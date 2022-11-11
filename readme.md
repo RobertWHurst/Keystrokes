@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="https://github.com/RobertWHurst/Keystrokes/workflows/test/badge.svg">
+  <a href="https://github.com/RobertWHurst/Keystrokes/actions/workflows/ci.yml">
+    <img src="https://github.com/RobertWHurst/Keystrokes/actions/workflows/ci.yml/badge.svg">
+  </a>
 </p>
 
 Keystrokes as a quick and easy to use library for binding keys and key combos.
