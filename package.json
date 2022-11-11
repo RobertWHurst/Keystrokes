@@ -1,6 +1,6 @@
 {
   "name": "@rwh/keystrokes",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "",
   "exports": {
     ".": {
@@ -17,8 +17,10 @@
   "types": "dist-umd/index.d.ts",
   "main": "dist-umd/index.js",
   "files": [
+    "dist/esm/**/*.js",
+    "dist/esm/**/*.d.ts",
     "dist/cjs/**/*.js",
-    "dist/esm/**/*.d.ts"
+    "dist/cjs/**/*.d.ts"
   ],
   "scripts": {
     "build": "pnpm build-cjs; pnpm build-esm",
