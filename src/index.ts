@@ -1,6 +1,21 @@
 import { Keystrokes } from './keystrokes.js'
 
-export { Keystrokes }
+export {
+  KeyEvent,
+  HandlerFn,
+  HandlerObj,
+  Handler,
+  ActiveEvent,
+  InactiveEvent,
+  KeyPressedEvent,
+  KeyReleasedEvent,
+  OnActiveBinder,
+  OnInactiveBinder,
+  OnKeyPressedBinder,
+  OnKeyReleasedBinder,
+  KeystrokesOptions,
+  Keystrokes,
+} from './keystrokes.js'
 
 export const globalKeystrokes = new Keystrokes()
 

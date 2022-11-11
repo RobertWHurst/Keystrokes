@@ -170,9 +170,8 @@ export class Keystrokes {
   }
 
   checkKeyCombo (keyCombo: string) {
-    keyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
-    const keyComboStates = this._keyComboStates[keyCombo]
-    const keyComboState = keyComboStates?.[0] ?? new KeyComboState(keyCombo)
+    const keyComboState = new KeyComboState(keyCombo)
+    keyComboState.updateState(this._activeKeys)
     return keyComboState.isPressed
   }
 

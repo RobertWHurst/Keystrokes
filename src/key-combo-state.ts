@@ -19,7 +19,7 @@ export class KeyComboState {
     return normalized
   }
 
-  get isPressed() { return this._isPressedWithFinalKey }
+  get isPressed() { return !!this._isPressedWithFinalKey }
 
   _parsedKeyCombo: string[][][]
   _handlerState: HandlerState
