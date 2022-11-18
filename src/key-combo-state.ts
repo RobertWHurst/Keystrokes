@@ -1,7 +1,7 @@
 import { HandlerState } from "./handler-state.js"
-import { Handler, KeyPressedEvent, KeyReleasedEvent } from "./keystrokes.js"
+import { Handler, KeyComboEvent, KeyEvent, MinimalEvent } from "./keystrokes.js"
 
-export class KeyComboState {
+export class KeyComboState<KeyboardEvent extends MinimalEvent> {
   static _parseCache: Record<string, string[][][]> = {}
   static _normalizationCache: Record<string, string> = {}
 
@@ -21,31 +21,33 @@ export class KeyComboState {
 
   get isPressed() { return !!this._isPressedWithFinalKey }
 
+  _normalizedKeyCombo: string
   _parsedKeyCombo: string[][][]
-  _handlerState: HandlerState
+  _handlerState: HandlerState<KeyComboEvent<KeyboardEvent>>
   _isPressedWithFinalKey: string
   _sequenceIndex: number
 
-  constructor(keyCombo: string, handler: Handler = {}) {
+  constructor(keyCombo: string, handler: Handler<KeyComboEvent<KeyboardEvent>> = {}) {
+    this._normalizedKeyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
     this._parsedKeyCombo = KeyComboState.parseKeyCombo(keyCombo)
     this._handlerState = new HandlerState(handler)
     this._isPressedWithFinalKey = ''
     this._sequenceIndex = 0
   }
 
-  isOwnHandler(handler: Handler) {
+  isOwnHandler(handler: Handler<KeyComboEvent<KeyboardEvent>>) {
     return this._handlerState.isOwnHandler(handler)
   }
 
-  executePressed(event: KeyPressedEvent) {
-    if (this._isPressedWithFinalKey !== event.key) { return }
-    this._handlerState.executePressed(event)
+  executePressed(event: KeyEvent<KeyboardEvent>) {
+    if (this._isPressedWithFinalKey !== event.originalEvent.key) { return }
+    this._handlerState.executePressed(this._wrapEvent(event))
   }
 
-  executeReleased(event: KeyReleasedEvent) {
-    if (this._isPressedWithFinalKey !== event.key) { return }
+  executeReleased(event: KeyEvent<KeyboardEvent>) {
+    if (this._isPressedWithFinalKey !== event.originalEvent.key) { return }
     this._isPressedWithFinalKey = ''
-    this._handlerState.executeReleased(event)
+    this._handlerState.executeReleased(this._wrapEvent(event))
   }
 
   updateState (activeKeys: string[]) {
@@ -83,5 +85,12 @@ export class KeyComboState {
     }
 
     this._sequenceIndex += 1
+  }
+
+  _wrapEvent(keyEvent: KeyEvent<KeyboardEvent>): KeyComboEvent<KeyboardEvent> {
+    return {
+      keyCombo: this._normalizedKeyCombo,
+      originalEvent: keyEvent.originalEvent
+    }
   }
 }

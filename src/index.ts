@@ -2,17 +2,13 @@ import { Keystrokes } from './keystrokes.js'
 
 export {
   KeyEvent,
+  KeyComboEvent,
   HandlerFn,
   HandlerObj,
   Handler,
-  ActiveEvent,
-  InactiveEvent,
-  KeyPressedEvent,
-  KeyReleasedEvent,
-  OnActiveBinder,
-  OnInactiveBinder,
-  OnKeyPressedBinder,
-  OnKeyReleasedBinder,
+  MinimalEvent,
+  OnActiveEventBinder,
+  OnKeyboardEventBinder,
   KeystrokesOptions,
   Keystrokes,
 } from './keystrokes.js'
