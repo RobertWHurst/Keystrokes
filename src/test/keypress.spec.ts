@@ -1,4 +1,4 @@
-import { Keystrokes, nextTick } from '../keystrokes'
+import { Keystrokes, MinimalKeyboardEvent, nextTick } from '../keystrokes'
 import sinon from 'sinon'
 import assert from 'assert'
 
@@ -10,7 +10,7 @@ describe("new Keypress(options)", () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
-      const keystrokes = new Keystrokes({
+      const keystrokes = new Keystrokes<MinimalKeyboardEvent>({
         onKeyPressed: h => { press = k => h({ key: k }) }
       })
 
@@ -33,7 +33,7 @@ describe("new Keypress(options)", () => {
       let release: (key: string) => void = () => {
         throw new Error('onKeyReleased not bound')
       }
-      const keystrokes = new Keystrokes({
+      const keystrokes = new Keystrokes<MinimalKeyboardEvent>({
         onKeyPressed: h => { press = k => h({ key: k }) },
         onKeyReleased: h => { release = k => h({ key: k }) }
       })
@@ -70,7 +70,7 @@ describe("new Keypress(options)", () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
-      const keystrokes = new Keystrokes({
+      const keystrokes = new Keystrokes<MinimalKeyboardEvent>({
         onKeyPressed: h => { press = k => h({ key: k }) }
       })
 
@@ -93,7 +93,7 @@ describe("new Keypress(options)", () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
-      const keystrokes = new Keystrokes({
+      const keystrokes = new Keystrokes<MinimalKeyboardEvent>({
         onKeyPressed: h => { press = k => h({ key: k }) }
       })
 
@@ -116,7 +116,7 @@ describe("new Keypress(options)", () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
-      const keystrokes = new Keystrokes({
+      const keystrokes = new Keystrokes<MinimalKeyboardEvent>({
         onKeyPressed: h => { press = k => h({ key: k }) }
       })
 
@@ -147,7 +147,7 @@ describe("new Keypress(options)", () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
-      const keystrokes = new Keystrokes({
+      const keystrokes = new Keystrokes<MinimalKeyboardEvent>({
         onKeyPressed: h => { press = k => h({ key: k }) }
       })
 
@@ -184,7 +184,65 @@ describe("new Keypress(options)", () => {
       let release: (key: string) => void = () => {
         throw new Error('onKeyReleased not bound')
       }
-      const keystrokes = new Keystrokes({
+      const keystrokes = new Keystrokes<MinimalKeyboardEvent>({
+        onKeyPressed: h => { press = k => h({ key: k }) },
+        onKeyReleased: h => { release = k => h({ key: k }) }
+      })
+
+      const handler1 = {
+        onPressed: sinon.stub(),
+        onPressedWithRepeat: sinon.stub(),
+        onReleased: sinon.stub(),
+      }
+      const handler2 = {
+        onPressed: sinon.stub(),
+        onPressedWithRepeat: sinon.stub(),
+        onReleased: sinon.stub(),
+      }
+      keystrokes.bindKeyCombo('a,b>c+d', handler1)
+      keystrokes.bindKeyCombo('a,b>c+d', handler2)
+
+      press('a')
+      press('a')
+
+      await nextTick()
+
+      release('a')
+
+      await nextTick()
+
+      press('b')
+      press('b')
+      press('d')
+      press('d')
+      press('c')
+      press('c')
+
+      await nextTick()
+
+      release('b')
+      release('c')
+      release('d')
+
+      await nextTick()
+      await nextTick()
+
+      sinon.assert.calledOnce(handler1.onPressed)
+      sinon.assert.calledTwice(handler1.onPressedWithRepeat)
+      sinon.assert.calledOnce(handler1.onReleased)
+      sinon.assert.calledOnce(handler2.onPressed)
+      sinon.assert.calledTwice(handler2.onPressedWithRepeat)
+      sinon.assert.calledOnce(handler2.onReleased)
+    })
+    
+    it('will not trigger a key combo handler if the keys are pressed in the wrong order', async () => {
+      let press: (key: string) => void = () => {
+        throw new Error('onKeyPressed not bound')
+      }
+      let release: (key: string) => void = () => {
+        throw new Error('onKeyReleased not bound')
+      }
+      const keystrokes = new Keystrokes<MinimalKeyboardEvent>({
         onKeyPressed: h => { press = k => h({ key: k }) },
         onKeyReleased: h => { release = k => h({ key: k }) }
       })
@@ -202,12 +260,12 @@ describe("new Keypress(options)", () => {
       keystrokes.bindKeyCombo('a,b>c,d', handler1)
       keystrokes.bindKeyCombo('a,b>c,d', handler2)
 
-      press('a')
-      press('a')
+      press('d')
+      press('d')
 
       await nextTick()
 
-      release('a')
+      release('d')
 
       press('b')
       press('c')
@@ -217,22 +275,22 @@ describe("new Keypress(options)", () => {
       release('c')
       release('b')
 
-      press('d')
-      press('d')
+      press('a')
+      press('a')
 
       await nextTick()
 
-      release('d')
+      release('a')
 
       await nextTick()
       await nextTick()
 
-      sinon.assert.calledOnce(handler1.onPressed)
-      sinon.assert.calledTwice(handler1.onPressedWithRepeat)
-      sinon.assert.calledOnce(handler1.onReleased)
-      sinon.assert.calledOnce(handler2.onPressed)
-      sinon.assert.calledTwice(handler2.onPressedWithRepeat)
-      sinon.assert.calledOnce(handler2.onReleased)
+      sinon.assert.notCalled(handler1.onPressed)
+      sinon.assert.notCalled(handler1.onPressedWithRepeat)
+      sinon.assert.notCalled(handler1.onReleased)
+      sinon.assert.notCalled(handler2.onPressed)
+      sinon.assert.notCalled(handler2.onPressedWithRepeat)
+      sinon.assert.notCalled(handler2.onReleased)
     })
   })
 
@@ -242,7 +300,7 @@ describe("new Keypress(options)", () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
-      const keystrokes = new Keystrokes({
+      const keystrokes = new Keystrokes<MinimalKeyboardEvent>({
         onKeyPressed: h => { press = k => h({ key: k }) }
       })
 
@@ -279,7 +337,7 @@ describe("new Keypress(options)", () => {
       let release: (key: string) => void = () => {
         throw new Error('onKeyReleased not bound')
       }
-      const keystrokes = new Keystrokes({
+      const keystrokes = new Keystrokes<MinimalKeyboardEvent>({
         onKeyPressed: h => { press = k => h({ key: k }) },
         onKeyReleased: h => { release = k => h({ key: k }) }
       })
@@ -299,14 +357,14 @@ describe("new Keypress(options)", () => {
 
   describe('#checkKeyCombo(keyCombo)', () => {
     
-    it('will return a boolean indicating if a key combo is pressed', () => {
+    it('will return a boolean indicating if a key combo is pressed and a partial key combo state array containing the pressed keys', async () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
       let release: (key: string) => void = () => {
         throw new Error('onKeyReleased not bound')
       }
-      const keystrokes = new Keystrokes({
+      const keystrokes = new Keystrokes<MinimalKeyboardEvent>({
         onKeyPressed: h => { press = k => h({ key: k }) },
         onKeyReleased: h => { release = k => h({ key: k }) }
       })

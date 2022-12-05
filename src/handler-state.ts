@@ -20,6 +20,10 @@ export class HandlerState<Event> {
     }
   }
 
+  get isEmpty() {
+    return !this._onPressed && !this._onPressedWithRepeat && !this._onReleased
+  }
+
   isOwnHandler(handler: Handler<Event>) {
     return this._identity === handler
   }

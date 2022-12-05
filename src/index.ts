@@ -1,3 +1,4 @@
+import { KeyComboState } from './key-combo-state.js'
 import { Keystrokes } from './keystrokes.js'
 
 export {
@@ -6,29 +7,38 @@ export {
   HandlerFn,
   HandlerObj,
   Handler,
-  MinimalEvent,
+  MinimalKeyboardEvent,
+  DefaultKeyboardEvent,
   OnActiveEventBinder,
   OnKeyboardEventBinder,
   KeystrokesOptions,
   Keystrokes,
 } from './keystrokes.js'
 
-export const globalKeystrokes = new Keystrokes()
+let globalKeystrokes: Keystrokes
+export const getGlobalKeystrokesInstance = () => {
+  if (!globalKeystrokes) { globalKeystrokes = new Keystrokes() }
+  return globalKeystrokes
+}
 
 export const bindKey: typeof globalKeystrokes.bindKey =
-  (...args) => globalKeystrokes.bindKey(...args)
+  (...args) => getGlobalKeystrokesInstance().bindKey(...args)
 
 export const unbindKey: typeof globalKeystrokes.unbindKey =
-  (...args) => globalKeystrokes.unbindKey(...args)
+  (...args) => getGlobalKeystrokesInstance().unbindKey(...args)
 
 export const bindKeyCombo: typeof globalKeystrokes.bindKeyCombo =
-  (...args) => globalKeystrokes.bindKeyCombo(...args)
+  (...args) => getGlobalKeystrokesInstance().bindKeyCombo(...args)
 
 export const unbindKeyCombo: typeof globalKeystrokes.unbindKeyCombo =
-  (...args) => globalKeystrokes.unbindKeyCombo(...args)
+  (...args) => getGlobalKeystrokesInstance().unbindKeyCombo(...args)
 
 export const checkKey: typeof globalKeystrokes.checkKey =
-  (...args) => globalKeystrokes.checkKey(...args)
+  (...args) => getGlobalKeystrokesInstance().checkKey(...args)
 
 export const checkKeyCombo: typeof globalKeystrokes.checkKeyCombo =
-  (...args) => globalKeystrokes.checkKeyCombo(...args)
+  (...args) => getGlobalKeystrokesInstance().checkKeyCombo(...args)
+
+export const normalizeKeyCombo = KeyComboState.normalizeKeyCombo
+export const stringifyKeyCombo = KeyComboState.stringifyKeyCombo
+export const parseKeyCombo = KeyComboState.parseKeyCombo

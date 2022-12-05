@@ -2,16 +2,21 @@
   "name": "@rwh/keystrokes",
   "version": "1.0.0-alpha.3",
   "description": "",
-  "types": "dist/index.d.ts",
-  "main": "dist/index.js",
+  "types": "dist/cjs/index.d.ts",
+  "main": "dist/cjs/index.js",
   "files": [
     "dist/**/*.js",
     "dist/**/*.d.ts"
   ],
   "scripts": {
-    "build": "tsc",
-    "test": "tsc && mocha -r source-map-support/register dist/test/*.spec.js",
-    "prepublishOnly": "pnpm run build"
+    "build": "concurrently \"npm:build:*\"",
+    "test": "tsc --project ./tsconfig.test.json && mocha -r source-map-support/register dist/test/test/*.spec.js",
+    "prepublishOnly": "pnpm run build",
+    "build:cjs": "tsc --project ./tsconfig.cjs.json",
+    "build:test": "tsc --project ./tsconfig.test.json",
+    "build:script": "rollup --config ./rollup.script.config.js",
+    "build:example": "cp ./src/example/index.* ./dist/example/ && rollup --config ./rollup.example.config.js",
+    "example": "static ./dist/example"
   },
   "keywords": [
     "keyboard",
@@ -23,13 +28,17 @@
   "author": "Robert Hurst <robertwhurst@gmail.com>",
   "license": "AGPL-3.0-only",
   "devDependencies": {
+    "@rollup/plugin-typescript": "^9.0.2",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.11.9",
     "@types/sinon": "^10.0.13",
+    "concurrently": "^7.5.0",
     "mocha": "^10.1.0",
-    "rollup": "^3.2.5",
+    "node-static": "^0.7.11",
+    "rollup": "^3.3.0",
     "sinon": "^14.0.2",
     "source-map-support": "^0.5.21",
-    "typescript": "^4.8.4"
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.3"
   }
 }

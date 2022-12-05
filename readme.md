@@ -7,10 +7,12 @@
 Keystrokes as a quick and easy to use library for binding keys and key combos.
 
 ```js
-import { bindKeyCombo } from '@rwh/keystrokes'
+import { bindKey, bindKeyCombo } from '@rwh/keystrokes'
 
-bindKeyCombo('ctrl > y, r', () => console.log('You pressed ctrl then y followed by r'))
+bindKeyCombo('a', () =>
+  console.log('You pressed the a key'))
+
+bindKeyCombo('ctrl > y, r', () =>
+  console.log('You pressed ctrl then y, released both, then pressed r'))
 ```
 
-More examples and documentation will be added soon. Currently the library is in
-a very early stage of development.

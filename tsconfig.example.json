@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "Node",
+    "outDir": "./dist/cjs",
+    "target": "ES2017",
+    "module": "CommonJS",
+    "sourceMap": false,
+  },
+  "include": ["./src"],
+  "exclude": ["./src/test"]
+}

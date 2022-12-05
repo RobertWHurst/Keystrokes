@@ -1,2 +1,3 @@
-dist
-node_modules
+.rollup.cache/
+dist/
+node_modules/
