@@ -1,4 +1,4 @@
-import { KeyEvent, Handler, HandlerState } from "./handler-state.js"
+import { KeyEvent, Handler, HandlerState } from './handler-state.js'
 
 export type KeyComboEvent<E> = {
   keyCombo: string
@@ -10,7 +10,9 @@ export class KeyComboState<E> {
   static _normalizationCache: Record<string, string> = {}
 
   static parseKeyCombo(keyComboStr: string) {
-    if (KeyComboState._parseCache[keyComboStr]) { return KeyComboState._parseCache[keyComboStr] }
+    if (KeyComboState._parseCache[keyComboStr]) {
+      return KeyComboState._parseCache[keyComboStr]
+    }
 
     const s = keyComboStr.toLowerCase()
 
@@ -18,14 +20,14 @@ export class KeyComboState<E> {
     let k: string[] = []
     let x: string[][] = [k]
     let y: string[][][] = [x]
-    let z: string[][][][] = [y]
+    const z: string[][][][] = [y]
     let isEscaped = false
 
     for (let i = 0; i < keyComboStr.length; i += 1) {
       if (s[i] === '\\') {
         isEscaped = true
       } else if ((s[i] === '+' || s[i] === '>' || s[i] === ',') && !isEscaped) {
-        if (o) { 
+        if (o) {
           // TODO: Nice error message
         }
         o = s[i]
@@ -59,25 +61,40 @@ export class KeyComboState<E> {
   static stringifyKeyCombo(keyCombo: string[][][]) {
     return keyCombo
       .map(s =>
-        s.map(u =>
-          u.map(k => {
-            if (k === '+') { return '\\+' }
-            if (k === '>') { return '\\>' }
-            if (k === ',') { return '\\,' }
-            return k
-          }).join('+')
-        ).join('>')
-      ).join(',')
+        s
+          .map(u =>
+            u
+              .map(k => {
+                if (k === '+') {
+                  return '\\+'
+                }
+                if (k === '>') {
+                  return '\\>'
+                }
+                if (k === ',') {
+                  return '\\,'
+                }
+                return k
+              })
+              .join('+'),
+          )
+          .join('>'),
+      )
+      .join(',')
   }
 
   static normalizeKeyCombo(keyComboStr: string) {
-    if (KeyComboState._normalizationCache[keyComboStr]) { return KeyComboState._normalizationCache[keyComboStr] }
+    if (KeyComboState._normalizationCache[keyComboStr]) {
+      return KeyComboState._normalizationCache[keyComboStr]
+    }
     const normalized = this.stringifyKeyCombo(this.parseKeyCombo(keyComboStr))
     KeyComboState._normalizationCache[keyComboStr] = normalized
     return normalized
   }
 
-  get isPressed() { return !!this._isPressedWithFinalKey }
+  get isPressed() {
+    return !!this._isPressedWithFinalKey
+  }
 
   _normalizedKeyCombo: string
   _parsedKeyCombo: string[][][]
@@ -100,21 +117,27 @@ export class KeyComboState<E> {
   }
 
   executePressed(event: KeyEvent<E>) {
-    if (this._isPressedWithFinalKey !== event.key) { return }
+    if (this._isPressedWithFinalKey !== event.key) {
+      return
+    }
     this._handlerState.executePressed(this._wrapEvent(event))
   }
 
   executeReleased(event: KeyEvent<E>) {
-    if (this._isPressedWithFinalKey !== event.key) { return }
+    if (this._isPressedWithFinalKey !== event.key) {
+      return
+    }
     this._isPressedWithFinalKey = ''
     this._handlerState.executeReleased(this._wrapEvent(event))
   }
-  
-  updateState (activeKeys: string[]) {
+
+  updateState(activeKeys: string[]) {
     const sequence = this._parsedKeyCombo[this._sequenceIndex]
 
     // Do nothing if no keys are pressed
-    if (activeKeys.length === 0) { return }
+    if (activeKeys.length === 0) {
+      return
+    }
 
     // ensure all sequence keys are pressed
     let activeKeyIndex = 0
@@ -125,13 +148,17 @@ export class KeyComboState<E> {
         for (let i = activeKeyIndex; i < activeKeys.length; i += 1) {
           const activeKey = activeKeys[i]
           if (key === activeKey) {
-            if (i > unitEndIndex) { unitEndIndex = i }
+            if (i > unitEndIndex) {
+              unitEndIndex = i
+            }
             foundKey = true
             break
           }
         }
         if (!foundKey) {
-          if (this._handlerState.isEmpty) { this._isPressedWithFinalKey = '' }
+          if (this._handlerState.isEmpty) {
+            this._isPressedWithFinalKey = ''
+          }
           return
         }
       }
@@ -167,7 +194,7 @@ export class KeyComboState<E> {
   _wrapEvent(keyEvent: KeyEvent<E>): KeyComboEvent<E> {
     return {
       keyCombo: this._normalizedKeyCombo,
-      originalEvent: keyEvent.originalEvent
+      originalEvent: keyEvent.originalEvent,
     }
   }
 }

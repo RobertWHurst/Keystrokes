@@ -17,7 +17,7 @@
   </a>
 </p>
 
-__NOTE: Keystrokes is in early alpha. If you encounter a bug please [report it][bug-report].__
+__Take note, Keystrokes is in early alpha. If you encounter a bug please [report it][bug-report].__
 
 Keystrokes as a quick and easy to use library for binding functions to keys
 and key combos. It can also be used to check if keys or key combos are pressed

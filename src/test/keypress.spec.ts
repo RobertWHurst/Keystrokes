@@ -2,16 +2,16 @@ import { Keystrokes, nextTick } from '../keystrokes'
 import sinon from 'sinon'
 import assert from 'assert'
 
-describe("new Keypress(options)", () => {
-
+describe('new Keypress(options)', () => {
   describe('#bindKey(keyCombo, handler)', () => {
-
     it('accepts a key and handler which is executed repeatedly while the key is pressed', () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
       const keystrokes = new Keystrokes({
-        onKeyPressed: h => { press = k => h({ key: k }) }
+        onKeyPressed: h => {
+          press = k => h({ key: k })
+        },
       })
 
       const handler1 = sinon.stub()
@@ -34,8 +34,12 @@ describe("new Keypress(options)", () => {
         throw new Error('onKeyReleased not bound')
       }
       const keystrokes = new Keystrokes({
-        onKeyPressed: h => { press = k => h({ key: k }) },
-        onKeyReleased: h => { release = k => h({ key: k }) }
+        onKeyPressed: h => {
+          press = k => h({ key: k })
+        },
+        onKeyReleased: h => {
+          release = k => h({ key: k })
+        },
       })
 
       const handler1 = {
@@ -65,13 +69,14 @@ describe("new Keypress(options)", () => {
   })
 
   describe('#unbindKey(keyCombo, handler?)', () => {
-    
     it('will remove a handler function for a given key, preventing it from being called', () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
       const keystrokes = new Keystrokes({
-        onKeyPressed: h => { press = k => h({ key: k }) }
+        onKeyPressed: h => {
+          press = k => h({ key: k })
+        },
       })
 
       const handler1 = sinon.stub()
@@ -88,13 +93,15 @@ describe("new Keypress(options)", () => {
       sinon.assert.calledOnce(handler1)
       sinon.assert.calledTwice(handler2)
     })
-    
+
     it('will remove all handler functions for a given key if no handler is given', () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
       const keystrokes = new Keystrokes({
-        onKeyPressed: h => { press = k => h({ key: k }) }
+        onKeyPressed: h => {
+          press = k => h({ key: k })
+        },
       })
 
       const handler1 = sinon.stub()
@@ -111,13 +118,15 @@ describe("new Keypress(options)", () => {
       sinon.assert.calledOnce(handler1)
       sinon.assert.calledOnce(handler2)
     })
-    
+
     it('will remove a handler object for a given key, preventing it from being called', () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
       const keystrokes = new Keystrokes({
-        onKeyPressed: h => { press = k => h({ key: k }) }
+        onKeyPressed: h => {
+          press = k => h({ key: k })
+        },
       })
 
       const handler1 = {
@@ -142,13 +151,15 @@ describe("new Keypress(options)", () => {
       sinon.assert.calledOnce(handler2.onPressed)
       sinon.assert.calledTwice(handler2.onPressedWithRepeat)
     })
-    
+
     it('will remove all handler objects for a key if no handler is given', () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
       const keystrokes = new Keystrokes({
-        onKeyPressed: h => { press = k => h({ key: k }) }
+        onKeyPressed: h => {
+          press = k => h({ key: k })
+        },
       })
 
       const handler1 = {
@@ -176,7 +187,6 @@ describe("new Keypress(options)", () => {
   })
 
   describe('#bindKeyCombo(keyCombo, handler)', () => {
-    
     it('accepts a key combo and when that combo is satisfied the given handler is executed', async () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
@@ -185,8 +195,12 @@ describe("new Keypress(options)", () => {
         throw new Error('onKeyReleased not bound')
       }
       const keystrokes = new Keystrokes({
-        onKeyPressed: h => { press = k => h({ key: k }) },
-        onKeyReleased: h => { release = k => h({ key: k }) }
+        onKeyPressed: h => {
+          press = k => h({ key: k })
+        },
+        onKeyReleased: h => {
+          release = k => h({ key: k })
+        },
       })
 
       const handler1 = {
@@ -234,7 +248,7 @@ describe("new Keypress(options)", () => {
       sinon.assert.calledTwice(handler2.onPressedWithRepeat)
       sinon.assert.calledOnce(handler2.onReleased)
     })
-    
+
     it('will not trigger a key combo handler if the keys are pressed in the wrong order', async () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
@@ -243,8 +257,12 @@ describe("new Keypress(options)", () => {
         throw new Error('onKeyReleased not bound')
       }
       const keystrokes = new Keystrokes({
-        onKeyPressed: h => { press = k => h({ key: k }) },
-        onKeyReleased: h => { release = k => h({ key: k }) }
+        onKeyPressed: h => {
+          press = k => h({ key: k })
+        },
+        onKeyReleased: h => {
+          release = k => h({ key: k })
+        },
       })
 
       const handler1 = {
@@ -295,13 +313,14 @@ describe("new Keypress(options)", () => {
   })
 
   describe('#unbindKeyCombo(keyCombo, handler?)', () => {
-    
     it('remove a handler for a given key combo', async () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
       }
       const keystrokes = new Keystrokes({
-        onKeyPressed: h => { press = k => h({ key: k }) }
+        onKeyPressed: h => {
+          press = k => h({ key: k })
+        },
       })
 
       const handler1 = sinon.stub()
@@ -329,7 +348,6 @@ describe("new Keypress(options)", () => {
   })
 
   describe('#checkKey(key)', () => {
-    
     it('will return a boolean indicating if a key is pressed', () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
@@ -338,8 +356,12 @@ describe("new Keypress(options)", () => {
         throw new Error('onKeyReleased not bound')
       }
       const keystrokes = new Keystrokes({
-        onKeyPressed: h => { press = k => h({ key: k }) },
-        onKeyReleased: h => { release = k => h({ key: k }) }
+        onKeyPressed: h => {
+          press = k => h({ key: k })
+        },
+        onKeyReleased: h => {
+          release = k => h({ key: k })
+        },
       })
 
       assert.ok(!keystrokes.checkKey('a'))
@@ -356,7 +378,6 @@ describe("new Keypress(options)", () => {
   })
 
   describe('#checkKeyCombo(keyCombo)', () => {
-    
     it('will return a boolean indicating if a key combo is pressed and a partial key combo state array containing the pressed keys', async () => {
       let press: (key: string) => void = () => {
         throw new Error('onKeyPressed not bound')
@@ -365,8 +386,12 @@ describe("new Keypress(options)", () => {
         throw new Error('onKeyReleased not bound')
       }
       const keystrokes = new Keystrokes({
-        onKeyPressed: h => { press = k => h({ key: k }) },
-        onKeyReleased: h => { release = k => h({ key: k }) }
+        onKeyPressed: h => {
+          press = k => h({ key: k })
+        },
+        onKeyReleased: h => {
+          release = k => h({ key: k })
+        },
       })
 
       assert.ok(!keystrokes.checkKeyCombo('a>b'))

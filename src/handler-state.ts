@@ -42,14 +42,18 @@ export class HandlerState<E> {
   }
 
   executePressed(event: E) {
-    if (!this._isPressed) { this._onPressed?.(event) }
+    if (!this._isPressed) {
+      this._onPressed?.(event)
+    }
 
     this._isPressed = true
     this._onPressedWithRepeat?.(event)
   }
 
   executeReleased(event: E) {
-    if (this._isPressed) { this._onReleased?.(event) }
+    if (this._isPressed) {
+      this._onReleased?.(event)
+    }
 
     this._isPressed = false
   }

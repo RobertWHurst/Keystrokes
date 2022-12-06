@@ -11,17 +11,20 @@ let release: (key: string) => void = () => {
 }
 global.document = {
   addEventListener: (eventName: string, handler: (event: any) => void) => {
-    if (eventName === 'keydown') { press = key => handler({ key }) }
-    if (eventName === 'keyup') { release = key => handler({ key }) }
+    if (eventName === 'keydown') {
+      press = key => handler({ key })
+    }
+    if (eventName === 'keyup') {
+      release = key => handler({ key })
+    }
   },
-  removeEventListener: (eventName: string, handler: () => void) => {}
+  removeEventListener: (eventName: string, handler: () => void) => {},
 } as Document
 
 getGlobalKeystrokesInstance().bindEnvironment()
 
 describe('exported globalKeystrokes methods', () => {
   describe('bindKey(keyCombo, handler)', () => {
-
     it('accepts a key and handler which is executed repeatedly while the key is pressed', () => {
       const handler1 = sinon.stub()
       const handler2 = sinon.stub()
@@ -37,7 +40,6 @@ describe('exported globalKeystrokes methods', () => {
   })
 
   describe('unbindKey(keyCombo, handler?)', () => {
-    
     it('will remove a handler function for a given key, preventing it from being called', () => {
       const handler1 = sinon.stub()
       const handler2 = sinon.stub()
@@ -56,7 +58,6 @@ describe('exported globalKeystrokes methods', () => {
   })
 
   describe('bindKeyCombo(keyCombo, handler)', () => {
-    
     it('accepts a key combo and when that combo is satisfied the given handler is executed', async () => {
       const handler1 = {
         onPressed: sinon.stub(),
@@ -105,12 +106,9 @@ describe('exported globalKeystrokes methods', () => {
     })
   })
 
-  describe('unbindKeyCombo(keyCombo, handler?)', () => {
-    
-  })
+  describe('unbindKeyCombo(keyCombo, handler?)', () => {})
 
   describe('checkKey(key)', () => {
-    
     it('will return a boolean indicating if a key is pressed', () => {
       assert.ok(!checkKey('a'))
 
@@ -125,7 +123,5 @@ describe('exported globalKeystrokes methods', () => {
     })
   })
 
-  describe('checkKeyCombo(keyCombo)', () => {
-    
-  })
+  describe('checkKeyCombo(keyCombo)', () => {})
 })

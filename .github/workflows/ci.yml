@@ -1,4 +1,4 @@
-name: Test
+name: Lint & Test
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Check Tests
+    name: Check Linting and Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -27,5 +27,8 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Run tests
+      - name: Run Linter
+        run: pnpm lint
+
+      - name: Run Tests
         run: pnpm test

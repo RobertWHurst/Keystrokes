@@ -1,28 +1,30 @@
-import { bindKeyCombo, parseKeyCombo, stringifyKeyCombo } from "../index"
-import { Keystrokes, Handler } from "../index"
+import { parseKeyCombo, stringifyKeyCombo } from '../index'
+import { Keystrokes } from '../index'
 
 // const initialKeyCombo = 'a > s > d + f, g + h > j, k + l'
 const initialKeyCombo = 'a > b, c + b'
 
-run().catch(err => { console.error(err) })
+run().catch(err => {
+  console.error(err)
+})
 
 async function run() {
   const keystrokes = new Keystrokes()
 
   let keyComboStr = ''
-  let keyCombo = parseKeyCombo(initialKeyCombo)
+  const keyCombo = parseKeyCombo(initialKeyCombo)
 
   const keyComboEl = document.querySelector<HTMLDivElement>('#key-combo')!
   keyComboEl.innerHTML = stylizeKeyCombo(keyCombo)
   const originalBg = keyComboEl.style.background
 
   const handleCombo = {
-    onPressed () {
+    onPressed() {
       keyComboEl.style.background = '#FFBF00'
     },
-    onReleased () {
+    onReleased() {
       keyComboEl.style.background = originalBg
-    }
+    },
   }
 
   const bindKeyCombo = () => {
@@ -39,7 +41,9 @@ async function run() {
 
   keyComboEl.addEventListener('keydown', event => {
     const key = event.key.toLowerCase()
-    if (key === 'shift') { standAloneShift = true }
+    if (key === 'shift') {
+      standAloneShift = true
+    }
     console.log('down', standAloneShift)
   })
 
@@ -52,7 +56,9 @@ async function run() {
     let lastSequence = keyCombo[keyCombo.length - 1]
     let lastUnit = lastSequence?.[lastSequence.length - 1] ?? []
 
-    if (key !== 'shift') { standAloneShift = false }
+    if (key !== 'shift') {
+      standAloneShift = false
+    }
     if (key === 'backspace' && pendingOperator) {
       pendingOperator = ''
     } else if (key === 'backspace' && lastUnit.length !== 0) {
@@ -115,25 +121,31 @@ async function run() {
   })
 }
 
-function stylizeKeyCombo (keyCombo: string[][][], pendingOperator?: string) {
-  let stylizedKeyCombo = keyCombo.map(s =>
-    `<span class="sequence">${s.map(u =>
-      `<span class="unit">${u.map(k => 
-        `<span class="key">${k}</span>`
-      ).join('<span class="join"> + </span>')}</span>`
-    ).join('<span class="order"> &gt; </span>')}</span>`
-  ).join('<span class="group">, </span>')
+function stylizeKeyCombo(keyCombo: string[][][], pendingOperator?: string) {
+  let stylizedKeyCombo = keyCombo
+    .map(
+      s =>
+        `<span class="sequence">${s
+          .map(
+            u =>
+              `<span class="unit">${u
+                .map(k => `<span class="key">${k}</span>`)
+                .join('<span class="join"> + </span>')}</span>`,
+          )
+          .join('<span class="order"> &gt; </span>')}</span>`,
+    )
+    .join('<span class="group">, </span>')
 
   switch (pendingOperator) {
     case '+':
       stylizedKeyCombo += '<span class="join"> + </span>'
-      break;
+      break
     case '>':
       stylizedKeyCombo += '<span class="order"> &gt; </span>'
-      break;
+      break
     case ',':
       stylizedKeyCombo += '<span class="group">, </span>'
-      break;
+      break
   }
 
   return stylizedKeyCombo
