@@ -8,7 +8,9 @@
     "dist/cjs/*.js",
     "dist/cjs/*.d.ts",
     "keystrokes.js",
-    "keystrokes.js.map"
+    "keystrokes.js.map",
+    "logo.png",
+    "readme.md"
   ],
   "scripts": {
     "build": "concurrently \"npm:build:*\"",
