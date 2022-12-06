@@ -65,6 +65,11 @@ As in the example at the top of the page, Keystrokes exports a bindKey and
 bindKeyCombo function. These function will bind a handler function, or handler
 object to a key or key combo.
 
+The key names used in your bindings is determined by the environment you are
+using Keystrokes in. They are always case insensitive. The default behavior,
+intended for browser environments, is to use the value of the key property from
+keyboard events. You get get a list of valid [key names here][key-names].
+
 ```js
 import { bindKey, bindKeyCombo } from '@rwh/keystrokes'
 
@@ -344,5 +349,6 @@ Thank you!
 [webpack]: https://webpack.js.org
 [jsdelivr]: https://www.jsdelivr.com/package/npm/@rwh/keystrokes
 [unpkg]: https://unpkg.com/browse/@rwh/keystrokes@latest/
+[key-names]: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
 [bug-report]: https://github.com/RobertWHurst/Keystrokes/issues/new?template=bug_report.md
 [feature-request]: https://github.com/RobertWHurst/Keystrokes/issues/new?template=feature_request.md
