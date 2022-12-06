@@ -1,9 +1,10 @@
 {
   "name": "@rwh/keystrokes",
-  "version": "1.0.0-alpha.6",
+  "version": "1.0.0-alpha.7",
   "description": "",
   "types": "dist/cjs/index.d.ts",
   "main": "dist/cjs/index.js",
+  "browser": "keystrokes.js",
   "files": [
     "dist/cjs/*.js",
     "dist/cjs/*.d.ts",
@@ -32,6 +33,12 @@
   ],
   "author": "Robert Hurst <robertwhurst@gmail.com>",
   "license": "AGPL-3.0-only",
+  "funding": "https://github.com/sponsors/RobertWHurst",
+  "repository": "github:RobertWHurst/Keystrokes",
+  "bugs": {
+    "email": "robertwhurst@gmail.com",
+    "url": "https://github.com/RobertWHurst/Keystrokes/issues/new?template=bug_report.md"
+  },
   "devDependencies": {
     "@rollup/plugin-typescript": "^9.0.2",
     "@types/mocha": "^10.0.1",
