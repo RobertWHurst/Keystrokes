@@ -1,3 +1,5 @@
 .rollup.cache/
 dist/
 node_modules/
+keystrokes.js
+keystrokes.js.map

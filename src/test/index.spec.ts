@@ -17,7 +17,7 @@ global.document = {
   removeEventListener: (eventName: string, handler: () => void) => {}
 } as Document
 
-getGlobalKeystrokesInstance()._bindEnvironment()
+getGlobalKeystrokesInstance().bindEnvironment()
 
 describe('exported globalKeystrokes methods', () => {
   describe('bindKey(keyCombo, handler)', () => {

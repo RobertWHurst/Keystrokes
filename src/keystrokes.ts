@@ -1,45 +1,15 @@
-import { HandlerState } from "./handler-state.js"
-import { KeyComboState } from "./key-combo-state.js"
-
-type BrowserKeyboardEvent = KeyboardEvent
-
-export type KeyEvent<KeyboardEvent> = {
-  key: string
-  originalEvent: KeyboardEvent
-}
-
-export type KeyComboEvent<KeyboardEvent> = {
-  keyCombo: string
-  originalEvent: KeyboardEvent
-}
-
-export type HandlerFn<Event> = (event: Event) => void
-
-export type HandlerObj<Event> = {
-  onPressed?: HandlerFn<Event>
-  onPressedWithRepeat?: HandlerFn<Event>
-  onReleased?: HandlerFn<Event>
-}
-
-export type Handler<Event> = HandlerFn<Event> | HandlerObj<Event>
-
-export type MinimalKeyboardEvent = {
-  key: string
-}
-
-export type DefaultKeyboardEvent = MinimalKeyboardEvent & {
-  originalEvent: BrowserKeyboardEvent
-}
+import { Handler, HandlerState, KeyEvent } from "./handler-state.js"
+import { KeyComboEvent, KeyComboState } from "./key-combo-state.js"
 
 export type OnActiveEventBinder = (handler: () => void) => (() => void) | void
-export type OnKeyboardEventBinder<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyboardEvent> =
-  (handler: (event: KeyboardEvent) => void) => (() => void) | void
+export type OnKeyEventBinder<E> =
+  (handler: (event: KeyEvent<E>) => void) => (() => void) | void
 
-export type KeystrokesOptions<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyboardEvent> = {
+export type KeystrokesOptions<E = KeyboardEvent> = {
   onActive?: OnActiveEventBinder
   onInactive?: OnActiveEventBinder
-  onKeyPressed?: OnKeyboardEventBinder<KeyboardEvent>
-  onKeyReleased?: OnKeyboardEventBinder<KeyboardEvent>
+  onKeyPressed?: OnKeyEventBinder<E>
+  onKeyReleased?: OnKeyEventBinder<E>
   selfReleasingKeys?: string[]
   keyRemap?: Record<string, string>
 }
@@ -51,7 +21,7 @@ const nextTickBinder =
 
 export const nextTick = () => new Promise(r => nextTickBinder(r))
 
-export const defaultOnActiveBinder: OnActiveEventBinder = (handler) => {
+const defaultOnActiveBinder: OnActiveEventBinder = (handler) => {
   try {
     const handlerWrapper = () => handler()
     addEventListener('focus', handlerWrapper)
@@ -59,31 +29,31 @@ export const defaultOnActiveBinder: OnActiveEventBinder = (handler) => {
   } catch {}
 }
 
-export const defaultOnInactiveBinder: OnActiveEventBinder = (handler) => {
+const defaultOnInactiveBinder: OnActiveEventBinder = (handler) => {
   try {
     const handlerWrapper = () => handler()
-    addEventListener('blur', () => handler())
+    addEventListener('blur', handlerWrapper)
     return () => { removeEventListener('blur', handlerWrapper) }
   } catch {}
 }
 
-export const defaultOnKeyPressedBinder: OnKeyboardEventBinder = (handler) => {
+const defaultOnKeyPressedBinder: OnKeyEventBinder<KeyboardEvent> = (handler) => {
   try {
-    const handlerWrapper = (e: BrowserKeyboardEvent) => handler({ key: e.key, originalEvent: e })
+    const handlerWrapper = (e: KeyboardEvent) => handler({ key: e.key, originalEvent: e })
     document.addEventListener('keydown', handlerWrapper)
     return () => { document.removeEventListener('keydown', handlerWrapper) }
   } catch {}
 }
 
-export const defaultOnKeyReleasedBinder: OnKeyboardEventBinder = (handler) => {
+const defaultOnKeyReleasedBinder: OnKeyEventBinder<KeyboardEvent> = (handler) => {
   try {
-    const handlerWrapper = (e: BrowserKeyboardEvent) => handler({ key: e.key, originalEvent: e })
+    const handlerWrapper = (e: KeyboardEvent) => handler({ key: e.key, originalEvent: e })
     document.addEventListener('keyup', handlerWrapper)
     return () => { document.removeEventListener('keyup', handlerWrapper) }
   } catch {}
 }
 
-export class Keystrokes<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyboardEvent> {
+export class Keystrokes<E = KeyboardEvent> {
   _isActive: boolean
   _isUpdatingKeyComboState: boolean
 
@@ -91,20 +61,20 @@ export class Keystrokes<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyb
 
   _onActiveBinder: OnActiveEventBinder
   _onInactiveBinder: OnActiveEventBinder
-  _onKeyPressedBinder: OnKeyboardEventBinder<KeyboardEvent>
-  _onKeyReleasedBinder: OnKeyboardEventBinder<KeyboardEvent>
+  _onKeyPressedBinder: OnKeyEventBinder<E>
+  _onKeyReleasedBinder: OnKeyEventBinder<E>
   _selfReleasingKeys: string[]
   _keyRemap: Record<string, string>
 
-  _handlerStates: Record<string, HandlerState<KeyEvent<KeyboardEvent>>[]>
-  _keyComboStates: Record<string, KeyComboState<KeyboardEvent>[]>
-  _keyComboStatesArray: KeyComboState<KeyboardEvent>[]
+  _handlerStates: Record<string, HandlerState<KeyEvent<E>>[]>
+  _keyComboStates: Record<string, KeyComboState<E>[]>
+  _keyComboStatesArray: KeyComboState<E>[]
   _activeKeys: string[]
   _activeKeySet: Set<string>
 
-  _watchedKeyComboStates: Record<string, KeyComboState<KeyboardEvent>>
+  _watchedKeyComboStates: Record<string, KeyComboState<E>>
 
-  constructor (options: KeystrokesOptions<KeyboardEvent> = {}) {
+  constructor (options: KeystrokesOptions<E> = {}) {
     this._isActive = true
     this._isUpdatingKeyComboState = false
 
@@ -123,10 +93,14 @@ export class Keystrokes<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyb
 
     this._watchedKeyComboStates = {}
 
-    this._bindEnvironment()
+    this.bindEnvironment()
   }
 
-  bindKey (key: string, handler: Handler<KeyEvent<KeyboardEvent>>) {
+  get pressedKeys() {
+    return this._activeKeys.slice(0)
+  }
+
+  bindKey (key: string, handler: Handler<KeyEvent<E>>) {
     key = key.toLowerCase()
 
     const handlerState = new HandlerState(handler)
@@ -134,7 +108,7 @@ export class Keystrokes<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyb
     this._handlerStates[key].push(handlerState)
   }
 
-  unbindKey (key: string, handler?: Handler<KeyEvent<KeyboardEvent>>) {
+  unbindKey (key: string, handler?: Handler<KeyEvent<E>>) {
     key = key.toLowerCase()
 
     const handlerStates = this._handlerStates[key]
@@ -152,17 +126,17 @@ export class Keystrokes<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyb
     }
   }
 
-  bindKeyCombo (keyCombo: string, handler: Handler<KeyComboEvent<KeyboardEvent>>) {
+  bindKeyCombo (keyCombo: string, handler: Handler<KeyComboEvent<E>>) {
     keyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
   
-    const keyComboState = new KeyComboState<KeyboardEvent>(keyCombo, handler)
+    const keyComboState = new KeyComboState<E>(keyCombo, handler)
 
     this._keyComboStates[keyCombo] ??= []
     this._keyComboStates[keyCombo].push(keyComboState)
     this._keyComboStatesArray.push(keyComboState)
   }
 
-  unbindKeyCombo (keyCombo: string, handler?: Handler<KeyComboEvent<KeyboardEvent>>) {
+  unbindKeyCombo (keyCombo: string, handler?: Handler<KeyComboEvent<E>>) {
     keyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
 
     const keyComboStates = this._keyComboStates[keyCombo]
@@ -200,8 +174,8 @@ export class Keystrokes<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyb
     return keyComboState.isPressed
   }
 
-  _bindEnvironment() {
-    this._unbinder?.()
+  bindEnvironment() {
+    this.unbindEnvironment()
 
     const unbindActive = this._onActiveBinder(() => { this._isActive = true })
     const unbindInactive = this._onInactiveBinder(() => { this._isActive = false })
@@ -216,7 +190,11 @@ export class Keystrokes<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyb
     }
   }
 
-  _handleKeyPress (event: KeyboardEvent) {
+  unbindEnvironment() {
+    this._unbinder?.()
+  }
+
+  _handleKeyPress (event: KeyEvent<E>) {
     (async () => {
       if (!this._isActive) { return }
 
@@ -224,10 +202,9 @@ export class Keystrokes<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyb
       const remappedKey = this._keyRemap[key]
       if (remappedKey) { key = remappedKey }
 
-      const wrappedEvent = this._wrapEvent(event)
       const keyPressHandlerStates = this._handlerStates[key]
       if (keyPressHandlerStates) {
-        for (const s of keyPressHandlerStates) { s.executePressed(wrappedEvent) }
+        for (const s of keyPressHandlerStates) { s.executePressed(event) }
       }
 
       if (!this._activeKeySet.has(key)) {
@@ -238,19 +215,18 @@ export class Keystrokes<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyb
       await this._updateKeyComboStates()
 
       for (const keyComboState of this._keyComboStatesArray) {
-        keyComboState.executePressed(wrappedEvent)
+        keyComboState.executePressed(event)
       }
     })().catch(err => { console.error(err) })
   }
 
-  _handleKeyRelease (event: KeyboardEvent) {
+  _handleKeyRelease (event: KeyEvent<E>) {
     (async () => {
       const key = event.key.toLowerCase()
-      const wrappedEvent = this._wrapEvent(event)
 
       const keyPressHandlerStates = this._handlerStates[key]
       if (keyPressHandlerStates) {
-        for (const s of keyPressHandlerStates) { s.executeReleased(wrappedEvent) }
+        for (const s of keyPressHandlerStates) { s.executeReleased(event) }
       }
       
       if (this._activeKeySet.has(key)) {
@@ -264,10 +240,12 @@ export class Keystrokes<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyb
         }
       }
 
+      this._tryReleaseSelfReleasingKeys()
+
       await this._updateKeyComboStates()
 
       for (const keyComboState of this._keyComboStatesArray) {
-        keyComboState.executeReleased(wrappedEvent)
+        keyComboState.executeReleased(event)
       }
     })().catch(err => { console.error(err) })
   }
@@ -285,10 +263,22 @@ export class Keystrokes<KeyboardEvent extends MinimalKeyboardEvent = DefaultKeyb
     this._isUpdatingKeyComboState = false
   }
 
-  _wrapEvent(event: KeyboardEvent): KeyEvent<KeyboardEvent> {
-    return {
-      key: event.key,
-      originalEvent: event
+  _tryReleaseSelfReleasingKeys() {
+    for (const activeKey of this._activeKeys) {
+      let isSelfReleasingKey = false
+      for (const selfReleasingKey of this._selfReleasingKeys) {
+        if (activeKey === selfReleasingKey) {
+          isSelfReleasingKey = true
+          break
+        }
+      }
+      if (!isSelfReleasingKey) {
+        return
+      }
+    }
+
+    for (const activeKey of this._activeKeys) {
+      this._handleKeyRelease({ key: activeKey } as any)
     }
   }
 }

@@ -1,22 +1,24 @@
 {
   "name": "@rwh/keystrokes",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "description": "",
   "types": "dist/cjs/index.d.ts",
   "main": "dist/cjs/index.js",
   "files": [
-    "dist/**/*.js",
-    "dist/**/*.d.ts"
+    "dist/cjs/*.js",
+    "dist/cjs/*.d.ts",
+    "keystrokes.js",
+    "keystrokes.js.map"
   ],
   "scripts": {
     "build": "concurrently \"npm:build:*\"",
     "test": "tsc --project ./tsconfig.test.json && mocha -r source-map-support/register dist/test/test/*.spec.js",
-    "prepublishOnly": "pnpm run build",
     "build:cjs": "tsc --project ./tsconfig.cjs.json",
     "build:test": "tsc --project ./tsconfig.test.json",
-    "build:script": "rollup --config ./rollup.script.config.js",
+    "build:script": "rollup --config ./rollup.script.config.js && cp ./dist/script/keystrokes.js ./keystrokes.js && cp ./dist/script/keystrokes.js.map ./keystrokes.js.map",
     "build:example": "cp ./src/example/index.* ./dist/example/ && rollup --config ./rollup.example.config.js",
-    "example": "static ./dist/example"
+    "example": "static ./dist/example",
+    "prepublishOnly": "pnpm run build"
   },
   "keywords": [
     "keyboard",

@@ -1,24 +1,35 @@
 import { KeyComboState } from './key-combo-state.js'
-import { Keystrokes } from './keystrokes.js'
+import { Keystrokes, KeystrokesOptions } from './keystrokes.js'
 
 export {
   KeyEvent,
-  KeyComboEvent,
   HandlerFn,
   HandlerObj,
   Handler,
-  MinimalKeyboardEvent,
-  DefaultKeyboardEvent,
+} from './handler-state'
+
+export {
+  KeyComboEvent,
+} from './key-combo-state'
+
+export {
   OnActiveEventBinder,
-  OnKeyboardEventBinder,
+  OnKeyEventBinder,
   KeystrokesOptions,
   Keystrokes,
 } from './keystrokes.js'
 
+let globalKeystrokesOptions: KeystrokesOptions
 let globalKeystrokes: Keystrokes
 export const getGlobalKeystrokesInstance = () => {
-  if (!globalKeystrokes) { globalKeystrokes = new Keystrokes() }
+  if (!globalKeystrokes) {
+    globalKeystrokes = new Keystrokes(globalKeystrokesOptions)
+  }
   return globalKeystrokes
+}
+
+export const setGlobalKeystrokesOptions = (options: KeystrokesOptions) => {
+  globalKeystrokesOptions = options
 }
 
 export const bindKey: typeof globalKeystrokes.bindKey =
