@@ -4,7 +4,6 @@
   "description": "",
   "types": "dist/cjs/index.d.ts",
   "main": "dist/cjs/index.js",
-  "browser": "keystrokes.js",
   "files": [
     "dist/cjs/*.js",
     "dist/cjs/*.d.ts",
