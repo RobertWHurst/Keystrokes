@@ -4,8 +4,8 @@
   "browserslist": "defaults",
   "scripts": {
     "lint": "eslint ./src",
-    "build": "rm -rf ./dist && parcel build",
-    "serve": "parcel"
+    "build": "rm -rf ./docs && parcel build --dist-dir ./docs",
+    "serve": "parcel --dist-dir ./docs"
   },
   "dependencies": {
     "@rwh/keystrokes": "1.0.0-beta.4"
