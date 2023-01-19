@@ -1,7 +1,9 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@rwh/keystrokes': 1.0.0-alpha.9
+  '@parcel/core': ^2.8.3
+  '@rwh/keystrokes': 1.0.0-beta.4
+  '@swc/helpers': ^0.4.14
   '@types/node': ^18.11.11
   '@types/sinon': ^10.0.13
   '@typescript-eslint/eslint-plugin': ^5.36.0
@@ -15,9 +17,11 @@ specifiers:
   typescript: ^4.9.3
 
 dependencies:
-  '@rwh/keystrokes': 1.0.0-alpha.9
+  '@rwh/keystrokes': 1.0.0-beta.4
 
 devDependencies:
+  '@parcel/core': 2.8.3
+  '@swc/helpers': 0.4.14
   '@types/node': 18.11.11
   '@types/sinon': 10.0.13
   '@typescript-eslint/eslint-plugin': 5.45.1_tdm6ms4ntwhlpozn7kjqrhum74
@@ -869,18 +873,6 @@ packages:
       - '@parcel/core'
     dev: true
 
-  /@parcel/types/2.8.3:
-    resolution: {integrity: sha512-FECA1FB7+0UpITKU0D6TgGBpGxYpVSMNEENZbSJxFSajNy3wrko+zwBKQmFOLOiPcEtnGikxNs+jkFWbPlUAtw==}
-    dependencies:
-      '@parcel/cache': 2.8.3_@parcel+core@2.8.3
-      '@parcel/diagnostic': 2.8.3
-      '@parcel/fs': 2.8.3_@parcel+core@2.8.3
-      '@parcel/package-manager': 2.8.3_@parcel+core@2.8.3
-      '@parcel/source-map': 2.1.1
-      '@parcel/workers': 2.8.3_@parcel+core@2.8.3
-      utility-types: 3.10.0
-    dev: true
-
   /@parcel/types/2.8.3_@parcel+core@2.8.3:
     resolution: {integrity: sha512-FECA1FB7+0UpITKU0D6TgGBpGxYpVSMNEENZbSJxFSajNy3wrko+zwBKQmFOLOiPcEtnGikxNs+jkFWbPlUAtw==}
     dependencies:
@@ -928,14 +920,14 @@ packages:
       '@parcel/core': 2.8.3
       '@parcel/diagnostic': 2.8.3
       '@parcel/logger': 2.8.3
-      '@parcel/types': 2.8.3
+      '@parcel/types': 2.8.3_@parcel+core@2.8.3
       '@parcel/utils': 2.8.3
       chrome-trace-event: 1.0.3
       nullthrows: 1.1.1
     dev: true
 
-  /@rwh/keystrokes/1.0.0-alpha.9:
-    resolution: {integrity: sha512-0c0g8p4UOWwLerFhIECTh+qxldrKsMWPpYGSzrjAP1zip6oLT1RvtyJJiI0g1fBUC/HTOcUWNUhWBBw+xd6zJA==}
+  /@rwh/keystrokes/1.0.0-beta.4:
+    resolution: {integrity: sha512-1oWa9Odw/De+idTcagXnvvj6n/ICfESSG7nIUEI8R67e6lyaS0OxssZmKg8gM05Chi5DDTFc9efad/HQy2yolQ==}
     dev: false
 
   /@swc/helpers/0.4.14:

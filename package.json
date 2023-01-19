@@ -1,16 +1,18 @@
 {
   "private": true,
   "source": "src/index.html",
-  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "browserslist": "defaults",
   "scripts": {
     "lint": "eslint ./src",
     "build": "rm -rf ./dist && parcel build",
     "serve": "parcel"
   },
   "dependencies": {
-    "@rwh/keystrokes": "1.0.0-alpha.9"
+    "@rwh/keystrokes": "1.0.0-beta.4"
   },
   "devDependencies": {
+    "@parcel/core": "^2.8.3",
+    "@swc/helpers": "^0.4.14",
     "@types/node": "^18.11.11",
     "@types/sinon": "^10.0.13",
     "@typescript-eslint/eslint-plugin": "^5.36.0",
@@ -22,8 +24,5 @@
     "parcel": "^2.8.3",
     "prettier": "^2.7.1",
     "typescript": "^4.9.3"
-  },
-  "alias": {
-    "process": false
   }
 }
