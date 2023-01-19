@@ -7,5 +7,5 @@
     "module": "CommonJS",
   },
   "include": ["./src"],
-  "exclude": ["./src/test", "./src/example"]
+  "exclude": ["./src/test", "./src/landing-page"]
 }

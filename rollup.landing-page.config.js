@@ -1,14 +1,14 @@
 const typescript = require('@rollup/plugin-typescript')
 
 module.exports = {
-  input: './src/example/index.ts',
+  input: './src/landing-page/index.ts',
   plugins: [typescript({
-    tsconfig: './tsconfig.example.json',
+    tsconfig: './tsconfig.landing-page.json',
     compilerOptions: { module: 'ESNext' },
     outputToFilesystem: true
   })],
   output: {
-    file: './dist/example/index.js',
+    file: './dist/landing-page/index.js',
     name: 'page',
     format: 'iife',
   }

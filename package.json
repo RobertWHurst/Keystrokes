@@ -19,8 +19,8 @@
     "build:cjs": "tsc --project ./tsconfig.cjs.json",
     "build:test": "tsc --project ./tsconfig.test.json",
     "build:script": "rollup --config ./rollup.script.config.js && cp ./dist/script/keystrokes.js ./keystrokes.js && cp ./dist/script/keystrokes.js.map ./keystrokes.js.map",
-    "build:example": "cp ./src/example/index.* ./dist/example/ && rollup --config ./rollup.example.config.js",
-    "example": "static ./dist/example",
+    "build:landing-page": "mkdir -p ./dist/landing-page && cp ./src/landing-page/index.* ./dist/landing-page/ && rollup --config ./rollup.landing-page.config.js",
+    "landing-page": "static ./dist/landing-page",
     "prepublishOnly": "pnpm run build"
   },
   "keywords": [
