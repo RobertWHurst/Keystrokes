@@ -247,11 +247,10 @@ Option            | Description
 ------------------|------------------------------------------
 selfReleasingKeys | Some environments may not properly fire release events for all keys. Adding them to this array will ensure they are released automatically when no other keys are pressed.
 keyRemap          | An object of key value pairs with the key being the key to rename, and the value being the new name.
-onActive          | A binder to track viewport focus. See [Non Browser Environments](#Non-Browser-Environments) for details.
-onInactive        | A binder to track viewport blur. See [Non Browser Environments](#Non-Browser-Environments) for details.
-onKeyPressed      | A binder to track when keys are pressed. See [Non Browser Environments](#Non-Browser-Environments) for details.
-onKeyReleased     | A binder to track when keys are released. See [Non Browser Environments](#Non-Browser-Environments) for details.
-
+onActive          | A binder to track viewport focus. See [Non Browser Environments](#non-browser-environments) for details.
+onInactive        | A binder to track viewport blur. See [Non Browser Environments](#non-browser-environments) for details.
+onKeyPressed      | A binder to track when keys are pressed. See [Non Browser Environments](#non-browser-environments) for details.
+onKeyReleased     | A binder to track when keys are released. See [Non Browser Environments](#non-browser-environments) for details.
 
 Here is an example where we are configuring the global instance.
 
@@ -335,7 +334,7 @@ keystrokes.bindKey(...)
 If you want to support this project by throwing be some coffee money It's
 greatly appreciated.
 
-[![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/RobertWHurst)
+[![sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/RobertWHurst)
 
 If your interested in providing feedback or would like to contribute please feel
 free to do so. I recommend first [opening an issue][feature-request] expressing
