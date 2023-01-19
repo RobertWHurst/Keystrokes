@@ -25,6 +25,8 @@
     "dist/*.js",
     "dist/*.map",
     "dist/*.d.ts",
+    "keystrokes.js",
+    "keystrokes.js.map",
     "logo.png",
     "readme.md"
   ],
