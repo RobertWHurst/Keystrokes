@@ -12,17 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2.5.0
+        uses: actions/checkout@v3
 
       - name: Setup Node
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@v3.6
         with:
           node-version: 19
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7
+        uses: pnpm/action-setup@v2.2.4
 
       - name: Install Dependencies
         run: pnpm install
