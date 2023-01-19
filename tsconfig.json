@@ -2,12 +2,11 @@
   "compilerOptions": {
     "alwaysStrict": true,
     "strict": true,
-    "declaration": true,
     "esModuleInterop": true,
     "sourceMap": true,
     "lib": ["DOM", "ESNext"],
-    "target": "ES2017",
-    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "./dist/cjs",
   },
   "include": ["./src"]
 }

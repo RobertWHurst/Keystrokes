@@ -1,61 +1,29 @@
 {
-  "name": "@rwh/keystrokes",
-  "version": "1.0.0-alpha.9",
-  "description": "",
-  "types": "dist/cjs/index.d.ts",
-  "main": "dist/cjs/index.js",
-  "files": [
-    "dist/cjs/*.js",
-    "dist/cjs/*.d.ts",
-    "keystrokes.js",
-    "keystrokes.js.map",
-    "logo.png",
-    "readme.md"
-  ],
+  "private": true,
+  "source": "src/index.html",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
-    "build": "concurrently \"npm:build:*\"",
     "lint": "eslint ./src",
-    "test": "tsc --project ./tsconfig.test.json && mocha -r source-map-support/register dist/test/test/*.spec.js",
-    "build:cjs": "tsc --project ./tsconfig.cjs.json",
-    "build:test": "tsc --project ./tsconfig.test.json",
-    "build:script": "rollup --config ./rollup.script.config.js && cp ./dist/script/keystrokes.js ./keystrokes.js && cp ./dist/script/keystrokes.js.map ./keystrokes.js.map",
-    "build:landing-page": "mkdir -p ./dist/landing-page && cp ./src/landing-page/index.* ./dist/landing-page/ && rollup --config ./rollup.landing-page.config.js",
-    "landing-page": "static ./dist/landing-page",
-    "prepublishOnly": "pnpm run build"
+    "build": "rm -rf ./dist && parcel build",
+    "serve": "parcel"
   },
-  "keywords": [
-    "keyboard",
-    "key binding",
-    "key combo",
-    "keys",
-    "key events"
-  ],
-  "author": "Robert Hurst <robertwhurst@gmail.com>",
-  "license": "AGPL-3.0-only",
-  "funding": "https://github.com/sponsors/RobertWHurst",
-  "repository": "github:RobertWHurst/Keystrokes",
-  "bugs": {
-    "email": "robertwhurst@gmail.com",
-    "url": "https://github.com/RobertWHurst/Keystrokes/issues/new?template=bug_report.md"
+  "dependencies": {
+    "@rwh/keystrokes": "1.0.0-alpha.9"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^9.0.2",
-    "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.11",
     "@types/sinon": "^10.0.13",
     "@typescript-eslint/eslint-plugin": "^5.36.0",
     "@typescript-eslint/parser": "^5.36.0",
-    "concurrently": "^7.6.0",
     "eslint": "^8.23.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "mocha": "^10.1.0",
     "node-static": "^0.7.11",
+    "parcel": "^2.8.3",
     "prettier": "^2.7.1",
-    "rollup": "^3.6.0",
-    "sinon": "^14.0.2",
-    "source-map-support": "^0.5.21",
-    "tslib": "^2.4.1",
     "typescript": "^4.9.3"
+  },
+  "alias": {
+    "process": false
   }
 }
