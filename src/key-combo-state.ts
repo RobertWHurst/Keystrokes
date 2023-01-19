@@ -7,8 +7,8 @@ export type KeyComboEvent<E> = {
 }
 
 export class KeyComboState<E> {
-  static _parseCache: Record<string, string[][][]> = {}
-  static _normalizationCache: Record<string, string> = {}
+  private static _parseCache: Record<string, string[][][]> = {}
+  private static _normalizationCache: Record<string, string> = {}
 
   static parseKeyCombo(keyComboStr: string) {
     if (KeyComboState._parseCache[keyComboStr]) {

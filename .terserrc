@@ -1,7 +1,0 @@
-{
-  "mangle": {
-    "properties": {
-      "regex": "^_"
-    }
-  }
-}
