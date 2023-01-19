@@ -2,12 +2,15 @@
   "compilerOptions": {
     "alwaysStrict": true,
     "strict": true,
-    "declaration": true,
-    "esModuleInterop": true,
-    "sourceMap": true,
     "lib": ["DOM", "ESNext"],
-    "target": "ES2017",
-    "module": "CommonJS",
+    "target": "ESNext",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
   },
-  "include": ["./src"]
+  "include": ["./src"],
+  "ts-node": {
+    "files": true
+  }
 }

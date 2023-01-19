@@ -1,16 +1,11 @@
-import { KeyComboState } from './key-combo-state.js'
-import { Keystrokes, KeystrokesOptions } from './keystrokes.js'
+export type { KeyEvent, HandlerFn, HandlerObj, Handler } from './handler-state'
+export type { KeyComboEvent } from './key-combo-state'
+export type { OnActiveEventBinder, OnKeyEventBinder, KeystrokesOptions } from './keystrokes'
 
-export { KeyEvent, HandlerFn, HandlerObj, Handler } from './handler-state'
+import { KeyComboState } from './key-combo-state'
+import { Keystrokes, KeystrokesOptions } from './keystrokes'
 
-export { KeyComboEvent } from './key-combo-state'
-
-export {
-  OnActiveEventBinder,
-  OnKeyEventBinder,
-  KeystrokesOptions,
-  Keystrokes,
-} from './keystrokes.js'
+export { Keystrokes } from './keystrokes'
 
 let globalKeystrokesOptions: KeystrokesOptions
 let globalKeystrokes: Keystrokes

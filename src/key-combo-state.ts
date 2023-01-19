@@ -1,4 +1,5 @@
-import { KeyEvent, Handler, HandlerState } from './handler-state.js'
+import type { KeyEvent, Handler } from './handler-state'
+import { HandlerState } from './handler-state'
 
 export type KeyComboEvent<E> = {
   keyCombo: string
@@ -96,19 +97,17 @@ export class KeyComboState<E> {
     return !!this._isPressedWithFinalKey
   }
 
-  _normalizedKeyCombo: string
-  _parsedKeyCombo: string[][][]
-  _handlerState: HandlerState<KeyComboEvent<E>>
-  _isPressedWithFinalKey: string
-  _waitingForNextSequence: boolean
-  _sequenceIndex: number
+  private _normalizedKeyCombo: string
+  private _parsedKeyCombo: string[][][]
+  private _handlerState: HandlerState<KeyComboEvent<E>>
+  private _isPressedWithFinalKey: string
+  private _sequenceIndex: number
 
   constructor(keyCombo: string, handler: Handler<KeyComboEvent<E>> = {}) {
     this._normalizedKeyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
     this._parsedKeyCombo = KeyComboState.parseKeyCombo(keyCombo)
     this._handlerState = new HandlerState(handler)
     this._isPressedWithFinalKey = ''
-    this._waitingForNextSequence = false
     this._sequenceIndex = 0
   }
 
