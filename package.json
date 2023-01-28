@@ -2,7 +2,7 @@
   "name": "@rwh/keystrokes-monorepo",
   "private": true,
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "pnpm -r --sort build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "publish": "pnpm -r publish",

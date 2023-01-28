@@ -42,14 +42,14 @@
     "url": "https://github.com/RobertWHurst/Keystrokes/issues/new?template=bug_report.md"
   },
   "peerDependencies": {
-    "@rwh/keystrokes": "workspace:1.0.0-beta.4",
+    "@rwh/keystrokes": "workspace:1.0.0-beta.5",
     "react": ">=17"
   },
   "devDependencies": {
     "@parcel/core": "^2.8.3",
     "@parcel/packager-ts": "^2.8.3",
     "@parcel/transformer-typescript-types": "^2.8.3",
-    "@rwh/keystrokes": "workspace:1.0.0-beta.4",
+    "@rwh/keystrokes": "workspace:1.0.0-beta.5",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.11",
     "@types/react": "^18.0.27",

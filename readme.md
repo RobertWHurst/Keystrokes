@@ -185,6 +185,9 @@ and/or `useKeyCombo` with `<KeystrokesProvider>`. This component allows
 you to pass a custom instance of keystrokes, and all hooks rendered under it
 will use the provided instance instead of the global one.
 
+See [Creating Instances](#creating-instances) for more information on creating
+custom keystrokes instances.
+
 ```js
 import { useEffect, useState } from 'react'
 import { Keystrokes, KeystrokesProvider, useKey, useKeyCombo } from '@rwh/react-keystrokes'
@@ -207,6 +210,56 @@ export const App = () => {
     </KeystrokesProvider>
   )
 }
+```
+
+## Testing your Keystrokes bindings
+
+Keystrokes also exports a function, `createTestKeystrokes`, which creates an
+instance of Keystrokes modified for test cases. It has four additional methods
+for controlling the internal state.
+
+```js
+import assert from 'assert'
+import { createTestKeystrokes } from '@rwh/keystrokes'
+
+describe('MyApp', () => {
+  it('correctly handles the key combo', () => {
+    const keystrokes = createTestKeystrokes()
+
+    const app = new MyApp({ keystrokes })
+
+    keystrokes.press({ key: 'a' })
+    keystrokes.press({ key: 'b' })
+
+    await app.update()
+
+    assert(app.didComboBoundThing)
+  })
+})
+```
+
+If your app uses the global instance of keystrokes then this can be used in
+conjunction with `setGlobalKeystrokes`.
+
+```js
+import assert from 'assert'
+import { createTestKeystrokes, setGlobalKeystrokes } from '@rwh/keystrokes'
+
+describe('MyApp', () => {
+  it('correctly handles the key combo', () => {
+    const keystrokes = createTestKeystrokes()
+    setGlobalKeystrokes(keystrokes)
+
+    const app = new MyApp()
+
+    keystrokes.press({ key: 'a' })
+    keystrokes.press({ key: 'b' })
+
+    await app.update()
+
+    assert(app.didComboBoundThing)
+  })
+})
 ```
 
 ## Creating Instances
@@ -331,17 +384,6 @@ const keystrokes = new Keystrokes({
 
 keystrokes.bindKey(...)
 ```
-
-## Testing your Keystrokes bindings
-
-Keystrokes also exports a function which creates an instance of Keystrokes
-modified for test cases. It has four additional methods for controlling the
-internal state.
-
-```js
-
-```
-
 
 ## Help Welcome
 
