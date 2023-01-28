@@ -33,7 +33,7 @@
   "scripts": {
     "lint": "eslint ./src",
     "test": "mocha -r ts-node/register ./src/tests/**/*.spec.ts",
-    "build": "rm -rf dist/ && parcel build --no-scope-hoist",
+    "build": "rm -rf dist/ && cp ../../readme.md readme.md && parcel build --no-scope-hoist",
     "dev": "parcel build --watch",
     "prepublishOnly": "pnpm run build"
   },

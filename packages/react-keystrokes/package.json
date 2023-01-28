@@ -19,7 +19,7 @@
   "scripts": {
     "lint": "eslint ./src",
     "test": "mocha -r ts-node/register -r jsdom-global/register ./src/tests/**/*.spec.tsx",
-    "build": "rm -rf dist/ && parcel build --no-scope-hoist",
+    "build": "rm -rf dist/ && cp ../../readme.md readme.md && parcel build --no-scope-hoist",
     "dev": "parcel build --watch",
     "prepublishOnly": "pnpm run build"
   },
