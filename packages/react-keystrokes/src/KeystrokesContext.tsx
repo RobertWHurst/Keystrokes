@@ -1,12 +1,12 @@
 import React, { createContext, ReactNode } from 'react'
-import { getGlobalKeystrokesInstance, Keystrokes } from '@rwh/keystrokes'
+import { getGlobalKeystrokes, Keystrokes } from '@rwh/keystrokes'
 
 export type KeystrokesContextData = {
   keystrokes: Keystrokes
 }
 
 export const defaultKeystrokesContext: KeystrokesContextData = {
-  keystrokes: getGlobalKeystrokesInstance(),
+  keystrokes: getGlobalKeystrokes(),
 }
 
 export const KeystrokesContext = createContext(defaultKeystrokesContext)
