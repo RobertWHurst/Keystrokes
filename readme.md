@@ -1,6 +1,6 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/RobertWHurst/Keystrokes/master/logo.png">
-</p>
+<h1 align="center">
+  <img alt="Keystrokes" title="Keystrokes" src="https://raw.githubusercontent.com/RobertWHurst/Keystrokes/master/logo.png">
+</h1>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@rwh/keystrokes">
@@ -37,7 +37,7 @@ bindKeyCombo('ctrl > y, r', () =>
   console.log('You pressed "ctrl" then "y", released both, and are pressing "r"'))
 ```
 
-# Installation
+## Installation
 
 Keystrokes is available on [npm][npm]. This works great when using a build
 system like [Parcel][parcel], [Vite][vite], [Turbopack][turbopack], or
@@ -62,7 +62,7 @@ keystrokes.bindKey('a', () => console.log('you pressed a'))
 </script>
 ```
 
-# Binding Keys and Key Combos
+## Binding Keys and Key Combos
 
 As in the example at the top of the page, Keystrokes exports a bindKey and
 bindKeyCombo function. These function will bind a handler function, or handler
@@ -106,7 +106,7 @@ bindKeyCombo('ctrl > y, r', handler)
 bindKeyCombo('ctrl > y, r', { onPressedWithRepeat: handler })
 ```
 
-# Unbinding Keys and Key Combos
+## Unbinding Keys and Key Combos
 
 In more complex applications it's likely you'll need to unbind handlers, such
 as when you change your view. In order to do so you just need to keep a
@@ -134,7 +134,7 @@ reference.
 unbindKeyCombo('ctrl > y, r')
 ```
 
-# Checking Keys and Key Combos
+## Checking Keys and Key Combos
 
 If you have a situation where you want to check if a key or key combo is
 pressed at anytime you can do so with `checkKey` and/or `checkKeyCombo`
@@ -150,63 +150,66 @@ const keyIsPressed = checkKey('a')
 const keyComboIsPressed = checkKeyCombo('ctrl > y, r')
 ```
 
-# Working with Popular frontend frameworks
+## Using Keystrokes with React
 
-## React
+Keystrokes has it's own react specific package. It re-exports everything from
+the @rwh/keystrokes package, but adds a few react specific goodies.
 
-I recommend creating a react hook you can use to handle the activation
-of key combos. Below I've provided a basic hook that should do the trick
-for most React users.
+```sh
+npm install @rwh/keystrokes @rwh/react-keystrokes
+```
+
+You will find two hooks, `useKey` and `useKeyCombo`, as well as an optional
+context provider which allows using these hooks with custom keystrokes
+instances.
+
+Using it to track key or key combo states is rather easy.
 
 ```js
 import { useEffect, useState } from 'react'
-import { bindKeyCombo, unbindKeyCombo } from '@rwh/keystrokes'
+import { useKey, useKeyCombo } from '@rwh/react-keystrokes'
 
-export const useKeyCombo = (keyCombo) => {
-  const [isPressed, setIsPressed] = useState(false)
+export const Component = () => {
 
-  useEffect(() => {
-    const handler = {
-      onPressed: () => setIsPressed(true),
-      onReleased: () => setIsPressed(false),
-    }
+  const isComboPressed = useKeyCombo('a + b')
+  const isKeyPressed = useKeyCombo('c')
 
-    bindKeyCombo(keyCombo, handler)
-    return () => { unbindKeyCombo(keyCombo, handler) }
-  }, [keyCombo])
-
-  return isPressed
+  ...
 }
 ```
 
-## Vue
+By default the hooks will use the global instance of keystrokes.
 
-I recommend creating a vue composable you can use to handle the activation
-of key combos. Below I've provided a basic composable that should do the trick
-for most Vue users.
+To use a custom instance of keystrokes you can wrap components using `useKey`
+and/or `useKeyCombo` with `<KeystrokesProvider>`. This component allows
+you to pass a custom instance of keystrokes, and all hooks rendered under it
+will use the provided instance instead of the global one.
 
 ```js
-import { ref, unref, watchEffect } from 'vue'
-import { bindKeyCombo, unbindKeyCombo } from '@rwh/keystrokes'
+import { useEffect, useState } from 'react'
+import { Keystrokes, KeystrokesProvider, useKey, useKeyCombo } from '@rwh/react-keystrokes'
 
-export const useKeyCombo = (keyCombo) => {
-  const isPressed = ref(false)
+export const Component = () => {
 
-  watchEffect((cleanUp) => {
-    const handler = {
-      onPressed: () => { isPressed.value = true },
-      onReleased: () => { isPressed.value = false },
-    }
-    const keyComboStr = unref(keyCombo)
-    bindKeyCombo(keyComboStr, handler)
-    cleanUp(() => { unbindKeyCombo(keyComboStr, handler) })
-  })
+  const isComboPressed = useKeyCombo('a + b')
+  const isKeyPressed = useKeyCombo('c')
 
-  return isPressed
+  /* ... */
+}
+
+export const App = () => {
+
+  const keystrokes = new Keystrokes({ /* custom options */ })
+
+  return (
+    <KeystrokesProvider keystrokes={keystrokes}>
+      <Component />
+    </KeystrokesProvider>
+  )
 }
 ```
 
-# Creating Instances
+## Creating Instances
 
 If you'd rather create your own instances of Keystrokes, rather than using the
 global instance, you can do so by constructing the Keystrokes class. Keystrokes
@@ -231,14 +234,14 @@ If you want to go this route you won't have to work about overhead from the
 global instance as it is only created if you use the exported functions
 associated with it.
 
-# Configuration Options
+## Configuration Options
 
 Keystrokes has a few configuration options that you can configure by passing
 them to the `Keystrokes` constructor, or by calling the
 `setGlobalKeystrokesOptions` before using any of the functions exported by the
 package associated with the global instance.
 
-## Available Options
+### Available Options
 
   selfReleasingKeys?: string[]
   keyRemap?: Record<string, string>
@@ -278,7 +281,7 @@ const keystrokes = new Keystrokes({
 keystrokes.bindKey(...)
 ```
 
-# Non Browser Environments
+## Non Browser Environments
 
 Should you wish to use Keystrokes in a non browser environment, you can do
 so with the use of the `onActive`, `onInactive`, `onKeyPressed`, and
@@ -329,7 +332,18 @@ const keystrokes = new Keystrokes({
 keystrokes.bindKey(...)
 ```
 
-# Help Welcome
+## Testing your Keystrokes bindings
+
+Keystrokes also exports a function which creates an instance of Keystrokes
+modified for test cases. It has four additional methods for controlling the
+internal state.
+
+```js
+
+```
+
+
+## Help Welcome
 
 If you want to support this project by throwing be some coffee money It's
 greatly appreciated.

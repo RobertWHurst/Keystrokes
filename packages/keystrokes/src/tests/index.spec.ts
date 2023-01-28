@@ -1,6 +1,6 @@
 import sinon from 'sinon'
 import assert from 'assert'
-import { bindKey, bindKeyCombo, checkKey, getGlobalKeystrokesInstance, unbindKey } from '..'
+import { bindKey, bindKeyCombo, checkKey, getGlobalKeystrokes, unbindKey } from '..'
 import { nextTick } from '../keystrokes'
 
 let press: (key: string) => void = () => {
@@ -21,7 +21,7 @@ global.document = {
   removeEventListener: (eventName: string, handler: () => void) => {},
 } as Document
 
-getGlobalKeystrokesInstance().bindEnvironment()
+getGlobalKeystrokes().bindEnvironment()
 
 describe('exported globalKeystrokes methods', () => {
   describe('bindKey(keyCombo, handler)', () => {
