@@ -22,4 +22,4 @@
 This package provides React bindings for Keystrokes. See the [Readme][#readme]
 in the root of this repository for details.
 
-[#readme]: ../
+[#readme]: https://github.com/RobertWHurst/Keystrokes/tree/master#readme

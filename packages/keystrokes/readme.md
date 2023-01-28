@@ -24,4 +24,4 @@ can be used in any JavaScript or TypeScript project For more information about
 how to use the library see the [Readme][#readme] at the root of this
 repository.
 
-[#readme]: ../
+[#readme]: https://github.com/RobertWHurst/Keystrokes/tree/master#readme
