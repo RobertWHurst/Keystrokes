@@ -59,7 +59,7 @@ importers:
       '@parcel/core': ^2.8.3
       '@parcel/packager-ts': ^2.8.3
       '@parcel/transformer-typescript-types': ^2.8.3
-      '@rwh/keystrokes': workspace:1.0.0-beta.4
+      '@rwh/keystrokes': workspace:1.0.0-beta.5
       '@types/mocha': ^10.0.1
       '@types/node': ^18.11.11
       '@types/react': ^18.0.27
@@ -999,18 +999,6 @@ packages:
       typescript: 4.9.3
     dev: true
 
-  /@parcel/types/2.8.3:
-    resolution: {integrity: sha512-FECA1FB7+0UpITKU0D6TgGBpGxYpVSMNEENZbSJxFSajNy3wrko+zwBKQmFOLOiPcEtnGikxNs+jkFWbPlUAtw==}
-    dependencies:
-      '@parcel/cache': 2.8.3_@parcel+core@2.8.3
-      '@parcel/diagnostic': 2.8.3
-      '@parcel/fs': 2.8.3_@parcel+core@2.8.3
-      '@parcel/package-manager': 2.8.3_@parcel+core@2.8.3
-      '@parcel/source-map': 2.1.1
-      '@parcel/workers': 2.8.3_@parcel+core@2.8.3
-      utility-types: 3.10.0
-    dev: true
-
   /@parcel/types/2.8.3_@parcel+core@2.8.3:
     resolution: {integrity: sha512-FECA1FB7+0UpITKU0D6TgGBpGxYpVSMNEENZbSJxFSajNy3wrko+zwBKQmFOLOiPcEtnGikxNs+jkFWbPlUAtw==}
     dependencies:
@@ -1058,7 +1046,7 @@ packages:
       '@parcel/core': 2.8.3
       '@parcel/diagnostic': 2.8.3
       '@parcel/logger': 2.8.3
-      '@parcel/types': 2.8.3
+      '@parcel/types': 2.8.3_@parcel+core@2.8.3
       '@parcel/utils': 2.8.3
       chrome-trace-event: 1.0.3
       nullthrows: 1.1.1
