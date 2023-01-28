@@ -174,7 +174,7 @@ export const Component = () => {
   const isComboPressed = useKeyCombo('a + b')
   const isKeyPressed = useKeyCombo('c')
 
-  ...
+  /* ... */
 }
 ```
 
