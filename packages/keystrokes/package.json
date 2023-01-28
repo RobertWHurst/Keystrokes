@@ -1,6 +1,6 @@
 {
   "name": "@rwh/keystrokes",
-  "version": "1.0.0-beta.8",
+  "version": "1.0.0-beta.9",
   "description": "Keystrokes is an easy to use library for binding functions to keys and key combos. It can be used with any TypeScript or JavaScript project, even in non-browser environments.",
   "source": "./src/index.ts",
   "main": "./dist/index.js",
@@ -33,7 +33,7 @@
   "scripts": {
     "lint": "eslint ./src",
     "test": "mocha -r ts-node/register ./src/tests/**/*.spec.ts",
-    "build": "rm -rf dist/ && parcel build",
+    "build": "rm -rf dist/ && parcel build --no-scope-hoist",
     "dev": "parcel build --watch",
     "prepublishOnly": "pnpm run build"
   },
