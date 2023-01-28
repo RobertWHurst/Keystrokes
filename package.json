@@ -5,8 +5,7 @@
     "build": "pnpm -r --sort build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
-    "publish": "pnpm -r publish",
-    "prepublishOnly": "pnpm build"
+    "publish": "pnpm -r publish"
   },
   "devDependencies": {
     "@parcel/core": "^2.8.3",
