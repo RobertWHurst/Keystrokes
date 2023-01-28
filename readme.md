@@ -152,8 +152,7 @@ const keyComboIsPressed = checkKeyCombo('ctrl > y, r')
 
 ## Using Keystrokes with React
 
-Keystrokes has it's own react specific package. It re-exports everything from
-the @rwh/keystrokes package, but adds a few react specific goodies.
+Keystrokes has it's own react specific package with a few goodies.
 
 ```sh
 npm install @rwh/keystrokes @rwh/react-keystrokes

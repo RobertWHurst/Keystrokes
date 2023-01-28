@@ -4,7 +4,8 @@ import { create } from 'react-test-renderer'
 import { KeystrokesProvider } from '../KeystrokesContext'
 import { act } from './helpers/act'
 
-import { createTestKeystrokes, useKeyCombo } from '..'
+import { createTestKeystrokes } from '@rwh/keystrokes'
+import { useKeyCombo } from '..'
 import { wait } from './helpers/next-tick'
 
 const TestComponent = () => {
