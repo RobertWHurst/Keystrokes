@@ -1,6 +1,13 @@
 {
   "name": "@rwh/keystrokes-monorepo",
   "private": true,
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "publish": "pnpm -r publish",
+    "prepublishOnly": "pnpm build"
+  },
   "devDependencies": {
     "@parcel/core": "^2.8.3",
     "@parcel/packager-ts": "^2.8.3",
