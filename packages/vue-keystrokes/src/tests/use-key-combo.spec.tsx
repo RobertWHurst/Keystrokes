@@ -26,7 +26,7 @@ const TestComponent = defineComponent({
 `
 })
 
-describe.only('useKeyCombo(keyCombo) -> isPressed', () => {
+describe('useKeyCombo(keyCombo) -> isPressed', () => {
   it('initial state is unpressed', async () => {
     const keystrokes = createTestKeystrokes()
     const w = mount(ProviderComponent, {
