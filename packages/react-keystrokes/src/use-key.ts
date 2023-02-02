@@ -4,7 +4,7 @@ import { KeystrokesContext } from './KeystrokesContext'
 export const useKey = (key: string) => {
   const [isPressed, setIsPressed] = useState(false)
 
-  const { keystrokes } = useContext(KeystrokesContext)
+  const keystrokes = useContext(KeystrokesContext)()
 
   const updatePressedEffect = () => {
     const handler = {

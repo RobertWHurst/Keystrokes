@@ -1,13 +1,9 @@
 import React, { createContext, ReactNode } from 'react'
 import { getGlobalKeystrokes, Keystrokes } from '@rwh/keystrokes'
 
-export type KeystrokesContextData = {
-  keystrokes: Keystrokes
-}
+export type KeystrokesContextData = () => Keystrokes
 
-export const defaultKeystrokesContext: KeystrokesContextData = {
-  keystrokes: getGlobalKeystrokes(),
-}
+export const defaultKeystrokesContext: KeystrokesContextData = () => getGlobalKeystrokes()
 
 export const KeystrokesContext = createContext(defaultKeystrokesContext)
 
@@ -17,5 +13,11 @@ export type KeystrokesProviderProps = {
 }
 
 export const KeystrokesProvider = (props: KeystrokesProviderProps) => {
-  return <KeystrokesContext.Provider value={props}>{props.children}</KeystrokesContext.Provider>
+  const { keystrokes, children } = props
+
+  return (
+    <KeystrokesContext.Provider value={() => keystrokes}>
+      {children}
+    </KeystrokesContext.Provider>
+  )
 }
