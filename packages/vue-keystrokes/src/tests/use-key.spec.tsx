@@ -14,7 +14,7 @@ const ProviderComponent = defineComponent({
   },
   template: `
     <slot />
-  `
+  `,
 })
 
 const TestComponent = defineComponent({
@@ -23,7 +23,7 @@ const TestComponent = defineComponent({
   },
   template: `
     <div>{{isPressed ? 'isPressed' : 'isNotPressed'}}</div>
-`
+`,
 })
 
 describe('useKey(key) -> isPressed', () => {
@@ -31,7 +31,7 @@ describe('useKey(key) -> isPressed', () => {
     const keystrokes = createTestKeystrokes()
     const w = mount(ProviderComponent, {
       slots: { default: TestComponent },
-      props: { keystrokes }
+      props: { keystrokes },
     })
     assert(w.get('div').text() === 'isNotPressed')
   })
@@ -40,7 +40,7 @@ describe('useKey(key) -> isPressed', () => {
     const keystrokes = createTestKeystrokes()
     const w = mount(ProviderComponent, {
       slots: { default: TestComponent },
-      props: { keystrokes }
+      props: { keystrokes },
     })
 
     keystrokes.press({ key: 'a' })
@@ -53,7 +53,7 @@ describe('useKey(key) -> isPressed', () => {
     const keystrokes = createTestKeystrokes()
     const w = mount(ProviderComponent, {
       slots: { default: TestComponent },
-      props: { keystrokes }
+      props: { keystrokes },
     })
 
     keystrokes.press({ key: 'a' })

@@ -1,5 +1,5 @@
-import { Keystrokes } from "@rwh/keystrokes"
-import { provide } from "vue"
+import { Keystrokes } from '@rwh/keystrokes'
+import { provide } from 'vue'
 
 export const keystrokesSymbol = Symbol.for('keystrokes')
 
