@@ -1,6 +1,6 @@
 {
   "name": "@rwh/keystrokes",
-  "version": "1.0.0-beta.11",
+  "version": "1.0.0-beta.12",
   "description": "Keystrokes is an easy to use library for binding functions to keys and key combos. It can be used with any TypeScript or JavaScript project, even in non-browser environments.",
   "source": "./src/index.ts",
   "main": "./dist/index.js",
