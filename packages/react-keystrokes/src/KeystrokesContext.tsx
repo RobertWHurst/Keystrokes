@@ -16,8 +16,6 @@ export const KeystrokesProvider = (props: KeystrokesProviderProps) => {
   const { keystrokes, children } = props
 
   return (
-    <KeystrokesContext.Provider value={() => keystrokes}>
-      {children}
-    </KeystrokesContext.Provider>
+    <KeystrokesContext.Provider value={() => keystrokes}>{children}</KeystrokesContext.Provider>
   )
 }
