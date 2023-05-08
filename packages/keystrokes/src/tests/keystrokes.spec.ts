@@ -13,8 +13,8 @@ describe('new Keystrokes(options)', () => {
       keystrokes.bindKey('a', handler1)
       keystrokes.bindKey('a', handler2)
 
-      keystrokes.press({ key: 'a' })
-      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
 
       sinon.assert.calledTwice(handler1)
       sinon.assert.calledTwice(handler2)
@@ -36,9 +36,9 @@ describe('new Keystrokes(options)', () => {
       keystrokes.bindKey('a', handler1)
       keystrokes.bindKey('a', handler2)
 
-      keystrokes.press({ key: 'a' })
-      keystrokes.press({ key: 'a' })
-      keystrokes.release({ key: 'a' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
+      keystrokes.release({ key: 'a', composedPath: () => [] })
 
       sinon.assert.calledOnce(handler1.onPressed)
       sinon.assert.calledTwice(handler1.onPressedWithRepeat)
@@ -58,11 +58,11 @@ describe('new Keystrokes(options)', () => {
       keystrokes.bindKey('a', handler1)
       keystrokes.bindKey('a', handler2)
 
-      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
 
       keystrokes.unbindKey('a', handler1)
 
-      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
 
       sinon.assert.calledOnce(handler1)
       sinon.assert.calledTwice(handler2)
@@ -76,11 +76,11 @@ describe('new Keystrokes(options)', () => {
       keystrokes.bindKey('a', handler1)
       keystrokes.bindKey('a', handler2)
 
-      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
 
       keystrokes.unbindKey('a')
 
-      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
 
       sinon.assert.calledOnce(handler1)
       sinon.assert.calledOnce(handler2)
@@ -100,11 +100,11 @@ describe('new Keystrokes(options)', () => {
       keystrokes.bindKey('a', handler1)
       keystrokes.bindKey('a', handler2)
 
-      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
 
       keystrokes.unbindKey('a', handler1)
 
-      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
 
       sinon.assert.calledOnce(handler1.onPressed)
       sinon.assert.calledOnce(handler1.onPressedWithRepeat)
@@ -126,11 +126,11 @@ describe('new Keystrokes(options)', () => {
       keystrokes.bindKey('a', handler1)
       keystrokes.bindKey('a', handler2)
 
-      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
 
       keystrokes.unbindKey('a')
 
-      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
 
       sinon.assert.calledOnce(handler1.onPressed)
       sinon.assert.calledOnce(handler1.onPressedWithRepeat)
@@ -156,27 +156,27 @@ describe('new Keystrokes(options)', () => {
       keystrokes.bindKeyCombo('a,b>c+d', handler1)
       keystrokes.bindKeyCombo('a,b>c+d', handler2)
 
-      keystrokes.press({ key: 'a' })
-      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
 
       await nextTick()
 
-      keystrokes.release({ key: 'a' })
+      keystrokes.release({ key: 'a', composedPath: () => [] })
 
       await nextTick()
 
-      keystrokes.press({ key: 'b' })
-      keystrokes.press({ key: 'b' })
-      keystrokes.press({ key: 'd' })
-      keystrokes.press({ key: 'd' })
-      keystrokes.press({ key: 'c' })
-      keystrokes.press({ key: 'c' })
+      keystrokes.press({ key: 'b', composedPath: () => [] })
+      keystrokes.press({ key: 'b', composedPath: () => [] })
+      keystrokes.press({ key: 'd', composedPath: () => [] })
+      keystrokes.press({ key: 'd', composedPath: () => [] })
+      keystrokes.press({ key: 'c', composedPath: () => [] })
+      keystrokes.press({ key: 'c', composedPath: () => [] })
 
       await nextTick()
 
-      keystrokes.release({ key: 'b' })
-      keystrokes.release({ key: 'c' })
-      keystrokes.release({ key: 'd' })
+      keystrokes.release({ key: 'b', composedPath: () => [] })
+      keystrokes.release({ key: 'c', composedPath: () => [] })
+      keystrokes.release({ key: 'd', composedPath: () => [] })
 
       await nextTick()
       await nextTick()
@@ -205,27 +205,27 @@ describe('new Keystrokes(options)', () => {
       keystrokes.bindKeyCombo('a,b>c,d', handler1)
       keystrokes.bindKeyCombo('a,b>c,d', handler2)
 
-      keystrokes.press({ key: 'd' })
-      keystrokes.press({ key: 'd' })
+      keystrokes.press({ key: 'd', composedPath: () => [] })
+      keystrokes.press({ key: 'd', composedPath: () => [] })
 
       await nextTick()
 
-      keystrokes.release({ key: 'd' })
+      keystrokes.release({ key: 'd', composedPath: () => [] })
 
-      keystrokes.press({ key: 'b' })
-      keystrokes.press({ key: 'c' })
-
-      await nextTick()
-
-      keystrokes.release({ key: 'c' })
-      keystrokes.release({ key: 'b' })
-
-      keystrokes.press({ key: 'a' })
-      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'b', composedPath: () => [] })
+      keystrokes.press({ key: 'c', composedPath: () => [] })
 
       await nextTick()
 
-      keystrokes.release({ key: 'a' })
+      keystrokes.release({ key: 'c', composedPath: () => [] })
+      keystrokes.release({ key: 'b', composedPath: () => [] })
+
+      keystrokes.press({ key: 'a', composedPath: () => [] })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
+
+      await nextTick()
+
+      keystrokes.release({ key: 'a', composedPath: () => [] })
 
       await nextTick()
       await nextTick()
@@ -248,16 +248,16 @@ describe('new Keystrokes(options)', () => {
       keystrokes.bindKeyCombo('a>b', handler1)
       keystrokes.bindKeyCombo('a>b', handler2)
 
-      keystrokes.press({ key: 'a' })
-      keystrokes.press({ key: 'b' })
-      keystrokes.press({ key: 'b' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
+      keystrokes.press({ key: 'b', composedPath: () => [] })
+      keystrokes.press({ key: 'b', composedPath: () => [] })
 
       await nextTick()
       await nextTick()
 
       keystrokes.unbindKeyCombo('a>b', handler2)
 
-      keystrokes.press({ key: 'b' })
+      keystrokes.press({ key: 'b', composedPath: () => [] })
 
       await nextTick()
       await nextTick()
@@ -273,12 +273,12 @@ describe('new Keystrokes(options)', () => {
 
       assert.ok(!keystrokes.checkKey('a'))
 
-      keystrokes.press({ key: 'a' })
-      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
 
       assert.ok(keystrokes.checkKey('a'))
 
-      keystrokes.release({ key: 'a' })
+      keystrokes.release({ key: 'a', composedPath: () => [] })
 
       assert.ok(!keystrokes.checkKey('a'))
     })
@@ -290,12 +290,12 @@ describe('new Keystrokes(options)', () => {
 
       assert.ok(!keystrokes.checkKeyCombo('a>b'))
 
-      keystrokes.press({ key: 'a' })
-      keystrokes.press({ key: 'b' })
+      keystrokes.press({ key: 'a', composedPath: () => [] })
+      keystrokes.press({ key: 'b', composedPath: () => [] })
 
       assert.ok(keystrokes.checkKeyCombo('a>b'))
 
-      keystrokes.release({ key: 'a' })
+      keystrokes.release({ key: 'a', composedPath: () => [] })
 
       assert.ok(!keystrokes.checkKeyCombo('a>b'))
     })

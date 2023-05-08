@@ -4,7 +4,12 @@ export type { OnActiveEventBinder, OnKeyEventBinder, KeystrokesOptions } from '.
 
 import { KeyEvent } from './handler-state'
 import { KeyComboState } from './key-combo-state'
-import { Keystrokes, KeystrokesOptions } from './keystrokes'
+import {
+  Keystrokes,
+  KeystrokesOptions,
+  MaybeKeyboardEventComboProps,
+  MaybeKeyboardEventSingleProps,
+} from './keystrokes'
 
 export { Keystrokes } from './keystrokes'
 
@@ -48,21 +53,25 @@ export const normalizeKeyCombo = KeyComboState.normalizeKeyCombo
 export const stringifyKeyCombo = KeyComboState.stringifyKeyCombo
 export const parseKeyCombo = KeyComboState.parseKeyCombo
 
-export type TestKeystrokes<E> = Keystrokes<E> & {
+export type TestKeystrokes<E, SP, CP> = Keystrokes<E, SP, CP> & {
   activate(): void
   deactivate(): void
-  press(key: KeyEvent<E>): void
-  release(key: KeyEvent<E>): void
+  press(key: KeyEvent<E, SP>): void
+  release(key: KeyEvent<E, SP>): void
 }
 
-export const createTestKeystrokes = <E = KeyboardEvent>() => {
+export const createTestKeystrokes = <
+  E = KeyboardEvent,
+  SP = MaybeKeyboardEventSingleProps<E>,
+  CP = MaybeKeyboardEventComboProps<E>,
+>() => {
   let activate: () => void
   let deactivate: () => void
-  let press: (key: KeyEvent<E>) => void
-  let release: (key: KeyEvent<E>) => void
+  let press: (key: KeyEvent<E, SP>) => void
+  let release: (key: KeyEvent<E, SP>) => void
 
   const testKeystrokes = Object.assign(
-    new Keystrokes<E>({
+    new Keystrokes<E, SP, CP>({
       onActive(f) {
         activate = f
       },
@@ -82,7 +91,7 @@ export const createTestKeystrokes = <E = KeyboardEvent>() => {
       press: press!,
       release: release!,
     },
-  ) as TestKeystrokes<E>
+  ) as TestKeystrokes<E, SP, CP>
 
   return testKeystrokes
 }

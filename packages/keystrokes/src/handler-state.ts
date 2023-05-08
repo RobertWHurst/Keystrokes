@@ -1,4 +1,4 @@
-export type KeyEvent<E> = {
+export type KeyEvent<E, P> = P & {
   key: string
   originalEvent?: E
 }

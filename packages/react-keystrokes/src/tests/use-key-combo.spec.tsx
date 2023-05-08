@@ -38,8 +38,8 @@ describe('useKeyCombo(keyCombo) -> isPressed', () => {
       ),
     )
 
-    keystrokes.press({ key: 'a' })
-    keystrokes.press({ key: 'b' })
+    keystrokes.press({ key: 'a', composedPath: () => [] })
+    keystrokes.press({ key: 'b', composedPath: () => [] })
     await wait()
 
     assert(root.findByType('div').children[0] === 'isPressed')
@@ -56,12 +56,12 @@ describe('useKeyCombo(keyCombo) -> isPressed', () => {
       ),
     )
 
-    keystrokes.press({ key: 'a' })
-    keystrokes.press({ key: 'b' })
+    keystrokes.press({ key: 'a', composedPath: () => [] })
+    keystrokes.press({ key: 'b', composedPath: () => [] })
     await wait()
 
-    keystrokes.release({ key: 'a' })
-    keystrokes.release({ key: 'b' })
+    keystrokes.release({ key: 'a', composedPath: () => [] })
+    keystrokes.release({ key: 'b', composedPath: () => [] })
     await wait()
 
     assert(root.findByType('div').children[0] === 'isNotPressed')
