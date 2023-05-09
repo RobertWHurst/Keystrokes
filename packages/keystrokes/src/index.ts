@@ -7,8 +7,8 @@ import { KeyComboState } from './key-combo-state'
 import {
   Keystrokes,
   KeystrokesOptions,
-  MaybeKeyboardEventComboProps,
-  MaybeKeyboardEventSingleProps,
+  MaybeBrowserKeyComboEventProps,
+  MaybeBrowserKeyEventProps,
 } from './keystrokes'
 
 export { Keystrokes } from './keystrokes'
@@ -53,25 +53,29 @@ export const normalizeKeyCombo = KeyComboState.normalizeKeyCombo
 export const stringifyKeyCombo = KeyComboState.stringifyKeyCombo
 export const parseKeyCombo = KeyComboState.parseKeyCombo
 
-export type TestKeystrokes<E, SP, CP> = Keystrokes<E, SP, CP> & {
+export type TestKeystrokes<OriginalEvent, KeyEventProps, KeyComboEventProps> = Keystrokes<
+  OriginalEvent,
+  KeyEventProps,
+  KeyComboEventProps
+> & {
   activate(): void
   deactivate(): void
-  press(key: KeyEvent<E, SP>): void
-  release(key: KeyEvent<E, SP>): void
+  press(key: Partial<KeyEvent<OriginalEvent, KeyEventProps>>): void
+  release(key: Partial<KeyEvent<OriginalEvent, KeyEventProps>>): void
 }
 
 export const createTestKeystrokes = <
-  E = KeyboardEvent,
-  SP = MaybeKeyboardEventSingleProps<E>,
-  CP = MaybeKeyboardEventComboProps<E>,
+  OriginalEvent = KeyboardEvent,
+  KeyEventProps = MaybeBrowserKeyEventProps<OriginalEvent>,
+  KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>,
 >() => {
   let activate: () => void
   let deactivate: () => void
-  let press: (key: KeyEvent<E, SP>) => void
-  let release: (key: KeyEvent<E, SP>) => void
+  let press: (event: KeyEvent<OriginalEvent, KeyEventProps>) => void
+  let release: (event: KeyEvent<OriginalEvent, KeyEventProps>) => void
 
   const testKeystrokes = Object.assign(
-    new Keystrokes<E, SP, CP>({
+    new Keystrokes<OriginalEvent, KeyEventProps, KeyComboEventProps>({
       onActive(f) {
         activate = f
       },
@@ -86,12 +90,20 @@ export const createTestKeystrokes = <
       },
     }),
     {
-      activate: activate!,
-      deactivate: deactivate!,
-      press: press!,
-      release: release!,
+      activate() {
+        activate!()
+      },
+      deactivate() {
+        deactivate!()
+      },
+      press(event: KeyEvent<OriginalEvent, KeyEventProps>) {
+        press!({ composedPath: () => [], ...event })
+      },
+      release(event: KeyEvent<OriginalEvent, KeyEventProps>) {
+        release!({ composedPath: () => [], ...event })
+      },
     },
-  ) as TestKeystrokes<E, SP, CP>
+  ) as TestKeystrokes<OriginalEvent, KeyEventProps, KeyComboEventProps>
 
   return testKeystrokes
 }

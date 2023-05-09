@@ -2,13 +2,13 @@ import type { KeyEvent, Handler } from './handler-state'
 import { HandlerState } from './handler-state'
 import { KeyPress, KeyComboEventMapper } from './keystrokes'
 
-export type KeyComboEvent<E, SP, CP> = CP & {
+export type KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps> = KeyComboEventProps & {
   keyCombo: string
-  keyEvents: KeyEvent<E, SP>[]
-  finalKeyEvent: KeyEvent<E, SP>
+  keyEvents: KeyEvent<OriginalEvent, KeyEventProps>[]
+  finalKeyEvent: KeyEvent<OriginalEvent, KeyEventProps>
 }
 
-export class KeyComboState<E, SP, CP> {
+export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
   private static _parseCache: Record<string, string[][][]> = {}
   private static _normalizationCache: Record<string, string> = {}
 
@@ -101,16 +101,22 @@ export class KeyComboState<E, SP, CP> {
 
   private _normalizedKeyCombo: string
   private _parsedKeyCombo: string[][][]
-  private _handlerState: HandlerState<KeyComboEvent<E, SP, CP>>
-  private _lastActiveKeyPresses: KeyPress<E, SP>[]
-  private _isPressedWithFinalKey: KeyPress<E, SP> | null
+  private _handlerState: HandlerState<
+    KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>
+  >
+  private _lastActiveKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[]
+  private _isPressedWithFinalKey: KeyPress<OriginalEvent, KeyEventProps> | null
   private _sequenceIndex: number
-  private _keyComboEventMapper: KeyComboEventMapper<E, SP, CP>
+  private _keyComboEventMapper: KeyComboEventMapper<
+    OriginalEvent,
+    KeyEventProps,
+    KeyComboEventProps
+  >
 
   constructor(
     keyCombo: string,
-    keyComboEventMapper: KeyComboEventMapper<E, SP, CP>,
-    handler: Handler<KeyComboEvent<E, SP, CP>> = {},
+    keyComboEventMapper: KeyComboEventMapper<OriginalEvent, KeyEventProps, KeyComboEventProps>,
+    handler: Handler<KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>> = {},
   ) {
     this._normalizedKeyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
     this._parsedKeyCombo = KeyComboState.parseKeyCombo(keyCombo)
@@ -121,11 +127,11 @@ export class KeyComboState<E, SP, CP> {
     this._sequenceIndex = 0
   }
 
-  isOwnHandler(handler: Handler<KeyComboEvent<E, SP, CP>>) {
+  isOwnHandler(handler: Handler<KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>>) {
     return this._handlerState.isOwnHandler(handler)
   }
 
-  executePressed(event: KeyEvent<E, SP>) {
+  executePressed(event: KeyEvent<OriginalEvent, KeyEventProps>) {
     if (this._isPressedWithFinalKey?.key !== event.key) {
       return
     }
@@ -134,7 +140,7 @@ export class KeyComboState<E, SP, CP> {
     )
   }
 
-  executeReleased(event: KeyEvent<E, SP>) {
+  executeReleased(event: KeyEvent<OriginalEvent, KeyEventProps>) {
     if (this._isPressedWithFinalKey?.key !== event.key) {
       return
     }
@@ -144,7 +150,7 @@ export class KeyComboState<E, SP, CP> {
     this._isPressedWithFinalKey = null
   }
 
-  updateState(activeKeys: KeyPress<E, SP>[]) {
+  updateState(activeKeys: KeyPress<OriginalEvent, KeyEventProps>[]) {
     const sequence = this._parsedKeyCombo[this._sequenceIndex]
 
     // Do nothing if no keys are pressed
@@ -205,9 +211,9 @@ export class KeyComboState<E, SP, CP> {
   }
 
   _wrapEvent(
-    activeKeyPresses: KeyPress<E, SP>[],
-    finalKeyPress: KeyPress<E, SP>,
-  ): KeyComboEvent<E, SP, CP> {
+    activeKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[],
+    finalKeyPress: KeyPress<OriginalEvent, KeyEventProps>,
+  ): KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     const mappedEventProps = this._keyComboEventMapper(activeKeyPresses, finalKeyPress)
     return {
       ...mappedEventProps,
