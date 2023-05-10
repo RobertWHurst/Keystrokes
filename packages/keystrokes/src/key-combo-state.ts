@@ -104,7 +104,7 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
   private _handlerState: HandlerState<
     KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>
   >
-  private _lastActiveKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[]
+  private _lastActiveKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[][]
   private _isPressedWithFinalKey: KeyPress<OriginalEvent, KeyEventProps> | null
   private _sequenceIndex: number
   private _keyComboEventMapper: KeyComboEventMapper<
@@ -196,10 +196,13 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
         }
       }
       if (!foundActiveKey) {
+        this._lastActiveKeyPresses.length = 0
         this._sequenceIndex = 0
         return
       }
     }
+
+    this._lastActiveKeyPresses[this._sequenceIndex] = activeKeys.slice(0)
 
     if (this._sequenceIndex < this._parsedKeyCombo.length - 1) {
       this._sequenceIndex += 1
@@ -211,14 +214,14 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
   }
 
   _wrapEvent(
-    activeKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[],
+    activeKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[][],
     finalKeyPress: KeyPress<OriginalEvent, KeyEventProps>,
   ): KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     const mappedEventProps = this._keyComboEventMapper(activeKeyPresses, finalKeyPress)
     return {
       ...mappedEventProps,
       keyCombo: this._normalizedKeyCombo,
-      keyEvents: activeKeyPresses.map(p => p.event),
+      keyEvents: activeKeyPresses.flat().map(p => p.event),
       finalKeyEvent: finalKeyPress.event,
     }
   }

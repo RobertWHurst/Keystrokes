@@ -1,7 +1,12 @@
-import { Keystrokes, nextTick } from '../keystrokes'
+import {
+  BrowserKeyComboEventProps,
+  BrowserKeyEventProps,
+  Keystrokes,
+  nextTick,
+} from '../keystrokes'
 import sinon from 'sinon'
 import assert from 'assert'
-import { createTestKeystrokes } from '..'
+import { KeyComboEvent, KeyEvent, createTestKeystrokes } from '..'
 
 describe('new Keystrokes(options)', () => {
   describe('#bindKey(keyCombo, handler)', () => {
@@ -46,6 +51,31 @@ describe('new Keystrokes(options)', () => {
       sinon.assert.calledOnce(handler2.onPressed)
       sinon.assert.calledTwice(handler2.onPressedWithRepeat)
       sinon.assert.calledOnce(handler2.onReleased)
+    })
+
+    // TODO: This should probably be moved to a location for browser related binders. Perhaps
+    // when I actually move the browser binders out to a separate file.
+    it('provides an event with composedPath on it', () => {
+      const keystrokes = createTestKeystrokes()
+
+      const handler = {
+        onPressed: sinon.stub(),
+        onPressedWithRepeat: sinon.stub(),
+        onReleased: sinon.stub(),
+      }
+      keystrokes.bindKey('a', handler)
+
+      const node1 = {} as EventTarget
+      const node2 = {} as EventTarget
+
+      keystrokes.press({ key: 'a', composedPath: () => [node1, node2] })
+      keystrokes.release({ key: 'a', composedPath: () => [node1, node2] })
+
+      const event = handler.onPressed.args[0][0] as KeyEvent<KeyboardEvent, BrowserKeyEventProps>
+      const composedPath = event.composedPath()
+
+      assert.equal(composedPath[0], node1)
+      assert.equal(composedPath[1], node2)
     })
   })
 
@@ -236,6 +266,92 @@ describe('new Keystrokes(options)', () => {
       sinon.assert.notCalled(handler2.onPressed)
       sinon.assert.notCalled(handler2.onPressedWithRepeat)
       sinon.assert.notCalled(handler2.onReleased)
+    })
+
+    it('provides all key events invoked while the combo was being satisfied', async () => {
+      const keystrokes = createTestKeystrokes()
+
+      const handler = {
+        onPressed: sinon.stub(),
+        onPressedWithRepeat: sinon.stub(),
+        onReleased: sinon.stub(),
+      }
+      keystrokes.bindKeyCombo('a,b>c+d', handler)
+
+      keystrokes.press({ key: 'a' })
+
+      await nextTick()
+
+      keystrokes.release({ key: 'a' })
+
+      await nextTick()
+
+      keystrokes.press({ key: 'b' })
+      keystrokes.press({ key: 'd' })
+      keystrokes.press({ key: 'c' })
+
+      await nextTick()
+
+      keystrokes.release({ key: 'b' })
+      keystrokes.release({ key: 'c' })
+      keystrokes.release({ key: 'd' })
+
+      await nextTick()
+      await nextTick()
+
+      const event = handler.onPressed.args[0][0] as KeyComboEvent<
+        KeyboardEvent,
+        BrowserKeyEventProps,
+        BrowserKeyComboEventProps
+      >
+
+      assert.ok(event.keyEvents)
+      assert.equal(event.keyEvents.length, 4)
+      assert.ok(event.keyEvents.some(e => e.key === 'a'))
+      assert.ok(event.keyEvents.some(e => e.key === 'b'))
+      assert.ok(event.keyEvents.some(e => e.key === 'c'))
+      assert.ok(event.keyEvents.some(e => e.key === 'd'))
+    })
+
+    it('provides the final key event that invoked in order to satisfy the combo', async () => {
+      const keystrokes = createTestKeystrokes()
+
+      const handler = {
+        onPressed: sinon.stub(),
+        onPressedWithRepeat: sinon.stub(),
+        onReleased: sinon.stub(),
+      }
+      keystrokes.bindKeyCombo('a,b>c+d', handler)
+
+      keystrokes.press({ key: 'a' })
+
+      await nextTick()
+
+      keystrokes.release({ key: 'a' })
+
+      await nextTick()
+
+      keystrokes.press({ key: 'b' })
+      keystrokes.press({ key: 'd' })
+      keystrokes.press({ key: 'c' })
+
+      await nextTick()
+
+      keystrokes.release({ key: 'b' })
+      keystrokes.release({ key: 'c' })
+      keystrokes.release({ key: 'd' })
+
+      await nextTick()
+      await nextTick()
+
+      const event = handler.onPressed.args[0][0] as KeyComboEvent<
+        KeyboardEvent,
+        BrowserKeyEventProps,
+        BrowserKeyComboEventProps
+      >
+
+      assert.ok(event.finalKeyEvent)
+      assert.ok(event.finalKeyEvent.key === 'c')
     })
   })
 

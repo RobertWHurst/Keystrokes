@@ -25,7 +25,7 @@ export type OnKeyEventBinder<OriginalEvent, KeyEventProps> = (
 ) => (() => void) | void
 
 export type KeyComboEventMapper<OriginalEvent, KeyEventProps, KeyComboEventProps> = (
-  activeKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[],
+  activeKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[][],
   finalKeyPress: KeyPress<OriginalEvent, KeyEventProps>,
 ) => KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>
 
