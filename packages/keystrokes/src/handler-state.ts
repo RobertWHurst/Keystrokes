@@ -1,26 +1,26 @@
-export type KeyEvent<E> = {
+export type KeyEvent<OriginalEvent, KeyEventProps> = KeyEventProps & {
   key: string
-  originalEvent?: E
+  originalEvent?: OriginalEvent
 }
 
-export type HandlerFn<E> = (event: E) => void
+export type HandlerFn<Event> = (event: Event) => void
 
-export type HandlerObj<E> = {
-  onPressed?: HandlerFn<E>
-  onPressedWithRepeat?: HandlerFn<E>
-  onReleased?: HandlerFn<E>
+export type HandlerObj<Event> = {
+  onPressed?: HandlerFn<Event>
+  onPressedWithRepeat?: HandlerFn<Event>
+  onReleased?: HandlerFn<Event>
 }
 
-export type Handler<E> = HandlerFn<E> | HandlerObj<E>
+export type Handler<Event> = HandlerFn<Event> | HandlerObj<Event>
 
-export class HandlerState<E> {
-  _onPressed?: HandlerFn<E>
-  _onPressedWithRepeat?: HandlerFn<E>
-  _onReleased?: HandlerFn<E>
+export class HandlerState<Event> {
+  _onPressed?: HandlerFn<Event>
+  _onPressedWithRepeat?: HandlerFn<Event>
+  _onReleased?: HandlerFn<Event>
   _isPressed: boolean
-  _identity: Handler<E>
+  _identity: Handler<Event>
 
-  constructor(handler: Handler<E>) {
+  constructor(handler: Handler<Event>) {
     this._isPressed = false
     this._identity = handler
 
@@ -37,11 +37,11 @@ export class HandlerState<E> {
     return !this._onPressed && !this._onPressedWithRepeat && !this._onReleased
   }
 
-  isOwnHandler(handler: Handler<E>) {
+  isOwnHandler(handler: Handler<Event>) {
     return this._identity === handler
   }
 
-  executePressed(event: E) {
+  executePressed(event: Event) {
     if (!this._isPressed) {
       this._onPressed?.(event)
     }
@@ -50,7 +50,7 @@ export class HandlerState<E> {
     this._onPressedWithRepeat?.(event)
   }
 
-  executeReleased(event: E) {
+  executeReleased(event: Event) {
     if (this._isPressed) {
       this._onReleased?.(event)
     }

@@ -12,10 +12,10 @@ let release: (key: string) => void = () => {
 global.document = {
   addEventListener: (eventName: string, handler: (event: any) => void) => {
     if (eventName === 'keydown') {
-      press = key => handler({ key })
+      press = key => handler({ key, composedPath: () => [] })
     }
     if (eventName === 'keyup') {
-      release = key => handler({ key })
+      release = key => handler({ key, composedPath: () => [] })
     }
   },
   removeEventListener: (eventName: string, handler: () => void) => {},
