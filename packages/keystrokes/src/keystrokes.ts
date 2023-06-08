@@ -5,6 +5,7 @@ export type BrowserKeyEventProps = {
   composedPath(): EventTarget[]
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type BrowserKeyComboEventProps = {}
 
 export type MaybeBrowserKeyEventProps<OriginalEvent> = OriginalEvent extends KeyboardEvent
