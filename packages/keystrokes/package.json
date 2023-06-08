@@ -53,9 +53,6 @@
     "url": "https://github.com/RobertWHurst/Keystrokes/issues/new?template=bug_report.md"
   },
   "devDependencies": {
-    "@parcel/core": "2.8.3",
-    "@parcel/packager-ts": "2.8.3",
-    "@parcel/transformer-typescript-types": "2.8.3",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.18",
     "@types/sinon": "^10.0.13",

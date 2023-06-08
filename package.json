@@ -5,11 +5,5 @@
     "build": "pnpm -r --sort build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint"
-  },
-  "devDependencies": {
-    "@parcel/core": "2.9.2",
-    "@parcel/packager-ts": "2.9.2",
-    "@parcel/transformer-typescript-types": "2.9.2",
-    "typescript": "^5.1.3"
   }
 }
