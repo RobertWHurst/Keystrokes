@@ -5,9 +5,7 @@ export type BrowserKeyEventProps = {
   composedPath(): EventTarget[]
 }
 
-export type BrowserKeyComboEventProps = {
-  // todo
-}
+export type BrowserKeyComboEventProps = {}
 
 export type MaybeBrowserKeyEventProps<OriginalEvent> = OriginalEvent extends KeyboardEvent
   ? BrowserKeyEventProps
