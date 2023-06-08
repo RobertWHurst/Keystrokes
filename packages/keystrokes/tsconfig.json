@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "alwaysStrict": true,
+    "declaration": true,
     "strict": true,
     "lib": ["DOM", "ESNext"],
     "target": "ESNext",
