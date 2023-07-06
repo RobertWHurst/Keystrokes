@@ -62,6 +62,13 @@ keystrokes.bindKey('a', () => console.log('you pressed a'))
 </script>
 ```
 
+## Available Key Names
+
+Keystrokes uses the standard values for the [KeyboardEvent.key][key] property.
+
+To see what key names can be used in your bindings see MDN's
+[table of key values][key-names].
+
 ## Binding Keys and Key Combos
 
 As in the example at the top of the page, Keystrokes exports a bindKey and
@@ -189,6 +196,7 @@ custom keystrokes instances.
 
 ```js
 import { useEffect, useState } from 'react'
+import { Keystrokes } from '@rwh/keystrokes'
 import { Keystrokes, KeystrokesProvider, useKey, useKeyCombo } from '@rwh/react-keystrokes'
 
 export const Component = () => {
@@ -209,6 +217,56 @@ export const App = () => {
     </KeystrokesProvider>
   )
 }
+```
+
+## Using Keystrokes with Vue
+
+Like the react package there is also one for vue which is pretty
+similar to the react package, but with vue appropriate details.
+
+```sh
+npm install @rwh/keystrokes @rwh/vue-keystrokes
+```
+
+You will find two composables, `useKey` and `useKeyCombo`, as well as
+an optional composable, `useKeystrokes`, which acts as a context
+provider allowing the use of these composables with a custom keystrokes
+instance.
+
+Using it to track key or key combo states is rather easy.
+
+```vue
+<script setup>
+import { useKey, useKeyCombo } from '@rwh/vue-keystrokes'
+
+const isPressedCombo = useKeyCombo('a+b')
+const isPressedkey = useKeyCombo('a')
+
+...
+</script>
+```
+
+By default the hooks will use the global instance of keystrokes.
+
+To use a custom instance of keystrokes you can wrap components using `useKey`
+and/or `useKeyCombo` with a parent vue component which calls `useKeystrokes`.
+This composable accepts an instance of keystrokes as it's first argument.
+The passed instance of keystrokes will be used by all composables in decendant
+components.
+
+See [Creating Instances](#creating-instances) for more information on creating
+custom keystrokes instances.
+
+```vue
+<script setup>
+  import { Keystrokes } from '@rwh/keystrokes'
+  import { useKeystrokes } from '@rwh/vue-keystrokes'
+  const keystrokes = new Keystrokes({ /* custom options */ })
+
+  useKeystrokes(keystrokes)
+  
+  ...
+</script>
 ```
 
 ## Testing your Keystrokes bindings
@@ -407,5 +465,6 @@ Thank you!
 [jsdelivr]: https://www.jsdelivr.com/package/npm/@rwh/keystrokes
 [unpkg]: https://unpkg.com/browse/@rwh/keystrokes@latest/
 [key-names]: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
+[key]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
 [bug-report]: https://github.com/RobertWHurst/Keystrokes/issues/new?template=bug_report.md
 [feature-request]: https://github.com/RobertWHurst/Keystrokes/issues/new?template=feature_request.md

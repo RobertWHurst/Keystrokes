@@ -196,6 +196,7 @@ custom keystrokes instances.
 
 ```js
 import { useEffect, useState } from 'react'
+import { Keystrokes } from '@rwh/keystrokes'
 import { Keystrokes, KeystrokesProvider, useKey, useKeyCombo } from '@rwh/react-keystrokes'
 
 export const Component = () => {
