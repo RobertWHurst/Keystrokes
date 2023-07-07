@@ -1,6 +1,12 @@
 import sinon from 'sinon'
 import assert from 'assert'
-import { bindKey, bindKeyCombo, checkKey, getGlobalKeystrokes, unbindKey } from '..'
+import {
+  bindKey,
+  bindKeyCombo,
+  checkKey,
+  getGlobalKeystrokes,
+  unbindKey,
+} from '..'
 import { nextTick } from '../keystrokes'
 
 let press: (key: string) => void = () => {
@@ -12,10 +18,10 @@ let release: (key: string) => void = () => {
 global.document = {
   addEventListener: (eventName: string, handler: (event: any) => void) => {
     if (eventName === 'keydown') {
-      press = key => handler({ key, composedPath: () => [] })
+      press = (key) => handler({ key, composedPath: () => [] })
     }
     if (eventName === 'keyup') {
-      release = key => handler({ key, composedPath: () => [] })
+      release = (key) => handler({ key, composedPath: () => [] })
     }
   },
   removeEventListener: (eventName: string, handler: () => void) => {},

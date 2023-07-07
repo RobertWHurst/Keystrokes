@@ -71,7 +71,10 @@ describe('new Keystrokes(options)', () => {
       keystrokes.press({ key: 'a', composedPath: () => [node1, node2] })
       keystrokes.release({ key: 'a', composedPath: () => [node1, node2] })
 
-      const event = handler.onPressed.args[0][0] as KeyEvent<KeyboardEvent, BrowserKeyEventProps>
+      const event = handler.onPressed.args[0][0] as KeyEvent<
+        KeyboardEvent,
+        BrowserKeyEventProps
+      >
       const composedPath = event.composedPath()
 
       assert.equal(composedPath[0], node1)
@@ -307,10 +310,10 @@ describe('new Keystrokes(options)', () => {
 
       assert.ok(event.keyEvents)
       assert.equal(event.keyEvents.length, 4)
-      assert.ok(event.keyEvents.some(e => e.key === 'a'))
-      assert.ok(event.keyEvents.some(e => e.key === 'b'))
-      assert.ok(event.keyEvents.some(e => e.key === 'c'))
-      assert.ok(event.keyEvents.some(e => e.key === 'd'))
+      assert.ok(event.keyEvents.some((e) => e.key === 'a'))
+      assert.ok(event.keyEvents.some((e) => e.key === 'b'))
+      assert.ok(event.keyEvents.some((e) => e.key === 'c'))
+      assert.ok(event.keyEvents.some((e) => e.key === 'd'))
     })
 
     it('provides the final key event that invoked in order to satisfy the combo', async () => {

@@ -8,24 +8,30 @@ export type BrowserKeyEventProps = {
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type BrowserKeyComboEventProps = {}
 
-export type MaybeBrowserKeyEventProps<OriginalEvent> = OriginalEvent extends KeyboardEvent
-  ? BrowserKeyEventProps
-  : // eslint-disable-next-line @typescript-eslint/ban-types
-    {}
+export type MaybeBrowserKeyEventProps<OriginalEvent> =
+  OriginalEvent extends KeyboardEvent
+    ? BrowserKeyEventProps
+    : // eslint-disable-next-line @typescript-eslint/ban-types
+      {}
 
-export type MaybeBrowserKeyComboEventProps<OriginalEvent> = OriginalEvent extends KeyboardEvent
-  ? BrowserKeyComboEventProps
-  : // eslint-disable-next-line @typescript-eslint/ban-types
-    {}
+export type MaybeBrowserKeyComboEventProps<OriginalEvent> =
+  OriginalEvent extends KeyboardEvent
+    ? BrowserKeyComboEventProps
+    : // eslint-disable-next-line @typescript-eslint/ban-types
+      {}
 
 export type OnActiveEventBinder = (handler: () => void) => (() => void) | void
 export type OnKeyEventBinder<OriginalEvent, KeyEventProps> = (
-  handler: (event: KeyEvent<OriginalEvent, KeyEventProps>) => void,
+  handler: (event: KeyEvent<OriginalEvent, KeyEventProps>) => void
 ) => (() => void) | void
 
-export type KeyComboEventMapper<OriginalEvent, KeyEventProps, KeyComboEventProps> = (
+export type KeyComboEventMapper<
+  OriginalEvent,
+  KeyEventProps,
+  KeyComboEventProps
+> = (
   activeKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[][],
-  finalKeyPress: KeyPress<OriginalEvent, KeyEventProps>,
+  finalKeyPress: KeyPress<OriginalEvent, KeyEventProps>
 ) => KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>
 
 export type KeyPress<OriginalEvent, KeyEventProps> = {
@@ -36,13 +42,17 @@ export type KeyPress<OriginalEvent, KeyEventProps> = {
 export type KeystrokesOptions<
   OriginalEvent = KeyboardEvent,
   KeyEventProps = MaybeBrowserKeyEventProps<OriginalEvent>,
-  KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>,
+  KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>
 > = {
   onActive?: OnActiveEventBinder
   onInactive?: OnActiveEventBinder
   onKeyPressed?: OnKeyEventBinder<OriginalEvent, KeyEventProps>
   onKeyReleased?: OnKeyEventBinder<OriginalEvent, KeyEventProps>
-  mapKeyComboEvent?: KeyComboEventMapper<OriginalEvent, KeyEventProps, KeyComboEventProps>
+  mapKeyComboEvent?: KeyComboEventMapper<
+    OriginalEvent,
+    KeyEventProps,
+    KeyComboEventProps
+  >
   selfReleasingKeys?: string[]
   keyRemap?: Record<string, string>
 }
@@ -52,9 +62,9 @@ const nextTickBinder =
     ? (r: () => void) => requestAnimationFrame(r)
     : (f: () => void) => setTimeout(f, 0)
 
-export const nextTick = () => new Promise<void>(r => nextTickBinder(r))
+export const nextTick = () => new Promise<void>((r) => nextTickBinder(r))
 
-const browserOnActiveBinder: OnActiveEventBinder = handler => {
+const browserOnActiveBinder: OnActiveEventBinder = (handler) => {
   try {
     const handlerWrapper = () => handler()
     addEventListener('focus', handlerWrapper)
@@ -64,7 +74,7 @@ const browserOnActiveBinder: OnActiveEventBinder = handler => {
   } catch {}
 }
 
-const browserOnInactiveBinder: OnActiveEventBinder = handler => {
+const browserOnInactiveBinder: OnActiveEventBinder = (handler) => {
   try {
     const handlerWrapper = () => handler()
     addEventListener('blur', handlerWrapper)
@@ -77,11 +87,15 @@ const browserOnInactiveBinder: OnActiveEventBinder = handler => {
 const browserOnKeyPressedBinder: OnKeyEventBinder<
   KeyboardEvent,
   BrowserKeyEventProps
-> = handler => {
+> = (handler) => {
   try {
     const handlerWrapper = (e: KeyboardEvent) => {
       const originalComposedPath = e.composedPath()
-      return handler({ key: e.key, originalEvent: e, composedPath: () => originalComposedPath })
+      return handler({
+        key: e.key,
+        originalEvent: e,
+        composedPath: () => originalComposedPath,
+      })
     }
     document.addEventListener('keydown', handlerWrapper)
     return () => {
@@ -93,11 +107,15 @@ const browserOnKeyPressedBinder: OnKeyEventBinder<
 const browserOnKeyReleasedBinder: OnKeyEventBinder<
   KeyboardEvent,
   BrowserKeyEventProps
-> = handler => {
+> = (handler) => {
   try {
     const handlerWrapper = (e: KeyboardEvent) => {
       const originalComposedPath = e.composedPath()
-      return handler({ key: e.key, originalEvent: e, composedPath: () => originalComposedPath })
+      return handler({
+        key: e.key,
+        originalEvent: e,
+        composedPath: () => originalComposedPath,
+      })
     }
     document.addEventListener('keyup', handlerWrapper)
     return () => {
@@ -109,7 +127,7 @@ const browserOnKeyReleasedBinder: OnKeyEventBinder<
 export class Keystrokes<
   OriginalEvent = KeyboardEvent,
   KeyEventProps = MaybeBrowserKeyEventProps<OriginalEvent>,
-  KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>,
+  KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>
 > {
   private _isActive: boolean
   private _isUpdatingKeyComboState: boolean
@@ -128,12 +146,19 @@ export class Keystrokes<
   private _selfReleasingKeys: string[]
   private _keyRemap: Record<string, string>
 
-  private _handlerStates: Record<string, HandlerState<KeyEvent<OriginalEvent, KeyEventProps>>[]>
+  private _handlerStates: Record<
+    string,
+    HandlerState<KeyEvent<OriginalEvent, KeyEventProps>>[]
+  >
   private _keyComboStates: Record<
     string,
     KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps>[]
   >
-  private _keyComboStatesArray: KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps>[]
+  private _keyComboStatesArray: KeyComboState<
+    OriginalEvent,
+    KeyEventProps,
+    KeyComboEventProps
+  >[]
   private _activeKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[]
   private _activeKeySet: Set<string>
 
@@ -142,14 +167,22 @@ export class Keystrokes<
     KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps>
   >
 
-  constructor(options: KeystrokesOptions<OriginalEvent, KeyEventProps, KeyComboEventProps> = {}) {
+  constructor(
+    options: KeystrokesOptions<
+      OriginalEvent,
+      KeyEventProps,
+      KeyComboEventProps
+    > = {}
+  ) {
     this._isActive = true
     this._isUpdatingKeyComboState = false
 
     this._onActiveBinder = options.onActive ?? browserOnActiveBinder
     this._onInactiveBinder = options.onInactive ?? browserOnInactiveBinder
-    this._onKeyPressedBinder = options.onKeyPressed ?? (browserOnKeyPressedBinder as any)
-    this._onKeyReleasedBinder = options.onKeyReleased ?? (browserOnKeyReleasedBinder as any)
+    this._onKeyPressedBinder =
+      options.onKeyPressed ?? (browserOnKeyPressedBinder as any)
+    this._onKeyReleasedBinder =
+      options.onKeyReleased ?? (browserOnKeyReleasedBinder as any)
     this._keyComboEventMapper = options.mapKeyComboEvent ?? (() => ({} as any))
     this._selfReleasingKeys = options.selfReleasingKeys ?? []
     this._keyRemap = options.keyRemap ?? {}
@@ -166,10 +199,13 @@ export class Keystrokes<
   }
 
   get pressedKeys() {
-    return this._activeKeyPresses.map(p => p.key)
+    return this._activeKeyPresses.map((p) => p.key)
   }
 
-  bindKey(key: string, handler: Handler<KeyEvent<OriginalEvent, KeyEventProps>>) {
+  bindKey(
+    key: string,
+    handler: Handler<KeyEvent<OriginalEvent, KeyEventProps>>
+  ) {
     key = key.toLowerCase()
 
     const handlerState = new HandlerState(handler)
@@ -177,7 +213,10 @@ export class Keystrokes<
     this._handlerStates[key].push(handlerState)
   }
 
-  unbindKey(key: string, handler?: Handler<KeyEvent<OriginalEvent, KeyEventProps>>) {
+  unbindKey(
+    key: string,
+    handler?: Handler<KeyEvent<OriginalEvent, KeyEventProps>>
+  ) {
     key = key.toLowerCase()
 
     const handlerStates = this._handlerStates[key]
@@ -199,15 +238,17 @@ export class Keystrokes<
 
   bindKeyCombo(
     keyCombo: string,
-    handler: Handler<KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>>,
+    handler: Handler<
+      KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>
+    >
   ) {
     keyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
 
-    const keyComboState = new KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps>(
-      keyCombo,
-      this._keyComboEventMapper,
-      handler,
-    )
+    const keyComboState = new KeyComboState<
+      OriginalEvent,
+      KeyEventProps,
+      KeyComboEventProps
+    >(keyCombo, this._keyComboEventMapper, handler)
 
     this._keyComboStates[keyCombo] ??= []
     this._keyComboStates[keyCombo].push(keyComboState)
@@ -216,7 +257,9 @@ export class Keystrokes<
 
   unbindKeyCombo(
     keyCombo: string,
-    handler?: Handler<KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>>,
+    handler?: Handler<
+      KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>
+    >
   ) {
     keyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
 
@@ -250,7 +293,10 @@ export class Keystrokes<
   checkKeyCombo(keyCombo: string) {
     keyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
     if (!this._watchedKeyComboStates[keyCombo]) {
-      this._watchedKeyComboStates[keyCombo] = new KeyComboState(keyCombo, this._keyComboEventMapper)
+      this._watchedKeyComboStates[keyCombo] = new KeyComboState(
+        keyCombo,
+        this._keyComboEventMapper
+      )
     }
     const keyComboState = this._watchedKeyComboStates[keyCombo]
     keyComboState.updateState(this._activeKeyPresses)
@@ -266,10 +312,10 @@ export class Keystrokes<
     const unbindInactive = this._onInactiveBinder(() => {
       this._isActive = false
     })
-    const unbindKeyPressed = this._onKeyPressedBinder(e => {
+    const unbindKeyPressed = this._onKeyPressedBinder((e) => {
       this._handleKeyPress(e)
     })
-    const unbindKeyReleased = this._onKeyReleasedBinder(e => {
+    const unbindKeyReleased = this._onKeyReleasedBinder((e) => {
       this._handleKeyRelease(e)
     })
 
@@ -317,7 +363,7 @@ export class Keystrokes<
       for (const keyComboState of this._keyComboStatesArray) {
         keyComboState.executePressed(event)
       }
-    })().catch(err => {
+    })().catch((err) => {
       console.error(err)
     })
   }
@@ -351,7 +397,7 @@ export class Keystrokes<
       for (const keyComboState of this._keyComboStatesArray) {
         keyComboState.executeReleased(event)
       }
-    })().catch(err => {
+    })().catch((err) => {
       console.error(err)
     })
   }

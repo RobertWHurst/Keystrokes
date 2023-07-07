@@ -20,8 +20,8 @@ describe('useKey(key) -> isPressed', () => {
       create(
         <KeystrokesProvider keystrokes={keystrokes}>
           <TestComponent />
-        </KeystrokesProvider>,
-      ),
+        </KeystrokesProvider>
+      )
     )
 
     assert(root.findByType('div').children[0] === 'isNotPressed')
@@ -34,8 +34,8 @@ describe('useKey(key) -> isPressed', () => {
       create(
         <KeystrokesProvider keystrokes={keystrokes}>
           <TestComponent />
-        </KeystrokesProvider>,
-      ),
+        </KeystrokesProvider>
+      )
     )
 
     keystrokes.press({ key: 'a' })
@@ -51,8 +51,8 @@ describe('useKey(key) -> isPressed', () => {
       create(
         <KeystrokesProvider keystrokes={keystrokes}>
           <TestComponent />
-        </KeystrokesProvider>,
-      ),
+        </KeystrokesProvider>
+      )
     )
 
     keystrokes.press({ key: 'a' })

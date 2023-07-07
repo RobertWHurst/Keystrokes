@@ -1,6 +1,10 @@
 export type { KeyEvent, HandlerFn, HandlerObj, Handler } from './handler-state'
 export type { KeyComboEvent } from './key-combo-state'
-export type { OnActiveEventBinder, OnKeyEventBinder, KeystrokesOptions } from './keystrokes'
+export type {
+  OnActiveEventBinder,
+  OnKeyEventBinder,
+  KeystrokesOptions,
+} from './keystrokes'
 
 import { KeyEvent } from './handler-state'
 import { KeyComboState } from './key-combo-state'
@@ -40,8 +44,9 @@ export const unbindKey: typeof globalKeystrokes.unbindKey = (...args) =>
 export const bindKeyCombo: typeof globalKeystrokes.bindKeyCombo = (...args) =>
   getGlobalKeystrokes().bindKeyCombo(...args)
 
-export const unbindKeyCombo: typeof globalKeystrokes.unbindKeyCombo = (...args) =>
-  getGlobalKeystrokes().unbindKeyCombo(...args)
+export const unbindKeyCombo: typeof globalKeystrokes.unbindKeyCombo = (
+  ...args
+) => getGlobalKeystrokes().unbindKeyCombo(...args)
 
 export const checkKey: typeof globalKeystrokes.checkKey = (...args) =>
   getGlobalKeystrokes().checkKey(...args)
@@ -53,21 +58,18 @@ export const normalizeKeyCombo = KeyComboState.normalizeKeyCombo
 export const stringifyKeyCombo = KeyComboState.stringifyKeyCombo
 export const parseKeyCombo = KeyComboState.parseKeyCombo
 
-export type TestKeystrokes<OriginalEvent, KeyEventProps, KeyComboEventProps> = Keystrokes<
-  OriginalEvent,
-  KeyEventProps,
-  KeyComboEventProps
-> & {
-  activate(): void
-  deactivate(): void
-  press(key: Partial<KeyEvent<OriginalEvent, KeyEventProps>>): void
-  release(key: Partial<KeyEvent<OriginalEvent, KeyEventProps>>): void
-}
+export type TestKeystrokes<OriginalEvent, KeyEventProps, KeyComboEventProps> =
+  Keystrokes<OriginalEvent, KeyEventProps, KeyComboEventProps> & {
+    activate(): void
+    deactivate(): void
+    press(key: Partial<KeyEvent<OriginalEvent, KeyEventProps>>): void
+    release(key: Partial<KeyEvent<OriginalEvent, KeyEventProps>>): void
+  }
 
 export const createTestKeystrokes = <
   OriginalEvent = KeyboardEvent,
   KeyEventProps = MaybeBrowserKeyEventProps<OriginalEvent>,
-  KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>,
+  KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>
 >() => {
   let activate: () => void
   let deactivate: () => void
@@ -102,7 +104,7 @@ export const createTestKeystrokes = <
       release(event: KeyEvent<OriginalEvent, KeyEventProps>) {
         release!({ composedPath: () => [], ...event })
       },
-    },
+    }
   ) as TestKeystrokes<OriginalEvent, KeyEventProps, KeyComboEventProps>
 
   return testKeystrokes
