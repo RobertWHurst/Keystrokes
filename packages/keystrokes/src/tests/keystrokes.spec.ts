@@ -419,4 +419,23 @@ describe('new Keystrokes(options)', () => {
       assert.ok(!keystrokes.checkKeyCombo('a>b'))
     })
   })
+
+  describe('#selfReleasingKeys', () => {
+    it('will automatically release the key', async () => {
+      const keystrokes = createTestKeystrokes({
+        selfReleasingKeys: ['meta', 'z'],
+      })
+
+      assert.ok(!keystrokes.checkKeyCombo('meta+z'))
+
+      keystrokes.press({ key: 'meta' })
+      keystrokes.press({ key: 'z' })
+
+      assert.ok(keystrokes.checkKeyCombo('meta+z'))
+
+      keystrokes.release({ key: 'meta' })
+
+      assert.ok(!keystrokes.checkKeyCombo('meta+z'))
+    })
+  })
 })
