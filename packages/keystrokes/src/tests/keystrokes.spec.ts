@@ -426,16 +426,24 @@ describe('new Keystrokes(options)', () => {
         selfReleasingKeys: ['meta', 'z'],
       })
 
-      assert.ok(!keystrokes.checkKeyCombo('meta+z'))
+      assert.ok(!keystrokes.checkKeyCombo('meta > z'))
 
       keystrokes.press({ key: 'meta' })
-      keystrokes.press({ key: 'z' })
+      await nextTick()
+      assert.ok(keystrokes.checkKey('meta'))
+      assert.ok(!keystrokes.checkKeyCombo('meta > z'))
 
-      assert.ok(keystrokes.checkKeyCombo('meta+z'))
+      keystrokes.press({ key: 'z' })
+      await nextTick()
+      assert.ok(keystrokes.checkKey('z'))
+      assert.ok(keystrokes.checkKeyCombo('meta > z'))
 
       keystrokes.release({ key: 'meta' })
+      await nextTick()
 
-      assert.ok(!keystrokes.checkKeyCombo('meta+z'))
+      assert.ok(!keystrokes.checkKey('z'))
+      assert.ok(!keystrokes.checkKey('meta'))
+      assert.ok(!keystrokes.checkKeyCombo('meta > z'))
     })
   })
 })

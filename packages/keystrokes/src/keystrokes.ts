@@ -368,27 +368,31 @@ export class Keystrokes<
     })
   }
 
+  private _releaseKey(event: KeyEvent<OriginalEvent, KeyEventProps>) {
+    const key = event.key.toLowerCase()
+
+    const keyPressHandlerStates = this._handlerStates[key]
+    if (keyPressHandlerStates) {
+      for (const s of keyPressHandlerStates) {
+        s.executeReleased(event)
+      }
+    }
+
+    if (this._activeKeySet.has(key)) {
+      this._activeKeySet.delete(key)
+      for (let i = 0; i < this._activeKeyPresses.length; i += 1) {
+        if (this._activeKeyPresses[i].key === key) {
+          this._activeKeyPresses.splice(i, 1)
+          i -= 1
+          break
+        }
+      }
+    }
+  }
+
   private _handleKeyRelease(event: KeyEvent<OriginalEvent, KeyEventProps>) {
     ;(async () => {
-      const key = event.key.toLowerCase()
-
-      const keyPressHandlerStates = this._handlerStates[key]
-      if (keyPressHandlerStates) {
-        for (const s of keyPressHandlerStates) {
-          s.executeReleased(event)
-        }
-      }
-
-      if (this._activeKeySet.has(key)) {
-        this._activeKeySet.delete(key)
-        for (let i = 0; i < this._activeKeyPresses.length; i += 1) {
-          if (this._activeKeyPresses[i].key === key) {
-            this._activeKeyPresses.splice(i, 1)
-            i -= 1
-            break
-          }
-        }
-      }
+      this._releaseKey(event)
 
       this._tryReleaseSelfReleasingKeys()
 
@@ -419,20 +423,11 @@ export class Keystrokes<
 
   private _tryReleaseSelfReleasingKeys() {
     for (const activeKey of this._activeKeyPresses) {
-      let isSelfReleasingKey = false
       for (const selfReleasingKey of this._selfReleasingKeys) {
         if (activeKey.key === selfReleasingKey) {
-          isSelfReleasingKey = true
-          break
+          this._releaseKey(activeKey.event)
         }
       }
-      if (!isSelfReleasingKey) {
-        return
-      }
-    }
-
-    for (const activeKey of this._activeKeyPresses) {
-      this._handleKeyRelease({ key: activeKey } as any)
     }
   }
 }
