@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "lint": "eslint ./src",
-    "test": "mocha -r ts-node/register -r jsdom-global/register -r ./src/tests/helpers/svg-stub.ts ./src/tests/**/*.spec.tsx",
+    "test": "mocha -r ts-node/register -r jsdom-global/register -r ./src/tests/helpers/svg-stub.ts ./src/tests/**/*.spec.ts",
     "build": "rm -rf dist/ && cp ../../readme.md readme.md && parcel build --no-scope-hoist",
     "dev": "parcel build --watch",
     "prepublishOnly": "pnpm run build"
