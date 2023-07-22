@@ -1,3 +1,9 @@
+import {
+  browserOnActiveBinder,
+  browserOnInactiveBinder,
+  browserOnKeyPressedBinder,
+  browserOnKeyReleasedBinder,
+} from './browser-bindings'
 import { Handler, HandlerState, KeyEvent } from './handler-state'
 import { KeyComboEvent, KeyComboState } from './key-combo-state'
 
@@ -63,66 +69,6 @@ const nextTickBinder =
     : (f: () => void) => setTimeout(f, 0)
 
 export const nextTick = () => new Promise<void>((r) => nextTickBinder(r))
-
-const browserOnActiveBinder: OnActiveEventBinder = (handler) => {
-  try {
-    const handlerWrapper = () => handler()
-    addEventListener('focus', handlerWrapper)
-    return () => {
-      removeEventListener('focus', handlerWrapper)
-    }
-  } catch {}
-}
-
-const browserOnInactiveBinder: OnActiveEventBinder = (handler) => {
-  try {
-    const handlerWrapper = () => handler()
-    addEventListener('blur', handlerWrapper)
-    return () => {
-      removeEventListener('blur', handlerWrapper)
-    }
-  } catch {}
-}
-
-const browserOnKeyPressedBinder: OnKeyEventBinder<
-  KeyboardEvent,
-  BrowserKeyEventProps
-> = (handler) => {
-  try {
-    const handlerWrapper = (e: KeyboardEvent) => {
-      const originalComposedPath = e.composedPath()
-      return handler({
-        key: e.key,
-        originalEvent: e,
-        composedPath: () => originalComposedPath,
-      })
-    }
-    document.addEventListener('keydown', handlerWrapper)
-    return () => {
-      document.removeEventListener('keydown', handlerWrapper)
-    }
-  } catch {}
-}
-
-const browserOnKeyReleasedBinder: OnKeyEventBinder<
-  KeyboardEvent,
-  BrowserKeyEventProps
-> = (handler) => {
-  try {
-    const handlerWrapper = (e: KeyboardEvent) => {
-      const originalComposedPath = e.composedPath()
-      return handler({
-        key: e.key,
-        originalEvent: e,
-        composedPath: () => originalComposedPath,
-      })
-    }
-    document.addEventListener('keyup', handlerWrapper)
-    return () => {
-      document.removeEventListener('keyup', handlerWrapper)
-    }
-  } catch {}
-}
 
 export class Keystrokes<
   OriginalEvent = KeyboardEvent,
