@@ -314,31 +314,27 @@ export class Keystrokes<
     })
   }
 
-  private _releaseKey(event: KeyEvent<OriginalEvent, KeyEventProps>) {
-    const key = event.key.toLowerCase()
-
-    const keyPressHandlerStates = this._handlerStates[key]
-    if (keyPressHandlerStates) {
-      for (const s of keyPressHandlerStates) {
-        s.executeReleased(event)
-      }
-    }
-
-    if (this._activeKeySet.has(key)) {
-      this._activeKeySet.delete(key)
-      for (let i = 0; i < this._activeKeyPresses.length; i += 1) {
-        if (this._activeKeyPresses[i].key === key) {
-          this._activeKeyPresses.splice(i, 1)
-          i -= 1
-          break
-        }
-      }
-    }
-  }
-
   private _handleKeyRelease(event: KeyEvent<OriginalEvent, KeyEventProps>) {
     ;(async () => {
-      this._releaseKey(event)
+      const key = event.key.toLowerCase()
+
+      const keyPressHandlerStates = this._handlerStates[key]
+      if (keyPressHandlerStates) {
+        for (const s of keyPressHandlerStates) {
+          s.executeReleased(event)
+        }
+      }
+
+      if (this._activeKeySet.has(key)) {
+        this._activeKeySet.delete(key)
+        for (let i = 0; i < this._activeKeyPresses.length; i += 1) {
+          if (this._activeKeyPresses[i].key === key) {
+            this._activeKeyPresses.splice(i, 1)
+            i -= 1
+            break
+          }
+        }
+      }
 
       this._tryReleaseSelfReleasingKeys()
 
@@ -371,7 +367,7 @@ export class Keystrokes<
     for (const activeKey of this._activeKeyPresses) {
       for (const selfReleasingKey of this._selfReleasingKeys) {
         if (activeKey.key === selfReleasingKey) {
-          this._releaseKey(activeKey.event)
+          this._handleKeyRelease(activeKey.event)
         }
       }
     }
