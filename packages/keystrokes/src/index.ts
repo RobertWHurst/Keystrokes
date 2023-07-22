@@ -69,7 +69,7 @@ export type TestKeystrokes<OriginalEvent, KeyEventProps, KeyComboEventProps> =
 export const createTestKeystrokes = <
   OriginalEvent = KeyboardEvent,
   KeyEventProps = MaybeBrowserKeyEventProps<OriginalEvent>,
-  KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>
+  KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>,
 >() => {
   let activate: () => void
   let deactivate: () => void
@@ -104,7 +104,7 @@ export const createTestKeystrokes = <
       release(event: KeyEvent<OriginalEvent, KeyEventProps>) {
         release!({ composedPath: () => [], ...event })
       },
-    }
+    },
   ) as TestKeystrokes<OriginalEvent, KeyEventProps, KeyComboEventProps>
 
   return testKeystrokes
