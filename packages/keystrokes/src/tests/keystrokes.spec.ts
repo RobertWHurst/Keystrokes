@@ -9,7 +9,7 @@ import assert from 'assert'
 import { KeyComboEvent, KeyEvent, createTestKeystrokes } from '..'
 
 describe('new Keystrokes(options)', () => {
-  it('will automatically all keys any time a self releasing key is pressed', async () => {
+  it('will automatically release self-releasing keys', async () => {
     const keystrokes = createTestKeystrokes({
       selfReleasingKeys: ['meta', 'z'],
     })
