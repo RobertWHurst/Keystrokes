@@ -316,27 +316,26 @@ export class Keystrokes<
 
   private _handleKeyPress(event: KeyEvent<OriginalEvent, KeyEventProps>) {
     ;(async () => {
-      if (!this._isActive) {
-        return
-      }
+      if (!this._isActive) return
 
-      let key = event.key.toLowerCase()
-      const remappedKey = this._keyRemap[key]
+      event = { ...event, key: event.key.toLowerCase() }
+
+      const remappedKey = this._keyRemap[event.key]
       if (remappedKey) {
-        key = remappedKey
+        event.key = remappedKey
       }
 
-      const keyPressHandlerStates = this._handlerStates[key]
+      const keyPressHandlerStates = this._handlerStates[event.key]
       if (keyPressHandlerStates) {
         for (const s of keyPressHandlerStates) {
           s.executePressed(event)
         }
       }
 
-      if (!this._activeKeySet.has(key)) {
-        this._activeKeySet.add(key)
+      if (!this._activeKeySet.has(event.key)) {
+        this._activeKeySet.add(event.key)
         this._activeKeyPresses.push({
-          key,
+          key: event.key,
           event,
         })
       }
@@ -353,19 +352,24 @@ export class Keystrokes<
 
   private _handleKeyRelease(event: KeyEvent<OriginalEvent, KeyEventProps>) {
     ;(async () => {
-      const key = event.key.toLowerCase()
+      event = { ...event, key: event.key.toLowerCase() }
 
-      const keyPressHandlerStates = this._handlerStates[key]
+      const remappedKey = this._keyRemap[event.key]
+      if (remappedKey) {
+        event.key = remappedKey
+      }
+
+      const keyPressHandlerStates = this._handlerStates[event.key]
       if (keyPressHandlerStates) {
         for (const s of keyPressHandlerStates) {
           s.executeReleased(event)
         }
       }
 
-      if (this._activeKeySet.has(key)) {
-        this._activeKeySet.delete(key)
+      if (this._activeKeySet.has(event.key)) {
+        this._activeKeySet.delete(event.key)
         for (let i = 0; i < this._activeKeyPresses.length; i += 1) {
-          if (this._activeKeyPresses[i].key === key) {
+          if (this._activeKeyPresses[i].key === event.key) {
             this._activeKeyPresses.splice(i, 1)
             i -= 1
             break
