@@ -1,8 +1,6 @@
 import { useState, useContext, useEffect } from 'react'
 import { KeystrokesContext } from './KeystrokesContext'
 
-console.log('!!!!!!!!!!!!!!!!!!', useState)
-
 export const useKeyCombo = (keyCombo: string) => {
   const [isPressed, setIsPressed] = useState(false)
 
