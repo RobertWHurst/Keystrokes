@@ -1,4 +1,4 @@
-import assert from 'assert'
+import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 
 import { createTestKeystrokes, Keystrokes } from '@rwh/keystrokes'
@@ -33,7 +33,7 @@ describe('useKey(key) -> isPressed', () => {
       slots: { default: TestComponent },
       props: { keystrokes },
     })
-    assert(w.get('div').text() === 'isNotPressed')
+    expect(w.get('div').text()).toEqual('isNotPressed')
   })
 
   it('tracks the pressed state', async () => {
@@ -46,7 +46,7 @@ describe('useKey(key) -> isPressed', () => {
     keystrokes.press({ key: 'a' })
     await wait()
 
-    assert(w.get('div').text() === 'isPressed')
+    expect(w.get('div').text()).toEqual('isPressed')
   })
 
   it('tracks the released state', async () => {
@@ -62,6 +62,6 @@ describe('useKey(key) -> isPressed', () => {
     keystrokes.release({ key: 'a' })
     await wait()
 
-    assert(w.get('div').text() === 'isNotPressed')
+    expect(w.get('div').text()).toEqual('isNotPressed')
   })
 })

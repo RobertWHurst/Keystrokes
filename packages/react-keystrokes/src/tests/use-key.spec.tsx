@@ -1,4 +1,4 @@
-import assert from 'assert'
+import { describe, it, expect } from 'vitest'
 import React from 'react'
 import { create } from 'react-test-renderer'
 import { KeystrokesProvider } from '../KeystrokesContext'
@@ -24,7 +24,7 @@ describe('useKey(key) -> isPressed', () => {
       ),
     )
 
-    assert(root.findByType('div').children[0] === 'isNotPressed')
+    expect(root.findByType('div').children[0]).toEqual('isNotPressed')
   })
 
   it('tracks the pressed state', async () => {
@@ -41,7 +41,7 @@ describe('useKey(key) -> isPressed', () => {
     keystrokes.press({ key: 'a' })
     await wait()
 
-    assert(root.findByType('div').children[0] === 'isPressed')
+    expect(root.findByType('div').children[0]).toEqual('isPressed')
   })
 
   it('tracks the released state', async () => {
@@ -61,6 +61,6 @@ describe('useKey(key) -> isPressed', () => {
     keystrokes.release({ key: 'a' })
     await wait()
 
-    assert(root.findByType('div').children[0] === 'isNotPressed')
+    expect(root.findByType('div').children[0]).toEqual('isNotPressed')
   })
 })

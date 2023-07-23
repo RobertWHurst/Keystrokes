@@ -1,4 +1,4 @@
-import assert from 'assert'
+import { describe, it, expect } from 'vitest'
 import React from 'react'
 import { create } from 'react-test-renderer'
 import { KeystrokesProvider } from '../KeystrokesContext'
@@ -24,7 +24,7 @@ describe('useKeyCombo(keyCombo) -> isPressed', () => {
       ),
     )
 
-    assert(root.findByType('div').children[0] === 'isNotPressed')
+    expect(root.findByType('div').children[0]).toEqual('isNotPressed')
   })
 
   it('tracks the pressed state', async () => {
@@ -42,7 +42,7 @@ describe('useKeyCombo(keyCombo) -> isPressed', () => {
     keystrokes.press({ key: 'b' })
     await wait()
 
-    assert(root.findByType('div').children[0] === 'isPressed')
+    expect(root.findByType('div').children[0]).toEqual('isPressed')
   })
 
   it('tracks the released state', async () => {
@@ -64,6 +64,6 @@ describe('useKeyCombo(keyCombo) -> isPressed', () => {
     keystrokes.release({ key: 'b' })
     await wait()
 
-    assert(root.findByType('div').children[0] === 'isNotPressed')
+    expect(root.findByType('div').children[0]).toEqual('isNotPressed')
   })
 })

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "alwaysStrict": true,
+    "declaration": true,
     "strict": true,
     "lib": ["DOM", "ESNext"],
     "target": "ESNext",
@@ -8,7 +9,8 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "isolatedModules": true,
-    "jsx": "react"
+    "jsx": "react",
+    "outDir": "./dist"
   },
   "include": ["./src"],
   "ts-node": {

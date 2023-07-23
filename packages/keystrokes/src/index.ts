@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 export type { KeyEvent, HandlerFn, HandlerObj, Handler } from './handler-state'
 export type { KeyComboEvent } from './key-combo-state'
 export type {

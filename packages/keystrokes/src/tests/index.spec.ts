@@ -1,5 +1,4 @@
-import sinon from 'sinon'
-import assert from 'assert'
+import { describe, it, expect, vi } from 'vitest'
 import {
   bindKey,
   bindKeyCombo,
@@ -32,23 +31,23 @@ getGlobalKeystrokes().bindEnvironment()
 describe('exported globalKeystrokes methods', () => {
   describe('bindKey(keyCombo, handler)', () => {
     it('accepts a key and handler which is executed repeatedly while the key is pressed', () => {
-      const handler1 = sinon.stub()
-      const handler2 = sinon.stub()
+      const handler1 = vi.fn()
+      const handler2 = vi.fn()
       bindKey('a', handler1)
       bindKey('a', handler2)
 
       press('a')
       press('a')
 
-      sinon.assert.calledTwice(handler1)
-      sinon.assert.calledTwice(handler2)
+      expect(handler1).toBeCalledTimes(2)
+      expect(handler2).toBeCalledTimes(2)
     })
   })
 
   describe('unbindKey(keyCombo, handler?)', () => {
     it('will remove a handler function for a given key, preventing it from being called', () => {
-      const handler1 = sinon.stub()
-      const handler2 = sinon.stub()
+      const handler1 = vi.fn()
+      const handler2 = vi.fn()
       bindKey('a', handler1)
       bindKey('a', handler2)
 
@@ -58,22 +57,22 @@ describe('exported globalKeystrokes methods', () => {
 
       press('a')
 
-      sinon.assert.calledOnce(handler1)
-      sinon.assert.calledTwice(handler2)
+      expect(handler1).toBeCalledTimes(1)
+      expect(handler2).toBeCalledTimes(2)
     })
   })
 
   describe('bindKeyCombo(keyCombo, handler)', () => {
     it('accepts a key combo and when that combo is satisfied the given handler is executed', async () => {
       const handler1 = {
-        onPressed: sinon.stub(),
-        onPressedWithRepeat: sinon.stub(),
-        onReleased: sinon.stub(),
+        onPressed: vi.fn(),
+        onPressedWithRepeat: vi.fn(),
+        onReleased: vi.fn(),
       }
       const handler2 = {
-        onPressed: sinon.stub(),
-        onPressedWithRepeat: sinon.stub(),
-        onReleased: sinon.stub(),
+        onPressed: vi.fn(),
+        onPressedWithRepeat: vi.fn(),
+        onReleased: vi.fn(),
       }
       bindKeyCombo('a,b>c,d', handler1)
       bindKeyCombo('a,b>c,d', handler2)
@@ -103,31 +102,31 @@ describe('exported globalKeystrokes methods', () => {
       await nextTick()
       await nextTick()
 
-      sinon.assert.calledOnce(handler1.onPressed)
-      sinon.assert.calledTwice(handler1.onPressedWithRepeat)
-      sinon.assert.calledOnce(handler1.onReleased)
-      sinon.assert.calledOnce(handler2.onPressed)
-      sinon.assert.calledTwice(handler2.onPressedWithRepeat)
-      sinon.assert.calledOnce(handler2.onReleased)
+      expect(handler1.onPressed).toBeCalledTimes(1)
+      expect(handler1.onPressedWithRepeat).toBeCalledTimes(2)
+      expect(handler1.onReleased).toBeCalledTimes(1)
+      expect(handler2.onPressed).toBeCalledTimes(1)
+      expect(handler2.onPressedWithRepeat).toBeCalledTimes(2)
+      expect(handler2.onReleased).toBeCalledTimes(1)
     })
   })
 
-  describe('unbindKeyCombo(keyCombo, handler?)', () => {})
+  describe.skip('unbindKeyCombo(keyCombo, handler?)', () => {})
 
   describe('checkKey(key)', () => {
     it('will return a boolean indicating if a key is pressed', () => {
-      assert.ok(!checkKey('a'))
+      expect(checkKey('a')).toBe(false)
 
       press('a')
       press('a')
 
-      assert.ok(checkKey('a'))
+      expect(checkKey('a')).toBe(true)
 
       release('a')
 
-      assert.ok(!checkKey('a'))
+      expect(checkKey('a')).toBe(false)
     })
   })
 
-  describe('checkKeyCombo(keyCombo)', () => {})
+  describe.skip('checkKeyCombo(keyCombo)', () => {})
 })
