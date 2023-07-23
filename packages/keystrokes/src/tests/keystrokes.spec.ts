@@ -13,24 +13,24 @@ describe('new Keystrokes(options)', () => {
       selfReleasingKeys: ['meta', 'z'],
     })
 
-    assert.ok(!keystrokes.checkKeyCombo('meta > z'))
+    expect(keystrokes.checkKeyCombo('meta > z')).toBe(false)
 
     keystrokes.press({ key: 'meta' })
     await nextTick()
-    assert.ok(keystrokes.checkKey('meta'))
-    assert.ok(!keystrokes.checkKeyCombo('meta > z'))
+    expect(keystrokes.checkKey('meta')).toBe(true)
+    expect(keystrokes.checkKeyCombo('meta > z')).toBe(false)
 
     keystrokes.press({ key: 'z' })
     await nextTick()
-    assert.ok(keystrokes.checkKey('z'))
-    assert.ok(keystrokes.checkKeyCombo('meta > z'))
+    expect(keystrokes.checkKey('z')).toBe(true)
+    expect(keystrokes.checkKeyCombo('meta > z')).toBe(true)
 
     keystrokes.release({ key: 'meta' })
     await nextTick()
 
-    assert.ok(!keystrokes.checkKey('z'))
-    assert.ok(!keystrokes.checkKey('meta'))
-    assert.ok(!keystrokes.checkKeyCombo('meta > z'))
+    expect(keystrokes.checkKey('z')).toBe(false)
+    expect(keystrokes.checkKey('meta')).toBe(false)
+    expect(keystrokes.checkKeyCombo('meta > z')).toBe(false)
   })
 
   describe('#bindKey(keyCombo, handler)', () => {
