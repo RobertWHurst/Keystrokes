@@ -56,7 +56,10 @@ If node modules aren't an option for you, you can use an npm CDN such as
 [jsDelivr][jsdelivr] or [UNPKG][unpkg].
 
 ```html
-<script src="https://unpkg.com/browse/@rwh/keystrokes@latest/keystrokes.js">
+<!-- ESM -->
+<script src="https://unpkg.com/browse/@rwh/keystrokes@latest/dist/keystrokes.js">
+<!-- UMD -->
+<script src="https://unpkg.com/browse/@rwh/keystrokes@latest/dist/keystrokes.umd.cjs">
 <script>
 keystrokes.bindKey('a', () => console.log('you pressed a'))
 </script>
@@ -299,7 +302,7 @@ If your app uses the global instance of keystrokes then this can be used in
 conjunction with `setGlobalKeystrokes`.
 
 ```js
-import assert from 'assert'
+import { describe, it, expect } from 'vitest'
 import { createTestKeystrokes, setGlobalKeystrokes } from '@rwh/keystrokes'
 
 describe('MyApp', () => {
@@ -314,7 +317,7 @@ describe('MyApp', () => {
 
     await app.update()
 
-    assert(app.didComboBoundThing)
+    expect(app.didComboBoundThing).toBe(true)
   })
 })
 ```
@@ -358,7 +361,7 @@ package associated with the global instance.
 
 Option            | Description
 ------------------|------------------------------------------
-selfReleasingKeys | Some environments may not properly fire release events for all keys. Adding them to this array will ensure they are released automatically when no other keys are pressed.
+selfReleasingKeys | Key names added to selfReleasingKeys will be marked as released after any other key is released. Provided to deal with buggy platforms.
 keyRemap          | An object of key value pairs with the key being the key to rename, and the value being the new name.
 onActive          | A binder to track viewport focus. See [Non Browser Environments](#non-browser-environments) for details.
 onInactive        | A binder to track viewport blur. See [Non Browser Environments](#non-browser-environments) for details.
