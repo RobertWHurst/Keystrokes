@@ -22,7 +22,7 @@
     "lint": "eslint ./src",
     "test": "vitest run",
     "build": "rm -rf dist/ && cp ../../readme.md readme.md && vite build",
-    "dev": "vite",
+    "dev": "vite build -w",
     "prepublishOnly": "pnpm run build"
   },
   "keywords": [

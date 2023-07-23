@@ -437,6 +437,27 @@ describe('new Keystrokes(options)', () => {
       expect(event.finalKeyEvent).toBeTruthy()
       expect(event.finalKeyEvent.key).toBe('c')
     })
+
+    it('correctly handles combos with the shift key', async () => {
+      const keystrokes = createTestKeystrokes()
+
+      const handler = {
+        onPressed: vi.fn(),
+        onReleased: vi.fn(),
+      }
+      keystrokes.bindKeyCombo('shift>s', handler)
+
+      keystrokes.press({ key: 'shift' })
+      keystrokes.press({ key: 'S' })
+      await nextTick()
+
+      expect(handler.onPressed).toBeCalledTimes(1)
+
+      keystrokes.release({ key: 'S' })
+      await nextTick()
+
+      expect(handler.onReleased).toBeCalledTimes(1)
+    })
   })
 
   describe('#unbindKeyCombo(keyCombo, handler?)', () => {
