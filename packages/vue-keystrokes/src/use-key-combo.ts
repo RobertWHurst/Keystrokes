@@ -7,8 +7,12 @@ export function useKeyCombo(keyCombo: string) {
   const isPressed = ref(false)
 
   const handler = {
-    onPressed: () => (isPressed.value = true),
-    onReleased: () => (isPressed.value = false),
+    onPressed: () => {
+      isPressed.value = true
+    },
+    onReleased: () => {
+      isPressed.value = false
+    },
   }
 
   // a composable can also hook into its owner component's

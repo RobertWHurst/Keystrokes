@@ -2,13 +2,15 @@
   "name": "@rwh/react-keystrokes",
   "version": "1.0.0",
   "description": "React bindings for Keystrokes, an easy to use library for binding functions to keys and key combos. It can be used with any TypeScript or JavaScript project, even in non-browser environments.",
-  "source": "./src/index.ts",
-  "main": "./dist/index.js",
-  "module": "./dist/module.js",
-  "types": "./dist/types.d.ts",
-  "targets": {
-    "main": {},
-    "module": {}
+  "type": "module",
+  "main": "dist/react-keystrokes.umd.cjs",
+  "module": "dist/react-keystrokes.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/react-keystrokes.js",
+      "require": "./dist/react-keystrokes.umd.cjs"
+    }
   },
   "files": [
     "dist/*.js",
@@ -18,9 +20,9 @@
   ],
   "scripts": {
     "lint": "eslint ./src",
-    "test": "mocha -r ts-node/register -r jsdom-global/register ./src/tests/**/*.spec.tsx",
-    "build": "rm -rf dist/ && cp ../../readme.md readme.md && parcel build --no-scope-hoist",
-    "dev": "parcel build --watch",
+    "test": "vitest run",
+    "build": "rm -rf dist/ && cp ../../readme.md readme.md && vite build",
+    "dev": "vite",
     "prepublishOnly": "pnpm run build"
   },
   "keywords": [
@@ -46,31 +48,24 @@
     "react": ">=17"
   },
   "devDependencies": {
-    "@parcel/core": "2.9.3",
-    "@parcel/packager-ts": "2.9.3",
-    "@parcel/transformer-typescript-types": "2.9.3",
+    "@rollup/plugin-typescript": "^11.1.2",
     "@rwh/keystrokes": "workspace:*",
-    "@types/mocha": "^10.0.1",
     "@types/node": "^20.4.4",
     "@types/react": "^18.2.15",
     "@types/react-test-renderer": "^18.0.0",
-    "@types/sinon": "^10.0.15",
     "@typescript-eslint/eslint-plugin": "^6.1.0",
     "@typescript-eslint/parser": "^6.1.0",
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "jsdom": "^22.1.0",
-    "jsdom-global": "^3.0.2",
-    "mocha": "^10.1.0",
-    "node-static": "^0.7.11",
-    "parcel": "2.9.3",
+    "happy-dom": "^10.5.2",
     "prettier": "^3.0.0",
     "react": ">=17",
     "react-dom": "^18.2.0",
     "react-test-renderer": "^18.2.0",
-    "sinon": "^15.2.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "vite": "^4.4.6",
+    "vitest": "^0.33.0"
   }
 }

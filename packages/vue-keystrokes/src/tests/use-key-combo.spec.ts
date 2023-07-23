@@ -1,10 +1,9 @@
-import assert from 'assert'
+import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-
 import { createTestKeystrokes, Keystrokes } from '@rwh/keystrokes'
-import { useKey, useKeyCombo, useKeystrokes } from '..'
+import { useKeyCombo, useKeystrokes } from '..'
 import { wait } from './helpers/next-tick'
-import { defineComponent } from 'vue'
+import { computed, defineComponent, effect } from 'vue'
 
 const ProviderComponent = defineComponent({
   props: ['keystrokes'],
@@ -19,10 +18,16 @@ const ProviderComponent = defineComponent({
 
 const TestComponent = defineComponent({
   setup() {
-    return { isPressed: useKeyCombo('a+b') }
+    const isPressed = useKeyCombo('a+b')
+
+    const text = computed(() =>
+      isPressed.value ? 'isPressed' : 'isNotPressed',
+    )
+
+    return { text }
   },
   template: `
-    <div>{{isPressed ? 'isPressed' : 'isNotPressed'}}</div>
+    <div>{{text}}</div>
 `,
 })
 
@@ -33,7 +38,7 @@ describe('useKeyCombo(keyCombo) -> isPressed', () => {
       slots: { default: TestComponent },
       props: { keystrokes },
     })
-    assert(w.get('div').text() === 'isNotPressed')
+    expect(w.get('div').text()).toEqual('isNotPressed')
   })
 
   it('tracks the pressed state', async () => {
@@ -45,9 +50,10 @@ describe('useKeyCombo(keyCombo) -> isPressed', () => {
 
     keystrokes.press({ key: 'a' })
     keystrokes.press({ key: 'b' })
+
     await wait()
 
-    assert(w.get('div').text() === 'isPressed')
+    expect(w.get('div').text()).toEqual('isPressed')
   })
 
   it('tracks the released state', async () => {
@@ -65,6 +71,6 @@ describe('useKeyCombo(keyCombo) -> isPressed', () => {
     keystrokes.release({ key: 'b' })
     await wait()
 
-    assert(w.get('div').text() === 'isNotPressed')
+    expect(w.get('div').text()).toEqual('isNotPressed')
   })
 })
