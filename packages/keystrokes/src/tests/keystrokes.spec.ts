@@ -8,6 +8,31 @@ import {
 import { KeyComboEvent, KeyEvent, createTestKeystrokes } from '..'
 
 describe('new Keystrokes(options)', () => {
+  it('will automatically release self-releasing keys', async () => {
+    const keystrokes = createTestKeystrokes({
+      selfReleasingKeys: ['meta', 'z'],
+    })
+
+    assert.ok(!keystrokes.checkKeyCombo('meta > z'))
+
+    keystrokes.press({ key: 'meta' })
+    await nextTick()
+    assert.ok(keystrokes.checkKey('meta'))
+    assert.ok(!keystrokes.checkKeyCombo('meta > z'))
+
+    keystrokes.press({ key: 'z' })
+    await nextTick()
+    assert.ok(keystrokes.checkKey('z'))
+    assert.ok(keystrokes.checkKeyCombo('meta > z'))
+
+    keystrokes.release({ key: 'meta' })
+    await nextTick()
+
+    assert.ok(!keystrokes.checkKey('z'))
+    assert.ok(!keystrokes.checkKey('meta'))
+    assert.ok(!keystrokes.checkKeyCombo('meta > z'))
+  })
+
   describe('#bindKey(keyCombo, handler)', () => {
     it('accepts a key and handler which is executed repeatedly while the key is pressed', () => {
       const keystrokes = createTestKeystrokes()

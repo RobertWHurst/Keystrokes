@@ -72,7 +72,13 @@ export const createTestKeystrokes = <
   OriginalEvent = KeyboardEvent,
   KeyEventProps = MaybeBrowserKeyEventProps<OriginalEvent>,
   KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>,
->() => {
+>(
+  options: KeystrokesOptions<
+    OriginalEvent,
+    KeyEventProps,
+    KeyComboEventProps
+  > = {},
+) => {
   let activate: () => void
   let deactivate: () => void
   let press: (event: KeyEvent<OriginalEvent, KeyEventProps>) => void
@@ -80,6 +86,7 @@ export const createTestKeystrokes = <
 
   const testKeystrokes = Object.assign(
     new Keystrokes<OriginalEvent, KeyEventProps, KeyComboEventProps>({
+      ...options,
       onActive(f) {
         activate = f
       },

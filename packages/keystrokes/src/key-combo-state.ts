@@ -164,11 +164,6 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
   updateState(activeKeys: KeyPress<OriginalEvent, KeyEventProps>[]) {
     const sequence = this._parsedKeyCombo[this._sequenceIndex]
 
-    // Do nothing if no keys are pressed
-    if (activeKeys.length === 0) {
-      return
-    }
-
     // ensure all sequence keys are pressed
     let activeKeyIndex = 0
     for (const unit of sequence) {
