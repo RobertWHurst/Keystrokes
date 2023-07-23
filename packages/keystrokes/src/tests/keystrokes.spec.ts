@@ -33,6 +33,63 @@ describe('new Keystrokes(options)', () => {
     expect(keystrokes.checkKeyCombo('meta > z')).toBe(false)
   })
 
+  describe('#bindEnvironment(options)', () => {
+    it('accepts a custom focus, blur, key pressed and key released binder', () => {
+      const keystrokes = new Keystrokes()
+
+      type EmptyObject = Record<never, never>
+
+      let press: ((event: KeyEvent<EmptyObject, EmptyObject>) => void) | null =
+        null
+      let release:
+        | ((event: KeyEvent<EmptyObject, EmptyObject>) => void)
+        | null = null
+
+      const onActive = vi.fn()
+      const onInactive = vi.fn()
+      const onKeyPressed = vi.fn((p) => (press = p))
+      const onKeyReleased = vi.fn((r) => (release = r))
+
+      const aPressed = vi.fn()
+      const aReleased = vi.fn()
+
+      // Replaces the default browser binders
+      keystrokes.bindEnvironment({
+        onActive,
+        onInactive,
+        onKeyPressed,
+        onKeyReleased,
+      })
+
+      expect(onActive).toBeCalledTimes(1)
+      expect(onActive).toBeCalledWith(expect.any(Function))
+
+      expect(onInactive).toBeCalledTimes(1)
+      expect(onInactive).toBeCalledWith(expect.any(Function))
+
+      expect(onKeyPressed).toBeCalledTimes(1)
+      expect(onKeyPressed).toBeCalledWith(expect.any(Function))
+
+      expect(onKeyReleased).toBeCalledTimes(1)
+      expect(onKeyReleased).toBeCalledWith(expect.any(Function))
+
+      keystrokes.bindKey('a', { onPressed: aPressed, onReleased: aReleased })
+
+      expect(aPressed).toBeCalledTimes(0)
+      expect(aReleased).toBeCalledTimes(0)
+
+      press!({ key: 'a' })
+
+      expect(aPressed).toBeCalledTimes(1)
+      expect(aReleased).toBeCalledTimes(0)
+
+      release!({ key: 'a' })
+
+      expect(aPressed).toBeCalledTimes(1)
+      expect(aReleased).toBeCalledTimes(1)
+    })
+  })
+
   describe('#bindKey(keyCombo, handler)', () => {
     it('accepts a key and handler which is executed repeatedly while the key is pressed', () => {
       const keystrokes = createTestKeystrokes()
@@ -441,6 +498,54 @@ describe('new Keystrokes(options)', () => {
       keystrokes.release({ key: 'a' })
 
       expect(keystrokes.checkKeyCombo('a>b')).toBe(false)
+    })
+  })
+
+  describe('#checkKeyComboSequenceIndex(keyCombo)', () => {
+    it('will return the index of the last active key combo sequence', () => {
+      const keystrokes = createTestKeystrokes()
+
+      const keyCombo = 'a>b,c+d,e,f>g'
+
+      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(0)
+
+      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'b' })
+
+      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(1)
+
+      keystrokes.release({ key: 'a' })
+      keystrokes.release({ key: 'b' })
+
+      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(1)
+
+      keystrokes.press({ key: 'd' })
+      keystrokes.press({ key: 'c' })
+
+      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(2)
+
+      keystrokes.release({ key: 'c' })
+      keystrokes.release({ key: 'd' })
+
+      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(2)
+
+      keystrokes.press({ key: 'e' })
+
+      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(3)
+
+      keystrokes.release({ key: 'e' })
+
+      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(3)
+
+      keystrokes.press({ key: 'f' })
+      keystrokes.press({ key: 'g' })
+
+      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(4)
+
+      keystrokes.release({ key: 'f' })
+      keystrokes.release({ key: 'g' })
+
+      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(0)
     })
   })
 })

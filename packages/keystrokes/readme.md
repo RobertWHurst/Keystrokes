@@ -80,6 +80,15 @@ using Keystrokes in. They are always case insensitive. The default behavior,
 intended for browser environments, is to use the value of the key property from
 keyboard events. You get get a list of valid [key names here][key-names].
 
+Key combos are made up of key names and operators. The operators separate the
+key combo into it's parts.
+
+| Operator | Name               | Description
+|----------|--------------------|-----------------------------------------------------
+| +        | Key Unit           | A group of key names. Can be pressed in any order.
+| >        | Group Separator    | Separates key units. Each key unit must be pressed and held in order.
+| ,        | Sequence Separator | Separates groups. Each group must be pressed and released in order. This will be familiar to vim users.
+
 ```js
 import { bindKey, bindKeyCombo } from '@rwh/keystrokes'
 

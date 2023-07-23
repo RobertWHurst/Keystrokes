@@ -49,6 +49,12 @@ export type KeystrokesOptions<
   OriginalEvent = KeyboardEvent,
   KeyEventProps = MaybeBrowserKeyEventProps<OriginalEvent>,
   KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>,
+> = BindEnvironmentOptions<OriginalEvent, KeyEventProps, KeyComboEventProps>
+
+export type BindEnvironmentOptions<
+  OriginalEvent = KeyboardEvent,
+  KeyEventProps = MaybeBrowserKeyEventProps<OriginalEvent>,
+  KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>,
 > = {
   onActive?: OnActiveEventBinder
   onInactive?: OnActiveEventBinder
@@ -123,15 +129,13 @@ export class Keystrokes<
     this._isActive = true
     this._isUpdatingKeyComboState = false
 
-    this._onActiveBinder = options.onActive ?? browserOnActiveBinder
-    this._onInactiveBinder = options.onInactive ?? browserOnInactiveBinder
-    this._onKeyPressedBinder =
-      options.onKeyPressed ?? (browserOnKeyPressedBinder as any)
-    this._onKeyReleasedBinder =
-      options.onKeyReleased ?? (browserOnKeyReleasedBinder as any)
-    this._keyComboEventMapper = options.mapKeyComboEvent ?? (() => ({}) as any)
-    this._selfReleasingKeys = options.selfReleasingKeys ?? []
-    this._keyRemap = options.keyRemap ?? {}
+    this._onActiveBinder = () => {}
+    this._onInactiveBinder = () => {}
+    this._onKeyPressedBinder = () => {}
+    this._onKeyReleasedBinder = () => {}
+    this._keyComboEventMapper = () => ({}) as any
+    this._selfReleasingKeys = []
+    this._keyRemap = {}
 
     this._handlerStates = {}
     this._keyComboStates = {}
@@ -141,7 +145,7 @@ export class Keystrokes<
 
     this._watchedKeyComboStates = {}
 
-    this.bindEnvironment()
+    this.bindEnvironment(options)
   }
 
   get pressedKeys() {
@@ -237,20 +241,40 @@ export class Keystrokes<
   }
 
   checkKeyCombo(keyCombo: string) {
-    keyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
-    if (!this._watchedKeyComboStates[keyCombo]) {
-      this._watchedKeyComboStates[keyCombo] = new KeyComboState(
-        keyCombo,
-        this._keyComboEventMapper,
-      )
-    }
-    const keyComboState = this._watchedKeyComboStates[keyCombo]
-    keyComboState.updateState(this._activeKeyPresses)
+    const keyComboState = this._ensureCachedKeyComboState(keyCombo)
     return keyComboState.isPressed
   }
 
-  bindEnvironment() {
+  checkKeyComboSequenceIndex(keyCombo: string) {
+    const keyComboState = this._ensureCachedKeyComboState(keyCombo)
+    return keyComboState.sequenceIndex
+  }
+
+  bindEnvironment(
+    options: BindEnvironmentOptions<
+      OriginalEvent,
+      KeyEventProps,
+      KeyComboEventProps
+    > = {},
+  ) {
     this.unbindEnvironment()
+
+    this._onActiveBinder = options.onActive ?? browserOnActiveBinder
+    this._onInactiveBinder = options.onInactive ?? browserOnInactiveBinder
+    this._onKeyPressedBinder =
+      options.onKeyPressed ??
+      (browserOnKeyPressedBinder as OnKeyEventBinder<
+        OriginalEvent,
+        KeyEventProps
+      >)
+    this._onKeyReleasedBinder =
+      options.onKeyReleased ??
+      (browserOnKeyReleasedBinder as OnKeyEventBinder<
+        OriginalEvent,
+        KeyEventProps
+      >)
+    this._keyComboEventMapper = options.mapKeyComboEvent ?? (() => ({}) as any)
+    this._selfReleasingKeys = options.selfReleasingKeys ?? []
 
     const unbindActive = this._onActiveBinder(() => {
       this._isActive = true
@@ -275,6 +299,19 @@ export class Keystrokes<
 
   unbindEnvironment() {
     this._unbinder?.()
+  }
+
+  private _ensureCachedKeyComboState(keyCombo: string) {
+    keyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
+    if (!this._watchedKeyComboStates[keyCombo]) {
+      this._watchedKeyComboStates[keyCombo] = new KeyComboState(
+        keyCombo,
+        this._keyComboEventMapper,
+      )
+    }
+    const keyComboState = this._watchedKeyComboStates[keyCombo]
+    keyComboState.updateState(this._activeKeyPresses)
+    return keyComboState
   }
 
   private _handleKeyPress(event: KeyEvent<OriginalEvent, KeyEventProps>) {

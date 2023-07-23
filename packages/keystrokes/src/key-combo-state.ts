@@ -20,11 +20,21 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
 
     const s = keyComboStr.toLowerCase()
 
+    // operator
     let o = ''
+
+    // unit
     let k: string[] = []
+
+    // group
     let x: string[][] = [k]
+
+    // sequence
     let y: string[][][] = [x]
+
+    // combo
     const z: string[][][][] = [y]
+
     let isEscaped = false
 
     for (let i = 0; i < keyComboStr.length; i += 1) {
@@ -98,6 +108,11 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
 
   get isPressed() {
     return !!this._isPressedWithFinalKey
+  }
+
+  get sequenceIndex() {
+    if (this.isPressed) return this._parsedKeyCombo.length
+    return this._sequenceIndex
   }
 
   private _normalizedKeyCombo: string
