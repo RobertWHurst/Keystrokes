@@ -275,6 +275,7 @@ export class Keystrokes<
       >)
     this._keyComboEventMapper = options.mapKeyComboEvent ?? (() => ({}) as any)
     this._selfReleasingKeys = options.selfReleasingKeys ?? []
+    this._keyRemap = options.keyRemap ?? {}
 
     const unbindActive = this._onActiveBinder(() => {
       this._isActive = true
