@@ -88,6 +88,33 @@ describe('new Keystrokes(options)', () => {
       expect(aPressed).toBeCalledTimes(1)
       expect(aReleased).toBeCalledTimes(1)
     })
+
+    it('can setup key remaps', () => {
+      const keystrokes = createTestKeystrokes()
+
+      keystrokes.bindEnvironment({
+        keyRemap: {
+          a: 'b',
+          b: 'c',
+        },
+      })
+
+      const aPressed = vi.fn()
+      const bPressed = vi.fn()
+      const cPressed = vi.fn()
+
+      keystrokes.bindKey('a', aPressed)
+      keystrokes.bindKey('b', bPressed)
+      keystrokes.bindKey('c', cPressed)
+
+      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'b' })
+      keystrokes.press({ key: 'c' })
+
+      expect(aPressed).toBeCalledTimes(0)
+      expect(bPressed).toBeCalledTimes(1)
+      expect(cPressed).toBeCalledTimes(2)
+    })
   })
 
   describe('#bindKey(keyCombo, handler)', () => {
