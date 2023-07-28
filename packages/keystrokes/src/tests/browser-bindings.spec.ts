@@ -1,5 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
-import { browserOnActiveBinder, browserOnInactiveBinder, browserOnKeyPressedBinder, browserOnKeyReleasedBinder } from '../browser-bindings'
+import {
+  browserOnActiveBinder,
+  browserOnInactiveBinder,
+  browserOnKeyPressedBinder,
+  browserOnKeyReleasedBinder,
+} from '../browser-bindings'
 import { execFile } from 'child_process'
 
 describe('browserOnActiveBinder(handler) -> void', () => {
@@ -46,7 +51,9 @@ describe('browserOnInactiveBinder(handler) -> void', () => {
     const keyPressHandlerStub = vi.fn()
     const dispatchEventStub = vi.fn()
     vi.stubGlobal('addEventListener', winAddEventListenerStub)
-    vi.spyOn(document, 'addEventListener').mockImplementation(docAddEventListenerStub)
+    vi.spyOn(document, 'addEventListener').mockImplementation(
+      docAddEventListenerStub,
+    )
     vi.spyOn(document, 'dispatchEvent').mockImplementation(dispatchEventStub)
 
     browserOnInactiveBinder(inactiveHandlerStub)
@@ -64,13 +71,24 @@ describe('browserOnInactiveBinder(handler) -> void', () => {
     keyPressHandler(keydownEvent)
     inactiveHandler()
 
-    expect(winAddEventListenerStub).nthCalledWith(1, 'blur', expect.any(Function))
-    expect(docAddEventListenerStub).nthCalledWith(1, 'keydown', expect.any(Function))
-    expect(keyPressHandlerStub).nthCalledWith(1, expect.objectContaining({
-      composedPath: expect.any(Function),
-      key: 'a',
-      originalEvent: keydownEvent
-    }))
+    expect(winAddEventListenerStub).nthCalledWith(
+      1,
+      'blur',
+      expect.any(Function),
+    )
+    expect(docAddEventListenerStub).nthCalledWith(
+      1,
+      'keydown',
+      expect.any(Function),
+    )
+    expect(keyPressHandlerStub).nthCalledWith(
+      1,
+      expect.objectContaining({
+        composedPath: expect.any(Function),
+        key: 'a',
+        originalEvent: keydownEvent,
+      }),
+    )
     expect(dispatchEventStub).nthCalledWith(1, expect.any(KeyboardEvent))
 
     const syntheticKeyboardEvent = dispatchEventStub.mock.calls[0][0]
@@ -85,7 +103,9 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
   it('correctly binds the given handler to document keydown', () => {
     const addEventListenerStub = vi.fn()
     const handlerStub = vi.fn()
-    vi.spyOn(document, 'addEventListener').mockImplementation(addEventListenerStub)
+    vi.spyOn(document, 'addEventListener').mockImplementation(
+      addEventListenerStub,
+    )
 
     browserOnKeyPressedBinder(handlerStub)
 
@@ -99,12 +119,19 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
     })
     handler(keydownEvent)
 
-    expect(addEventListenerStub).nthCalledWith(1, 'keydown', expect.any(Function))
-    expect(handlerStub).nthCalledWith(1, expect.objectContaining({
-      composedPath: expect.any(Function),
-      key: 'a',
-      originalEvent: keydownEvent
-    }))
+    expect(addEventListenerStub).nthCalledWith(
+      1,
+      'keydown',
+      expect.any(Function),
+    )
+    expect(handlerStub).nthCalledWith(
+      1,
+      expect.objectContaining({
+        composedPath: expect.any(Function),
+        key: 'a',
+        originalEvent: keydownEvent,
+      }),
+    )
 
     vi.unstubAllGlobals()
   })
@@ -115,7 +142,9 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
       const keyPressedhandlerStub = vi.fn()
       const keyReleasehandlerStub = vi.fn()
       const dispatchEventStub = vi.fn()
-      vi.spyOn(document, 'addEventListener').mockImplementation(addEventListenerStub)
+      vi.spyOn(document, 'addEventListener').mockImplementation(
+        addEventListenerStub,
+      )
       vi.spyOn(document, 'dispatchEvent').mockImplementation(dispatchEventStub)
       vi.stubGlobal('navigator', { userAgent: 'mac' })
 
@@ -148,23 +177,40 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
       keyPressedHandler(aKeydownEvent)
       keyReleasedHandler(aKeyupEvent)
 
-      expect(addEventListenerStub).nthCalledWith(1, 'keydown', expect.any(Function))
-      expect(addEventListenerStub).nthCalledWith(2, 'keyup', expect.any(Function))
-      expect(keyPressedhandlerStub).nthCalledWith(1, expect.objectContaining({
-        composedPath: expect.any(Function),
-        key: 'Meta',
-        originalEvent: metaKeydownEvent
-      }))
-      expect(keyPressedhandlerStub).nthCalledWith(2, expect.objectContaining({
-        composedPath: expect.any(Function),
-        key: 'a',
-        originalEvent: aKeydownEvent,
-      }))
-      expect(keyReleasehandlerStub).nthCalledWith(1, expect.objectContaining({
-        composedPath: expect.any(Function),
-        key: 'a',
-        originalEvent: aKeyupEvent
-      }))
+      expect(addEventListenerStub).nthCalledWith(
+        1,
+        'keydown',
+        expect.any(Function),
+      )
+      expect(addEventListenerStub).nthCalledWith(
+        2,
+        'keyup',
+        expect.any(Function),
+      )
+      expect(keyPressedhandlerStub).nthCalledWith(
+        1,
+        expect.objectContaining({
+          composedPath: expect.any(Function),
+          key: 'Meta',
+          originalEvent: metaKeydownEvent,
+        }),
+      )
+      expect(keyPressedhandlerStub).nthCalledWith(
+        2,
+        expect.objectContaining({
+          composedPath: expect.any(Function),
+          key: 'a',
+          originalEvent: aKeydownEvent,
+        }),
+      )
+      expect(keyReleasehandlerStub).nthCalledWith(
+        1,
+        expect.objectContaining({
+          composedPath: expect.any(Function),
+          key: 'a',
+          originalEvent: aKeyupEvent,
+        }),
+      )
       expect(dispatchEventStub).nthCalledWith(1, expect.any(KeyboardEvent))
 
       const syntheticKeyboardEvent = dispatchEventStub.mock.calls[0][0]
@@ -180,7 +226,9 @@ describe('browserOnKeyReleased(handler) -> void', () => {
   it('correctly binds the given handler to document keyup', () => {
     const addEventListenerStub = vi.fn()
     const handlerStub = vi.fn()
-    vi.spyOn(document, 'addEventListener').mockImplementation(addEventListenerStub)
+    vi.spyOn(document, 'addEventListener').mockImplementation(
+      addEventListenerStub,
+    )
 
     browserOnKeyReleasedBinder(handlerStub)
 
@@ -195,18 +243,19 @@ describe('browserOnKeyReleased(handler) -> void', () => {
     handler(keyupEvent)
 
     expect(addEventListenerStub).nthCalledWith(1, 'keyup', expect.any(Function))
-    expect(handlerStub).nthCalledWith(1, expect.objectContaining({
-      composedPath: expect.any(Function),
-      key: 'a',
-      originalEvent: keyupEvent
-    }))
+    expect(handlerStub).nthCalledWith(
+      1,
+      expect.objectContaining({
+        composedPath: expect.any(Function),
+        key: 'a',
+        originalEvent: keyupEvent,
+      }),
+    )
 
     vi.unstubAllGlobals()
   })
 
   describe('/macOS Specific Behavior/', () => {
-    it('intercepts and blocks command key release events for command', () => {
-      
-    })
+    it('intercepts and blocks command key release events for command', () => {})
   })
 })
