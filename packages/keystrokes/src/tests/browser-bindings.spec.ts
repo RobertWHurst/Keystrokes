@@ -137,7 +137,7 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
   })
 
   describe('/macOS Specific Behavior/', () => {
-    it.only('generates a synthetic keyup for the command key when any other key is released', () => {
+    it('generates a synthetic keyup for the command key when any other key is released', () => {
       const addEventListenerStub = vi.fn()
       const keyPressedhandlerStub = vi.fn()
       const keyReleasehandlerStub = vi.fn()
