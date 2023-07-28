@@ -34,23 +34,23 @@ const getNav = () =>
 // NOTE: Because MacOS does not fire keyup events for the Command key, we need
 // to track the state of the Command key ourselves so we can release it
 // ourselves.
-const isMacOs = getNav().userAgent.toLocaleLowerCase().includes('mac')
+const isMacOs = () => getNav().userAgent.toLocaleLowerCase().includes('mac')
 let hasPressedMacOSCommand: 'MetaLeft' | 'MetaRight' | '' = ''
 
 const maybeHandleMacOSCommandKeyDown = (e: KeyboardEvent) => {
-  if (!isMacOs || e.key !== 'Meta') return
+  if (!isMacOs() || e.key !== 'Meta') return
   hasPressedMacOSCommand = e.code as 'MetaLeft' | 'MetaRight'
 }
 
 // Just in case macOS fixes this Command key issue, we will inhibit keyup events
 // for the Command key.
 const shouldInterceptMacOSCommandKeyUp = (e: KeyboardEvent) => {
-  if (!isMacOs || e.key !== 'Meta') return false
+  if (!isMacOs() || e.key !== 'Meta') return false
   return true
 }
 
 const maybeDispatchMacOSCommandKeyUp = () => {
-  if (!isMacOs || !hasPressedMacOSCommand) return
+  if (!isMacOs() || !hasPressedMacOSCommand) return
   const event = new KeyboardEvent('keyup', {
     key: 'Meta',
     code: hasPressedMacOSCommand,
@@ -61,6 +61,29 @@ const maybeDispatchMacOSCommandKeyUp = () => {
   getDoc().dispatchEvent(event)
 }
 // ----------------
+
+const activeKeyEvents = new Map<string, KeyboardEvent>()
+
+const addActiveKeyEvent = (event: KeyboardEvent) => {
+  activeKeyEvents.set(event.key, event)
+}
+
+const removeActiveKeyEvent = (event: KeyboardEvent) => {
+  activeKeyEvents.delete(event.key)
+}
+
+const dispatchKeyUpForAllActiveKeys = () => {
+  for (const activeKeyEvent of activeKeyEvents.values()) {
+    const event = new KeyboardEvent('keyup', {
+      key: activeKeyEvent.key,
+      code: activeKeyEvent.code,
+      bubbles: true,
+      cancelable: true,
+    })
+    getDoc().dispatchEvent(event)
+  }
+  activeKeyEvents.clear()
+}
 
 export const browserOnActiveBinder: OnActiveEventBinder = (handler) => {
   try {
@@ -74,14 +97,15 @@ export const browserOnActiveBinder: OnActiveEventBinder = (handler) => {
 
 export const browserOnInactiveBinder: OnActiveEventBinder = (handler) => {
   try {
-    const handlerWrapper = () => handler()
+    const handlerWrapper = () => {
+      maybeDispatchMacOSCommandKeyUp()
 
-    maybeDispatchMacOSCommandKeyUp()
+      dispatchKeyUpForAllActiveKeys()
+      handler()
+    }
 
     addEventListener('blur', handlerWrapper)
-    return () => {
-      removeEventListener('blur', handlerWrapper)
-    }
+    return () => removeEventListener('blur', handlerWrapper)
   } catch {}
 }
 
@@ -93,6 +117,7 @@ export const browserOnKeyPressedBinder: OnKeyEventBinder<
     const handlerWrapper = (e: KeyboardEvent) => {
       const originalComposedPath = e.composedPath()
 
+      addActiveKeyEvent(e)
       maybeHandleMacOSCommandKeyDown(e)
 
       return handler({
@@ -102,9 +127,7 @@ export const browserOnKeyPressedBinder: OnKeyEventBinder<
       })
     }
     getDoc().addEventListener('keydown', handlerWrapper)
-    return () => {
-      getDoc().removeEventListener('keydown', handlerWrapper)
-    }
+    return () => getDoc().removeEventListener('keydown', handlerWrapper)
   } catch {}
 }
 
@@ -116,6 +139,7 @@ export const browserOnKeyReleasedBinder: OnKeyEventBinder<
     const handlerWrapper = (e: KeyboardEvent) => {
       const originalComposedPath = e.composedPath()
 
+      removeActiveKeyEvent(e)
       maybeDispatchMacOSCommandKeyUp()
       if (shouldInterceptMacOSCommandKeyUp(e)) return
 
@@ -126,8 +150,6 @@ export const browserOnKeyReleasedBinder: OnKeyEventBinder<
       })
     }
     getDoc().addEventListener('keyup', handlerWrapper)
-    return () => {
-      getDoc().removeEventListener('keyup', handlerWrapper)
-    }
+    return () => getDoc().removeEventListener('keyup', handlerWrapper)
   } catch {}
 }

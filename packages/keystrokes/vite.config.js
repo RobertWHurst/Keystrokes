@@ -15,5 +15,7 @@ export default defineConfig({
       exclude: ['**/*.spec.*', '**/*.test.*', './src/tests/**/*'],
     }),
   ],
-  test: {},
+  test: {
+    environment: 'happy-dom'
+  },
 })
