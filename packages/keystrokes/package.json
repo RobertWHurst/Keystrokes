@@ -14,10 +14,9 @@
   },
   "files": [
     "dist/*.js",
+    "dist/*.cjs",
     "dist/*.map",
     "dist/*.d.ts",
-    "keystrokes.js",
-    "keystrokes.js.map",
     "logo.png",
     "readme.md"
   ],
