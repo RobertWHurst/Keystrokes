@@ -6,8 +6,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'reactKeystrokes',
-      fileName: 'react-keystrokes',
+      name: 'vueKeystrokes',
+      fileName: 'vue-keystrokes',
     },
     rollupOptions: {
       external: ['@rwh/keystrokes', 'vue'],
