@@ -3,12 +3,11 @@ import {
   BrowserKeyComboEventProps,
   BrowserKeyEventProps,
   Keystrokes,
-  nextTick,
 } from '../keystrokes'
 import { KeyComboEvent, KeyEvent, createTestKeystrokes } from '..'
 
 describe('new Keystrokes(options)', () => {
-  it('will automatically release self-releasing keys', async () => {
+  it('will automatically release self-releasing keys', () => {
     const keystrokes = createTestKeystrokes({
       selfReleasingKeys: ['meta', 'z'],
     })
@@ -16,17 +15,16 @@ describe('new Keystrokes(options)', () => {
     expect(keystrokes.checkKeyCombo('meta > z')).toBe(false)
 
     keystrokes.press({ key: 'meta' })
-    await nextTick()
+
     expect(keystrokes.checkKey('meta')).toBe(true)
     expect(keystrokes.checkKeyCombo('meta > z')).toBe(false)
 
     keystrokes.press({ key: 'z' })
-    await nextTick()
+
     expect(keystrokes.checkKey('z')).toBe(true)
     expect(keystrokes.checkKeyCombo('meta > z')).toBe(true)
 
     keystrokes.release({ key: 'meta' })
-    await nextTick()
 
     expect(keystrokes.checkKey('z')).toBe(false)
     expect(keystrokes.checkKey('meta')).toBe(false)
@@ -281,7 +279,7 @@ describe('new Keystrokes(options)', () => {
   })
 
   describe('#bindKeyCombo(keyCombo, handler)', () => {
-    it('accepts a key combo and when that combo is satisfied the given handler is executed', async () => {
+    it('accepts a key combo and when that combo is satisfied the given handler is executed', () => {
       const keystrokes = createTestKeystrokes()
 
       const handler1 = {
@@ -299,28 +297,17 @@ describe('new Keystrokes(options)', () => {
 
       keystrokes.press({ key: 'a' })
       keystrokes.press({ key: 'a' })
-
-      await nextTick()
-
       keystrokes.release({ key: 'a' })
 
-      await nextTick()
-
       keystrokes.press({ key: 'b' })
       keystrokes.press({ key: 'b' })
       keystrokes.press({ key: 'd' })
       keystrokes.press({ key: 'd' })
       keystrokes.press({ key: 'c' })
       keystrokes.press({ key: 'c' })
-
-      await nextTick()
-
       keystrokes.release({ key: 'b' })
       keystrokes.release({ key: 'c' })
       keystrokes.release({ key: 'd' })
-
-      await nextTick()
-      await nextTick()
 
       expect(handler1.onPressed).toBeCalledTimes(1)
       expect(handler1.onPressedWithRepeat).toBeCalledTimes(2)
@@ -330,7 +317,7 @@ describe('new Keystrokes(options)', () => {
       expect(handler2.onReleased).toBeCalledTimes(1)
     })
 
-    it('will not trigger a key combo handler if the keys are pressed in the wrong order', async () => {
+    it('will not trigger a key combo handler if the keys are pressed in the wrong order', () => {
       const keystrokes = createTestKeystrokes()
 
       const handler1 = {
@@ -348,28 +335,16 @@ describe('new Keystrokes(options)', () => {
 
       keystrokes.press({ key: 'd' })
       keystrokes.press({ key: 'd' })
-
-      await nextTick()
-
       keystrokes.release({ key: 'd' })
 
       keystrokes.press({ key: 'b' })
       keystrokes.press({ key: 'c' })
-
-      await nextTick()
-
       keystrokes.release({ key: 'c' })
       keystrokes.release({ key: 'b' })
 
       keystrokes.press({ key: 'a' })
       keystrokes.press({ key: 'a' })
-
-      await nextTick()
-
       keystrokes.release({ key: 'a' })
-
-      await nextTick()
-      await nextTick()
 
       expect(handler1.onPressed).toBeCalledTimes(0)
       expect(handler1.onPressedWithRepeat).toBeCalledTimes(0)
@@ -379,7 +354,7 @@ describe('new Keystrokes(options)', () => {
       expect(handler2.onReleased).toBeCalledTimes(0)
     })
 
-    it('provides all key events invoked while the combo was being satisfied', async () => {
+    it('provides all key events invoked while the combo was being satisfied', () => {
       const keystrokes = createTestKeystrokes()
 
       const handler = {
@@ -390,25 +365,13 @@ describe('new Keystrokes(options)', () => {
       keystrokes.bindKeyCombo('a,b>c+d', handler)
 
       keystrokes.press({ key: 'a' })
-
-      await nextTick()
-
       keystrokes.release({ key: 'a' })
-
-      await nextTick()
-
       keystrokes.press({ key: 'b' })
       keystrokes.press({ key: 'd' })
       keystrokes.press({ key: 'c' })
-
-      await nextTick()
-
       keystrokes.release({ key: 'b' })
       keystrokes.release({ key: 'c' })
       keystrokes.release({ key: 'd' })
-
-      await nextTick()
-      await nextTick()
 
       const event = handler.onPressed.mock.calls[0][0] as KeyComboEvent<
         KeyboardEvent,
@@ -424,7 +387,7 @@ describe('new Keystrokes(options)', () => {
       expect(event.keyEvents.some((e) => e.key === 'd')).toBe(true)
     })
 
-    it('provides the final key event that invoked in order to satisfy the combo', async () => {
+    it('provides the final key event that invoked in order to satisfy the combo', () => {
       const keystrokes = createTestKeystrokes()
 
       const handler = {
@@ -435,25 +398,13 @@ describe('new Keystrokes(options)', () => {
       keystrokes.bindKeyCombo('a,b>c+d', handler)
 
       keystrokes.press({ key: 'a' })
-
-      await nextTick()
-
       keystrokes.release({ key: 'a' })
-
-      await nextTick()
-
       keystrokes.press({ key: 'b' })
       keystrokes.press({ key: 'd' })
       keystrokes.press({ key: 'c' })
-
-      await nextTick()
-
       keystrokes.release({ key: 'b' })
       keystrokes.release({ key: 'c' })
       keystrokes.release({ key: 'd' })
-
-      await nextTick()
-      await nextTick()
 
       const event = handler.onPressed.mock.calls[0][0] as KeyComboEvent<
         KeyboardEvent,
@@ -465,7 +416,7 @@ describe('new Keystrokes(options)', () => {
       expect(event.finalKeyEvent.key).toBe('c')
     })
 
-    it('correctly handles combos with the shift key', async () => {
+    it('correctly handles combos with the shift key', () => {
       const keystrokes = createTestKeystrokes()
 
       const handler = {
@@ -476,19 +427,17 @@ describe('new Keystrokes(options)', () => {
 
       keystrokes.press({ key: 'shift' })
       keystrokes.press({ key: 'S' })
-      await nextTick()
 
       expect(handler.onPressed).toBeCalledTimes(1)
 
       keystrokes.release({ key: 'S' })
-      await nextTick()
 
       expect(handler.onReleased).toBeCalledTimes(1)
     })
   })
 
   describe('#unbindKeyCombo(keyCombo, handler?)', () => {
-    it('remove a handler for a given key combo', async () => {
+    it('remove a handler for a given key combo', () => {
       const keystrokes = createTestKeystrokes()
 
       const handler1 = vi.fn()
@@ -500,15 +449,9 @@ describe('new Keystrokes(options)', () => {
       keystrokes.press({ key: 'b' })
       keystrokes.press({ key: 'b' })
 
-      await nextTick()
-      await nextTick()
-
       keystrokes.unbindKeyCombo('a>b', handler2)
 
       keystrokes.press({ key: 'b' })
-
-      await nextTick()
-      await nextTick()
 
       expect(handler1).toBeCalledTimes(3)
       expect(handler2).toBeCalledTimes(2)

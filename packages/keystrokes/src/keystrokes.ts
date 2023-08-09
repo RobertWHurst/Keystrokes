@@ -1,4 +1,6 @@
 import {
+  MaybeBrowserKeyComboEventProps,
+  MaybeBrowserKeyEventProps,
   browserOnActiveBinder,
   browserOnInactiveBinder,
   browserOnKeyPressedBinder,
@@ -6,25 +8,6 @@ import {
 } from './browser-bindings'
 import { Handler, HandlerState, KeyEvent } from './handler-state'
 import { KeyComboEvent, KeyComboState } from './key-combo-state'
-
-export type BrowserKeyEventProps = {
-  composedPath(): EventTarget[]
-}
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type BrowserKeyComboEventProps = {}
-
-export type MaybeBrowserKeyEventProps<OriginalEvent> =
-  OriginalEvent extends KeyboardEvent
-    ? BrowserKeyEventProps
-    : // eslint-disable-next-line @typescript-eslint/ban-types
-      {}
-
-export type MaybeBrowserKeyComboEventProps<OriginalEvent> =
-  OriginalEvent extends KeyboardEvent
-    ? BrowserKeyComboEventProps
-    : // eslint-disable-next-line @typescript-eslint/ban-types
-      {}
 
 export type OnActiveEventBinder = (handler: () => void) => (() => void) | void
 export type OnKeyEventBinder<OriginalEvent, KeyEventProps> = (
@@ -69,20 +52,12 @@ export type BindEnvironmentOptions<
   keyRemap?: Record<string, string>
 }
 
-const nextTickBinder =
-  typeof requestAnimationFrame === 'function'
-    ? (r: () => void) => requestAnimationFrame(r)
-    : (f: () => void) => setTimeout(f, 0)
-
-export const nextTick = () => new Promise<void>((r) => nextTickBinder(r))
-
 export class Keystrokes<
   OriginalEvent = KeyboardEvent,
   KeyEventProps = MaybeBrowserKeyEventProps<OriginalEvent>,
   KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>,
 > {
   private _isActive: boolean
-  private _isUpdatingKeyComboState: boolean
 
   private _unbinder: (() => void) | undefined
 
@@ -127,7 +102,6 @@ export class Keystrokes<
     > = {},
   ) {
     this._isActive = true
-    this._isUpdatingKeyComboState = false
 
     this._onActiveBinder = () => {}
     this._onInactiveBinder = () => {}
@@ -316,93 +290,75 @@ export class Keystrokes<
   }
 
   private _handleKeyPress(event: KeyEvent<OriginalEvent, KeyEventProps>) {
-    ;(async () => {
-      if (!this._isActive) return
+    if (!this._isActive) return
 
-      event = { ...event, key: event.key.toLowerCase() }
+    event = { ...event, key: event.key.toLowerCase() }
 
-      const remappedKey = this._keyRemap[event.key]
-      if (remappedKey) {
-        event.key = remappedKey
+    const remappedKey = this._keyRemap[event.key]
+    if (remappedKey) {
+      event.key = remappedKey
+    }
+
+    const keyPressHandlerStates = this._handlerStates[event.key]
+    if (keyPressHandlerStates) {
+      for (const s of keyPressHandlerStates) {
+        s.executePressed(event)
       }
+    }
 
-      const keyPressHandlerStates = this._handlerStates[event.key]
-      if (keyPressHandlerStates) {
-        for (const s of keyPressHandlerStates) {
-          s.executePressed(event)
-        }
-      }
+    if (!this._activeKeySet.has(event.key)) {
+      this._activeKeySet.add(event.key)
+      this._activeKeyPresses.push({
+        key: event.key,
+        event,
+      })
+    }
 
-      if (!this._activeKeySet.has(event.key)) {
-        this._activeKeySet.add(event.key)
-        this._activeKeyPresses.push({
-          key: event.key,
-          event,
-        })
-      }
+    this._updateKeyComboStates()
 
-      await this._updateKeyComboStates()
-
-      for (const keyComboState of this._keyComboStatesArray) {
-        keyComboState.executePressed(event)
-      }
-    })().catch((err) => {
-      console.error(err)
-    })
+    for (const keyComboState of this._keyComboStatesArray) {
+      keyComboState.executePressed(event)
+    }
   }
 
   private _handleKeyRelease(event: KeyEvent<OriginalEvent, KeyEventProps>) {
-    ;(async () => {
-      event = { ...event, key: event.key.toLowerCase() }
+    event = { ...event, key: event.key.toLowerCase() }
 
-      const remappedKey = this._keyRemap[event.key]
-      if (remappedKey) {
-        event.key = remappedKey
+    const remappedKey = this._keyRemap[event.key]
+    if (remappedKey) {
+      event.key = remappedKey
+    }
+
+    const keyPressHandlerStates = this._handlerStates[event.key]
+    if (keyPressHandlerStates) {
+      for (const s of keyPressHandlerStates) {
+        s.executeReleased(event)
       }
+    }
 
-      const keyPressHandlerStates = this._handlerStates[event.key]
-      if (keyPressHandlerStates) {
-        for (const s of keyPressHandlerStates) {
-          s.executeReleased(event)
+    if (this._activeKeySet.has(event.key)) {
+      this._activeKeySet.delete(event.key)
+      for (let i = 0; i < this._activeKeyPresses.length; i += 1) {
+        if (this._activeKeyPresses[i].key === event.key) {
+          this._activeKeyPresses.splice(i, 1)
+          i -= 1
+          break
         }
       }
+    }
 
-      if (this._activeKeySet.has(event.key)) {
-        this._activeKeySet.delete(event.key)
-        for (let i = 0; i < this._activeKeyPresses.length; i += 1) {
-          if (this._activeKeyPresses[i].key === event.key) {
-            this._activeKeyPresses.splice(i, 1)
-            i -= 1
-            break
-          }
-        }
-      }
+    this._tryReleaseSelfReleasingKeys()
+    this._updateKeyComboStates()
 
-      this._tryReleaseSelfReleasingKeys()
-
-      await this._updateKeyComboStates()
-
-      for (const keyComboState of this._keyComboStatesArray) {
-        keyComboState.executeReleased(event)
-      }
-    })().catch((err) => {
-      console.error(err)
-    })
+    for (const keyComboState of this._keyComboStatesArray) {
+      keyComboState.executeReleased(event)
+    }
   }
 
-  private async _updateKeyComboStates() {
-    if (this._isUpdatingKeyComboState) {
-      return await nextTick()
-    }
-    this._isUpdatingKeyComboState = true
-
-    await nextTick()
-
+  private _updateKeyComboStates() {
     for (const keyComboState of this._keyComboStatesArray) {
       keyComboState.updateState(this._activeKeyPresses)
     }
-
-    this._isUpdatingKeyComboState = false
   }
 
   private _tryReleaseSelfReleasingKeys() {

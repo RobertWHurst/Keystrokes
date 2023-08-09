@@ -56,8 +56,6 @@ describe('useKey(key) -> isPressed', () => {
     )
 
     keystrokes.press({ key: 'a' })
-    await wait()
-
     keystrokes.release({ key: 'a' })
     await wait()
 

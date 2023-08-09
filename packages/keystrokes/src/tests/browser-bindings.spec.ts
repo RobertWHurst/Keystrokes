@@ -5,7 +5,6 @@ import {
   browserOnKeyPressedBinder,
   browserOnKeyReleasedBinder,
 } from '../browser-bindings'
-import { execFile } from 'child_process'
 
 describe('browserOnActiveBinder(handler) -> void', () => {
   it('correctly binds the given handler to window focus', () => {

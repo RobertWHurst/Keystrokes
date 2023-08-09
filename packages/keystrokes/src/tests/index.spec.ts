@@ -6,7 +6,6 @@ import {
   getGlobalKeystrokes,
   unbindKey,
 } from '..'
-import { nextTick } from '../keystrokes'
 
 let press: (key: string) => void = () => {
   throw new Error('onKeyPressed not bound')
@@ -79,28 +78,14 @@ describe('exported globalKeystrokes methods', () => {
 
       press('a')
       press('a')
-
-      await nextTick()
-
       release('a')
-
       press('b')
       press('c')
-
-      await nextTick()
-
       release('c')
       release('b')
-
       press('d')
       press('d')
-
-      await nextTick()
-
       release('d')
-
-      await nextTick()
-      await nextTick()
 
       expect(handler1.onPressed).toBeCalledTimes(1)
       expect(handler1.onPressedWithRepeat).toBeCalledTimes(2)

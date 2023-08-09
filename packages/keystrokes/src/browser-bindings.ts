@@ -1,8 +1,24 @@
-import {
-  BrowserKeyEventProps,
-  OnActiveEventBinder,
-  OnKeyEventBinder,
-} from './keystrokes'
+import { OnActiveEventBinder, OnKeyEventBinder } from './keystrokes'
+
+export type BrowserKeyEventProps = {
+  composedPath(): EventTarget[]
+  preventDefault(): void
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type BrowserKeyComboEventProps = {}
+
+export type MaybeBrowserKeyEventProps<OriginalEvent> =
+  OriginalEvent extends KeyboardEvent
+    ? BrowserKeyEventProps
+    : // eslint-disable-next-line @typescript-eslint/ban-types
+      {}
+
+export type MaybeBrowserKeyComboEventProps<OriginalEvent> =
+  OriginalEvent extends KeyboardEvent
+    ? BrowserKeyComboEventProps
+    : // eslint-disable-next-line @typescript-eslint/ban-types
+      {}
 
 // NOTE: These stubs are only used if the library is used in a non-browser
 // environment with default binders.
@@ -115,15 +131,14 @@ export const browserOnKeyPressedBinder: OnKeyEventBinder<
 > = (handler) => {
   try {
     const handlerWrapper = (e: KeyboardEvent) => {
-      const originalComposedPath = e.composedPath()
-
       addActiveKeyEvent(e)
       maybeHandleMacOSCommandKeyDown(e)
 
       return handler({
         key: e.key,
         originalEvent: e,
-        composedPath: () => originalComposedPath,
+        composedPath: () => e.composedPath(),
+        preventDefault: () => e.preventDefault(),
       })
     }
     getDoc().addEventListener('keydown', handlerWrapper)
@@ -137,8 +152,6 @@ export const browserOnKeyReleasedBinder: OnKeyEventBinder<
 > = (handler) => {
   try {
     const handlerWrapper = (e: KeyboardEvent) => {
-      const originalComposedPath = e.composedPath()
-
       removeActiveKeyEvent(e)
       maybeDispatchMacOSCommandKeyUp()
       if (shouldInterceptMacOSCommandKeyUp(e)) return
@@ -146,7 +159,8 @@ export const browserOnKeyReleasedBinder: OnKeyEventBinder<
       return handler({
         key: e.key,
         originalEvent: e,
-        composedPath: () => originalComposedPath,
+        composedPath: () => e.composedPath(),
+        preventDefault: () => e.preventDefault(),
       })
     }
     getDoc().addEventListener('keyup', handlerWrapper)

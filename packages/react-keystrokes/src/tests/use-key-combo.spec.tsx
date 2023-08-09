@@ -58,8 +58,6 @@ describe('useKeyCombo(keyCombo) -> isPressed', () => {
 
     keystrokes.press({ key: 'a' })
     keystrokes.press({ key: 'b' })
-    await wait()
-
     keystrokes.release({ key: 'a' })
     keystrokes.release({ key: 'b' })
     await wait()
