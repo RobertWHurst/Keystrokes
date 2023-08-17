@@ -136,10 +136,10 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
   })
 
   describe('/macOS Specific Behavior/', () => {
-    it('generates a synthetic keyup for the command key when any other key is released', () => {
+    it('will release all keys pressed once meta is released', () => {
       const addEventListenerStub = vi.fn()
-      const keyPressedhandlerStub = vi.fn()
-      const keyReleasehandlerStub = vi.fn()
+      const keyPressedHandlerStub = vi.fn()
+      const keyReleaseHandlerStub = vi.fn()
       const dispatchEventStub = vi.fn()
       vi.spyOn(document, 'addEventListener').mockImplementation(
         addEventListenerStub,
@@ -147,8 +147,8 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
       vi.spyOn(document, 'dispatchEvent').mockImplementation(dispatchEventStub)
       vi.stubGlobal('navigator', { userAgent: 'mac' })
 
-      browserOnKeyPressedBinder(keyPressedhandlerStub)
-      browserOnKeyReleasedBinder(keyReleasehandlerStub)
+      browserOnKeyPressedBinder(keyPressedHandlerStub)
+      browserOnKeyReleasedBinder(keyReleaseHandlerStub)
 
       const keyPressedHandler = addEventListenerStub.mock.calls[0][1]
       const keyReleasedHandler = addEventListenerStub.mock.calls[1][1]
@@ -166,8 +166,8 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
         cancelable: true,
       })
       const aKeyupEvent = new KeyboardEvent('keydown', {
-        key: 'a',
-        code: 'a',
+        key: 'Meta',
+        code: 'MetaRight',
         bubbles: true,
         cancelable: true,
       })
@@ -186,7 +186,7 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
         'keyup',
         expect.any(Function),
       )
-      expect(keyPressedhandlerStub).nthCalledWith(
+      expect(keyPressedHandlerStub).nthCalledWith(
         1,
         expect.objectContaining({
           composedPath: expect.any(Function),
@@ -194,7 +194,7 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
           originalEvent: metaKeydownEvent,
         }),
       )
-      expect(keyPressedhandlerStub).nthCalledWith(
+      expect(keyPressedHandlerStub).nthCalledWith(
         2,
         expect.objectContaining({
           composedPath: expect.any(Function),
@@ -202,11 +202,11 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
           originalEvent: aKeydownEvent,
         }),
       )
-      expect(keyReleasehandlerStub).nthCalledWith(
+      expect(keyReleaseHandlerStub).nthCalledWith(
         1,
         expect.objectContaining({
           composedPath: expect.any(Function),
-          key: 'a',
+          key: 'Meta',
           originalEvent: aKeyupEvent,
         }),
       )
@@ -214,7 +214,7 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
 
       const syntheticKeyboardEvent = dispatchEventStub.mock.calls[0][0]
       expect(syntheticKeyboardEvent.type).toBe('keyup')
-      expect(syntheticKeyboardEvent.key).toBe('Meta')
+      expect(syntheticKeyboardEvent.key).toBe('a')
 
       vi.unstubAllGlobals()
     })

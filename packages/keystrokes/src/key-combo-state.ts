@@ -107,7 +107,7 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
   }
 
   get isPressed() {
-    return !!this._isPressedWithFinalKey
+    return !!this._isPressedWithFinalUnit
   }
 
   get sequenceIndex() {
@@ -121,7 +121,7 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>
   >
   private _lastActiveKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[][]
-  private _isPressedWithFinalKey: KeyPress<OriginalEvent, KeyEventProps> | null
+  private _isPressedWithFinalUnit: Set<string> | null
   private _sequenceIndex: number
   private _keyComboEventMapper: KeyComboEventMapper<
     OriginalEvent,
@@ -145,7 +145,7 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     this._handlerState = new HandlerState(handler)
     this._keyComboEventMapper = keyComboEventMapper
     this._lastActiveKeyPresses = []
-    this._isPressedWithFinalKey = null
+    this._isPressedWithFinalUnit = null
     this._sequenceIndex = 0
   }
 
@@ -158,22 +158,18 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
   }
 
   executePressed(event: KeyEvent<OriginalEvent, KeyEventProps>) {
-    if (this._isPressedWithFinalKey?.key !== event.key) {
-      return
-    }
+    if (!this._isPressedWithFinalUnit?.has(event.key)) return
     this._handlerState.executePressed(
-      this._wrapEvent(this._lastActiveKeyPresses, this._isPressedWithFinalKey),
+      this._wrapEvent(this._lastActiveKeyPresses, { key: event.key, event }),
     )
   }
 
   executeReleased(event: KeyEvent<OriginalEvent, KeyEventProps>) {
-    if (this._isPressedWithFinalKey?.key !== event.key) {
-      return
-    }
+    if (!this._isPressedWithFinalUnit?.has(event.key)) return
     this._handlerState.executeReleased(
-      this._wrapEvent(this._lastActiveKeyPresses, this._isPressedWithFinalKey),
+      this._wrapEvent(this._lastActiveKeyPresses, { key: event.key, event }),
     )
-    this._isPressedWithFinalKey = null
+    this._isPressedWithFinalUnit = null
   }
 
   updateState(activeKeys: KeyPress<OriginalEvent, KeyEventProps>[]) {
@@ -197,7 +193,7 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
         }
         if (!foundKey) {
           if (this._handlerState.isEmpty) {
-            this._isPressedWithFinalKey = null
+            this._isPressedWithFinalUnit = null
           }
           return
         }
@@ -231,7 +227,7 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     }
 
     this._sequenceIndex = 0
-    this._isPressedWithFinalKey = activeKeys[activeKeys.length - 1]
+    this._isPressedWithFinalUnit = new Set(sequence[sequence.length - 1])
   }
 
   _wrapEvent(

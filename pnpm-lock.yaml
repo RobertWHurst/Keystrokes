@@ -1171,6 +1171,7 @@ packages:
   /esbuild@0.18.17:
     resolution: {integrity: sha512-1GJtYnUxsJreHYA0Y+iQz2UEykonY66HNWOb0yXYZi9/kNrORUEHVg87eQsCtqh59PEJ5YVZJO98JHznMJSWjg==}
     engines: {node: '>=12'}
+    hasBin: true
     requiresBuild: true
     optionalDependencies:
       '@esbuild/android-arm': 0.18.17
@@ -1204,6 +1205,7 @@ packages:
 
   /eslint-config-prettier@8.10.0(eslint@8.46.0):
     resolution: {integrity: sha512-SM8AMJdeQqRYT9O9zguiruQZaN7+z+E4eAP9oiLNGKMtomwaB1E9dcgUD6ZAn/eQAb52USbvezbiljfZUhbJcg==}
+    hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
     dependencies:
@@ -1795,6 +1797,7 @@ packages:
   /nanoid@3.3.6:
     resolution: {integrity: sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
     dev: true
 
   /natural-compare-lite@1.4.0:
@@ -2072,6 +2075,7 @@ packages:
   /rollup@3.27.0:
     resolution: {integrity: sha512-aOltLCrYZ0FhJDm7fCqwTjIUEVjWjcydKBV/Zeid6Mn8BWgDCUBBWT5beM5ieForYNo/1ZHuGJdka26kvQ3Gzg==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
+    hasBin: true
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
@@ -2238,6 +2242,7 @@ packages:
 
   /ts-node@10.9.1(@types/node@20.4.6)(typescript@5.1.6):
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
+    hasBin: true
     peerDependencies:
       '@swc/core': '>=1.2.50'
       '@swc/wasm': '>=1.2.50'
@@ -2335,6 +2340,7 @@ packages:
   /vite@4.4.8(@types/node@20.4.6):
     resolution: {integrity: sha512-LONawOUUjxQridNWGQlNizfKH89qPigK36XhMI7COMGztz8KNY0JHim7/xDd71CZwGT4HtSRgI7Hy+RlhG0Gvg==}
     engines: {node: ^14.18.0 || >=16.0.0}
+    hasBin: true
     peerDependencies:
       '@types/node': '>= 14'
       less: '*'
@@ -2370,6 +2376,7 @@ packages:
   /vitest@0.34.1(happy-dom@10.6.3):
     resolution: {integrity: sha512-G1PzuBEq9A75XSU88yO5G4vPT20UovbC/2osB2KEuV/FisSIIsw7m5y2xMdB7RsAGHAfg2lPmp2qKr3KWliVlQ==}
     engines: {node: '>=v14.18.0'}
+    hasBin: true
     peerDependencies:
       '@edge-runtime/vm': '*'
       '@vitest/browser': '*'

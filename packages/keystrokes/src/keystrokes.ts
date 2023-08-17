@@ -87,7 +87,7 @@ export class Keystrokes<
     KeyComboEventProps
   >[]
   private _activeKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[]
-  private _activeKeySet: Set<string>
+  private _activeKeyMap: Map<string, KeyPress<OriginalEvent, KeyEventProps>>
 
   private _watchedKeyComboStates: Record<
     string,
@@ -115,7 +115,7 @@ export class Keystrokes<
     this._keyComboStates = {}
     this._keyComboStatesArray = []
     this._activeKeyPresses = []
-    this._activeKeySet = new Set()
+    this._activeKeyMap = new Map()
 
     this._watchedKeyComboStates = {}
 
@@ -211,7 +211,7 @@ export class Keystrokes<
   }
 
   checkKey(key: string) {
-    return this._activeKeySet.has(key.toLowerCase())
+    return this._activeKeyMap.has(key.toLowerCase())
   }
 
   checkKeyCombo(keyCombo: string) {
@@ -306,12 +306,16 @@ export class Keystrokes<
       }
     }
 
-    if (!this._activeKeySet.has(event.key)) {
-      this._activeKeySet.add(event.key)
-      this._activeKeyPresses.push({
+    const existingKeypress = this._activeKeyMap.get(event.key)
+    if (existingKeypress) {
+      existingKeypress.event = event
+    } else {
+      const keypress = {
         key: event.key,
         event,
-      })
+      }
+      this._activeKeyMap.set(event.key, keypress)
+      this._activeKeyPresses.push(keypress)
     }
 
     this._updateKeyComboStates()
@@ -336,8 +340,8 @@ export class Keystrokes<
       }
     }
 
-    if (this._activeKeySet.has(event.key)) {
-      this._activeKeySet.delete(event.key)
+    if (this._activeKeyMap.has(event.key)) {
+      this._activeKeyMap.delete(event.key)
       for (let i = 0; i < this._activeKeyPresses.length; i += 1) {
         if (this._activeKeyPresses[i].key === event.key) {
           this._activeKeyPresses.splice(i, 1)

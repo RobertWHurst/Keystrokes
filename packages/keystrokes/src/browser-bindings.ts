@@ -51,30 +51,17 @@ const getNav = () =>
 // to track the state of the Command key ourselves so we can release it
 // ourselves.
 const isMacOs = () => getNav().userAgent.toLocaleLowerCase().includes('mac')
-let hasPressedMacOSCommand: 'MetaLeft' | 'MetaRight' | '' = ''
+let isMacOsCommandKeyPressed = false
 
-const maybeHandleMacOSCommandKeyDown = (e: KeyboardEvent) => {
-  if (!isMacOs() || e.key !== 'Meta') return
-  hasPressedMacOSCommand = e.code as 'MetaLeft' | 'MetaRight'
+const maybeHandleMacOsCommandKeyPressed = (event: KeyboardEvent) => {
+  if (!isMacOs() || event.key !== 'Meta') return
+  isMacOsCommandKeyPressed = true
 }
 
-// Just in case macOS fixes this Command key issue, we will inhibit keyup events
-// for the Command key.
-const shouldInterceptMacOSCommandKeyUp = (e: KeyboardEvent) => {
-  if (!isMacOs() || e.key !== 'Meta') return false
-  return true
-}
-
-const maybeDispatchMacOSCommandKeyUp = () => {
-  if (!isMacOs() || !hasPressedMacOSCommand) return
-  const event = new KeyboardEvent('keyup', {
-    key: 'Meta',
-    code: hasPressedMacOSCommand,
-    bubbles: true,
-    cancelable: true,
-  })
-  hasPressedMacOSCommand = ''
-  getDoc().dispatchEvent(event)
+const maybeHandleMacOsCommandKeyReleased = (event: KeyboardEvent) => {
+  if (!isMacOsCommandKeyPressed || event.key !== 'Meta') return
+  isMacOsCommandKeyPressed = false
+  dispatchKeyUpForAllActiveKeys()
 }
 // ----------------
 
@@ -114,8 +101,6 @@ export const browserOnActiveBinder: OnActiveEventBinder = (handler) => {
 export const browserOnInactiveBinder: OnActiveEventBinder = (handler) => {
   try {
     const handlerWrapper = () => {
-      maybeDispatchMacOSCommandKeyUp()
-
       dispatchKeyUpForAllActiveKeys()
       handler()
     }
@@ -132,7 +117,7 @@ export const browserOnKeyPressedBinder: OnKeyEventBinder<
   try {
     const handlerWrapper = (e: KeyboardEvent) => {
       addActiveKeyEvent(e)
-      maybeHandleMacOSCommandKeyDown(e)
+      maybeHandleMacOsCommandKeyPressed(e)
 
       return handler({
         key: e.key,
@@ -153,8 +138,7 @@ export const browserOnKeyReleasedBinder: OnKeyEventBinder<
   try {
     const handlerWrapper = (e: KeyboardEvent) => {
       removeActiveKeyEvent(e)
-      maybeDispatchMacOSCommandKeyUp()
-      if (shouldInterceptMacOSCommandKeyUp(e)) return
+      maybeHandleMacOsCommandKeyReleased(e)
 
       return handler({
         key: e.key,
