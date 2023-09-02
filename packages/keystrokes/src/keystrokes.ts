@@ -144,9 +144,7 @@ export class Keystrokes<
     key = key.toLowerCase()
 
     const handlerStates = this._handlerStates[key]
-    if (!handlerStates) {
-      return
-    }
+    if (!handlerStates) return
 
     if (handler) {
       for (let i = 0; i < handlerStates.length; i += 1) {
@@ -188,9 +186,7 @@ export class Keystrokes<
     keyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
 
     const keyComboStates = this._keyComboStates[keyCombo]
-    if (!keyComboStates) {
-      return
-    }
+    if (!keyComboStates) return
 
     if (handler) {
       for (let i = 0; i < keyComboStates.length; i += 1) {
@@ -301,9 +297,7 @@ export class Keystrokes<
 
     const keyPressHandlerStates = this._handlerStates[event.key]
     if (keyPressHandlerStates) {
-      for (const s of keyPressHandlerStates) {
-        s.executePressed(event)
-      }
+      for (const s of keyPressHandlerStates) s.executePressed(event)
     }
 
     const existingKeypress = this._activeKeyMap.get(event.key)
@@ -320,9 +314,8 @@ export class Keystrokes<
 
     this._updateKeyComboStates()
 
-    for (const keyComboState of this._keyComboStatesArray) {
+    for (const keyComboState of this._keyComboStatesArray)
       keyComboState.executePressed(event)
-    }
   }
 
   private _handleKeyRelease(event: KeyEvent<OriginalEvent, KeyEventProps>) {
@@ -335,9 +328,7 @@ export class Keystrokes<
 
     const keyPressHandlerStates = this._handlerStates[event.key]
     if (keyPressHandlerStates) {
-      for (const s of keyPressHandlerStates) {
-        s.executeReleased(event)
-      }
+      for (const s of keyPressHandlerStates) s.executeReleased(event)
     }
 
     if (this._activeKeyMap.has(event.key)) {
@@ -354,23 +345,20 @@ export class Keystrokes<
     this._tryReleaseSelfReleasingKeys()
     this._updateKeyComboStates()
 
-    for (const keyComboState of this._keyComboStatesArray) {
+    for (const keyComboState of this._keyComboStatesArray)
       keyComboState.executeReleased(event)
-    }
   }
 
   private _updateKeyComboStates() {
-    for (const keyComboState of this._keyComboStatesArray) {
+    for (const keyComboState of this._keyComboStatesArray)
       keyComboState.updateState(this._activeKeyPresses)
-    }
   }
 
   private _tryReleaseSelfReleasingKeys() {
     for (const activeKey of this._activeKeyPresses) {
       for (const selfReleasingKey of this._selfReleasingKeys) {
-        if (activeKey.key === selfReleasingKey) {
+        if (activeKey.key === selfReleasingKey)
           this._handleKeyRelease(activeKey.event)
-        }
       }
     }
   }
