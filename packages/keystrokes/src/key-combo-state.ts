@@ -87,9 +87,7 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
       // spaces are ignored
     }
 
-    console.log('before map', JSON.stringify(rawCombo, null, 2))
     const combo = rawCombo.map((s) => s.map((u) => u.map((k) => k.join(''))))
-    console.log('after map', JSON.stringify(combo, null, 2))
     KeyComboState._parseCache[keyComboStr] = combo
     return combo
   }
