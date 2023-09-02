@@ -9,6 +9,8 @@ import {
 import { Handler, HandlerState, KeyEvent } from './handler-state'
 import { KeyComboEvent, KeyComboState } from './key-combo-state'
 
+export const defaultSequenceTimeout = 1000
+
 export type OnActiveEventBinder = (handler: () => void) => (() => void) | void
 export type OnKeyEventBinder<OriginalEvent, KeyEventProps> = (
   handler: (event: KeyEvent<OriginalEvent, KeyEventProps>) => void,
@@ -57,6 +59,8 @@ export class Keystrokes<
   KeyEventProps = MaybeBrowserKeyEventProps<OriginalEvent>,
   KeyComboEventProps = MaybeBrowserKeyComboEventProps<OriginalEvent>,
 > {
+  sequenceTimeout: number
+
   private _isActive: boolean
 
   private _unbinder: (() => void) | undefined
@@ -101,6 +105,8 @@ export class Keystrokes<
       KeyComboEventProps
     > = {},
   ) {
+    this.sequenceTimeout = defaultSequenceTimeout
+
     this._isActive = true
 
     this._onActiveBinder = () => {}
@@ -281,7 +287,7 @@ export class Keystrokes<
       )
     }
     const keyComboState = this._watchedKeyComboStates[keyCombo]
-    keyComboState.updateState(this._activeKeyPresses)
+    keyComboState.updateState(this._activeKeyPresses, this.sequenceTimeout)
     return keyComboState
   }
 
@@ -351,7 +357,7 @@ export class Keystrokes<
 
   private _updateKeyComboStates() {
     for (const keyComboState of this._keyComboStatesArray)
-      keyComboState.updateState(this._activeKeyPresses)
+      keyComboState.updateState(this._activeKeyPresses, this.sequenceTimeout)
   }
 
   private _tryReleaseSelfReleasingKeys() {

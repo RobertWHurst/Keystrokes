@@ -3,7 +3,6 @@ import { HandlerState } from './handler-state'
 import { KeyPress, KeyComboEventMapper } from './keystrokes'
 
 // const sequenceTimeout = 1000 * 2 // 2 seconds
-const sequenceTimeout = Infinity
 
 export type KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps> =
   KeyComboEventProps & {
@@ -142,13 +141,12 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     KeyEventProps,
     KeyComboEventProps
   >
-
-  private _movingToNextSequenceAt: number = 0
-  private _sequenceIndex: number = 0
-  private _unitIndex: number = 0
-  private _lastActiveKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[][] = []
-  private _lastActiveKeyCount: number = 0
-  private _isPressedWithFinalUnit: Set<string> | null = null
+  private _movingToNextSequenceAt: number
+  private _sequenceIndex: number
+  private _unitIndex: number
+  private _lastActiveKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[][]
+  private _lastActiveKeyCount: number
+  private _isPressedWithFinalUnit: Set<string> | null
 
   constructor(
     keyCombo: string,
@@ -165,6 +163,12 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     this._parsedKeyCombo = KeyComboState.parseKeyCombo(keyCombo)
     this._handlerState = new HandlerState(handler)
     this._keyComboEventMapper = keyComboEventMapper
+    this._movingToNextSequenceAt = 0
+    this._sequenceIndex = 0
+    this._unitIndex = 0
+    this._lastActiveKeyPresses = []
+    this._lastActiveKeyCount = 0
+    this._isPressedWithFinalUnit = null
   }
 
   isOwnHandler(
@@ -190,7 +194,10 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     this._isPressedWithFinalUnit = null
   }
 
-  updateState(activeKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[]) {
+  updateState(
+    activeKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[],
+    sequenceTimeout: number,
+  ) {
     const activeKeysCount = activeKeyPresses.length
     const hasReleasedKeys = activeKeysCount < this._lastActiveKeyCount
     this._lastActiveKeyCount = activeKeysCount
