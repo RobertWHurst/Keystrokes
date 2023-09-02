@@ -2,6 +2,9 @@ import type { KeyEvent, Handler } from './handler-state'
 import { HandlerState } from './handler-state'
 import { KeyPress, KeyComboEventMapper } from './keystrokes'
 
+// const sequenceTimeout = 1000 * 2 // 2 seconds
+const sequenceTimeout = Infinity
+
 export type KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps> =
   KeyComboEventProps & {
     keyCombo: string
@@ -14,62 +17,82 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
   private static _normalizationCache: Record<string, string> = {}
 
   static parseKeyCombo(keyComboStr: string) {
-    if (KeyComboState._parseCache[keyComboStr]) {
+    if (KeyComboState._parseCache[keyComboStr])
       return KeyComboState._parseCache[keyComboStr]
-    }
 
     const s = keyComboStr.toLowerCase()
 
     // operator
     let o = ''
 
-    // unit
-    let k: string[] = []
+    // key
+    let key: string[] = []
 
-    // group
-    let x: string[][] = [k]
+    // unit
+    let unit: string[][] = [key]
 
     // sequence
-    let y: string[][][] = [x]
+    let sequence: string[][][] = [unit]
 
     // combo
-    const z: string[][][][] = [y]
+    const rawCombo: string[][][][] = [sequence]
 
     let isEscaped = false
 
     for (let i = 0; i < keyComboStr.length; i += 1) {
+      // begin escape
       if (s[i] === '\\') {
         isEscaped = true
-      } else if ((s[i] === '+' || s[i] === '>' || s[i] === ',') && !isEscaped) {
-        if (o) {
-          // TODO: Nice error message
-        }
+      }
+
+      // an non-escaped operator
+      else if ((s[i] === '+' || s[i] === '>' || s[i] === ',') && !isEscaped) {
+        if (o) throw new Error('cannot have two operators in a row')
         o = s[i]
-      } else if (s[i].match(/[^\s]/)) {
+      }
+
+      // any character that is not a space
+      else if (s[i].match(/[^\s]/)) {
+        // if we had an operator in the last iteration then apply it
         if (o) {
+          // start the next sequence
           if (o === ',') {
-            k = []
-            x = [k]
-            y = [x]
-            z.push(y)
-          } else if (o === '>') {
-            k = []
-            x = [k]
-            y.push(x)
-          } else if (o === '+') {
-            k = []
-            x.push(k)
+            key = []
+            unit = [key]
+            sequence = [unit]
+            rawCombo.push(sequence)
+          }
+
+          // start the next unit
+          else if (o === '>') {
+            key = []
+            unit = [key]
+            sequence.push(unit)
+          }
+
+          // start the next key
+          else if (o === '+') {
+            key = []
+            unit.push(key)
           }
           o = ''
         }
+
+        // clear escape
         isEscaped = false
-        k.push(s[i])
+
+        // add the character to the current key
+        key.push(s[i])
       }
+
+      // spaces are ignored
     }
 
-    const sequences = z.map((y) => y.map((x) => x.map((k) => k.join(''))))
-    KeyComboState._parseCache[keyComboStr] = sequences
-    return sequences
+    console.log('before map', JSON.stringify(rawCombo, null, 2))
+    const combo = rawCombo.map((s) => s.map((u) => u.map((k) => k.join(''))))
+    console.log('after map', JSON.stringify(combo, null, 2))
+    KeyComboState._parseCache[keyComboStr] = combo
+    return combo
   }
 
   static stringifyKeyCombo(keyCombo: string[][][]) {
@@ -79,15 +102,9 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
           .map((u) =>
             u
               .map((k) => {
-                if (k === '+') {
-                  return '\\+'
-                }
-                if (k === '>') {
-                  return '\\>'
-                }
-                if (k === ',') {
-                  return '\\,'
-                }
+                if (k === '+') return '\\+'
+                if (k === '>') return '\\>'
+                if (k === ',') return '\\,'
                 return k
               })
               .join('+'),
@@ -120,14 +137,18 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
   private _handlerState: HandlerState<
     KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>
   >
-  private _lastActiveKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[][]
-  private _isPressedWithFinalUnit: Set<string> | null
-  private _sequenceIndex: number
   private _keyComboEventMapper: KeyComboEventMapper<
     OriginalEvent,
     KeyEventProps,
     KeyComboEventProps
   >
+
+  private _movingToNextSequenceAt: number = 0
+  private _sequenceIndex: number = 0
+  private _unitIndex: number = 0
+  private _lastActiveKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[][] = []
+  private _lastActiveKeyCount: number = 0
+  private _isPressedWithFinalUnit: Set<string> | null = null
 
   constructor(
     keyCombo: string,
@@ -144,9 +165,6 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     this._parsedKeyCombo = KeyComboState.parseKeyCombo(keyCombo)
     this._handlerState = new HandlerState(handler)
     this._keyComboEventMapper = keyComboEventMapper
-    this._lastActiveKeyPresses = []
-    this._isPressedWithFinalUnit = null
-    this._sequenceIndex = 0
   }
 
   isOwnHandler(
@@ -172,61 +190,115 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     this._isPressedWithFinalUnit = null
   }
 
-  updateState(activeKeys: KeyPress<OriginalEvent, KeyEventProps>[]) {
+  updateState(activeKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[]) {
+    const activeKeysCount = activeKeyPresses.length
+    const hasReleasedKeys = activeKeysCount < this._lastActiveKeyCount
+    this._lastActiveKeyCount = activeKeysCount
+
     const sequence = this._parsedKeyCombo[this._sequenceIndex]
+    const previousUnits = sequence.slice(0, this._unitIndex)
+    const remainingUnits = sequence.slice(this._unitIndex)
 
-    // ensure all sequence keys are pressed
+    const reset = () => {
+      this._movingToNextSequenceAt = 0
+      this._sequenceIndex = 0
+      this._unitIndex = 0
+      this._lastActiveKeyPresses.length = 0
+
+      // In the case of key combos that are used by checkKeyCombo, we need to
+      // clear the final unit for it because the executeReleased will not be
+      // called.
+      if (this._handlerState.isEmpty) {
+        this._isPressedWithFinalUnit = null
+      }
+    }
+
     let activeKeyIndex = 0
-    for (const unit of sequence) {
-      let unitEndIndex = activeKeyIndex
-      for (const key of unit) {
-        let foundKey = false
-        for (let i = activeKeyIndex; i < activeKeys.length; i += 1) {
-          const activeKey = activeKeys[i]
-          if (key === activeKey.key) {
-            if (i > unitEndIndex) {
-              unitEndIndex = i
-            }
-            foundKey = true
-            break
-          }
-        }
-        if (!foundKey) {
-          if (this._handlerState.isEmpty) {
-            this._isPressedWithFinalUnit = null
-          }
-          return
-        }
-      }
-      activeKeyIndex = unitEndIndex
-    }
 
-    // ensure all active keys are part of sequence
-    for (const activeKey of activeKeys) {
-      let foundActiveKey = false
-      for (const unit of sequence) {
-        for (const key of unit) {
-          if (activeKey.key === key) {
-            foundActiveKey = true
-            break
-          }
-        }
-      }
-      if (!foundActiveKey) {
-        this._lastActiveKeyPresses.length = 0
-        this._sequenceIndex = 0
-        return
-      }
-    }
-
-    this._lastActiveKeyPresses[this._sequenceIndex] = activeKeys.slice(0)
-
-    if (this._sequenceIndex < this._parsedKeyCombo.length - 1) {
+    // if we do not have new keys pressed, and we are not advancing to the next
+    // sequence, then we reset. If we are advancing to the next sequence but
+    // the timeout has passed then we reset. If no keys are pressed then we
+    // advance to the next sequence.
+    if (hasReleasedKeys) {
+      if (this._movingToNextSequenceAt === 0) return reset()
+      if (this._movingToNextSequenceAt + sequenceTimeout < Date.now()) return
+      if (activeKeysCount !== 0) return
+      this._movingToNextSequenceAt = 0
       this._sequenceIndex += 1
+      this._unitIndex = 0
       return
     }
 
-    this._sequenceIndex = 0
+    // go through each each previous unit. If any are no longer pressed then
+    // we reset to the beginning of the combo.
+    for (const previousUnit of previousUnits) {
+      for (const key of previousUnit) {
+        let keyFound = false
+        for (
+          let i = activeKeyIndex;
+          i < activeKeyPresses.length &&
+          i < activeKeyIndex + previousUnit.length;
+          i += 1
+        ) {
+          if (activeKeyPresses[i].key === key) {
+            keyFound = true
+            break
+          }
+        }
+
+        if (!keyFound) return reset()
+      }
+      activeKeyIndex += previousUnit.length
+    }
+
+    // If we are already marked to move to the next sequence then we will stop
+    // here. When moving to the next sequence we only need to make sure that
+    // the keys in the current sequence are still pressed.
+    if (this._movingToNextSequenceAt !== 0) return
+
+    // loop through the remaining units. For each unit that is pressed, advance
+    // the unit counter. If all units are pressed then advance the sequence.
+    for (const unit of remainingUnits) {
+      for (const key of unit) {
+        let keyFound = false
+        for (
+          let i = activeKeyIndex;
+          i < activeKeyPresses.length && i < activeKeyIndex + unit.length;
+          i += 1
+        ) {
+          if (activeKeyPresses[i].key === key) {
+            keyFound = true
+            break
+          }
+        }
+
+        // if the unit is incomplete do nothing, the user could still press
+        // the remaining keys.
+        if (!keyFound) return
+      }
+      this._unitIndex += 1
+      activeKeyIndex += unit.length
+    }
+
+    // Now that we have completed the sequence we need to check for overshoot.
+    // If there are any keys pressed that are not in the current sequence then
+    // we reset.
+    if (activeKeyIndex < activeKeysCount - 1) return reset()
+
+    // store the active key presses for the sequence so they can be used in
+    // the event.
+    this._lastActiveKeyPresses[this._sequenceIndex] = activeKeyPresses.slice(0)
+
+    // Now that we know the sequence is complete we need to check to see if
+    // we can advance to the next sequence. If there is no sequence to advance
+    // to then we set the final unit.
+    if (this._sequenceIndex < this._parsedKeyCombo.length - 1) {
+      this._movingToNextSequenceAt = Date.now()
+      return
+    }
+
+    // Setting the final unit marks the combo as active. It also allows for
+    // something to match key repeat against.
     this._isPressedWithFinalUnit = new Set(sequence[sequence.length - 1])
   }
 

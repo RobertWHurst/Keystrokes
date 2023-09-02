@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
+import { Keystrokes } from '../keystrokes'
+import { KeyComboEvent, KeyEvent, createTestKeystrokes } from '..'
 import {
   BrowserKeyComboEventProps,
   BrowserKeyEventProps,
-  Keystrokes,
-} from '../keystrokes'
-import { KeyComboEvent, KeyEvent, createTestKeystrokes } from '..'
+} from '../browser-bindings'
 
 describe('new Keystrokes(options)', () => {
   it('will automatically release self-releasing keys', () => {
@@ -434,6 +434,32 @@ describe('new Keystrokes(options)', () => {
 
       expect(handler.onReleased).toBeCalledTimes(1)
     })
+
+    it('cancels a combo if an unexpected character is pressed before starting next sequence', () => {
+      const keystrokes = createTestKeystrokes()
+
+      const handler = {
+        onPressed: vi.fn(),
+        onReleased: vi.fn(),
+      }
+      keystrokes.bindKeyCombo('a>b,c>d', handler)
+
+      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'b' })
+      keystrokes.release({ key: 'a' })
+      keystrokes.release({ key: 'b' })
+
+      keystrokes.press({ key: 'x' })
+      keystrokes.release({ key: 'x' })
+
+      keystrokes.press({ key: 'c' })
+      keystrokes.press({ key: 'd' })
+      keystrokes.release({ key: 'c' })
+      keystrokes.release({ key: 'd' })
+
+      expect(handler.onPressed).toBeCalledTimes(0)
+      expect(handler.onReleased).toBeCalledTimes(0)
+    })
   })
 
   describe('#unbindKeyCombo(keyCombo, handler?)', () => {
@@ -503,7 +529,7 @@ describe('new Keystrokes(options)', () => {
       keystrokes.press({ key: 'a' })
       keystrokes.press({ key: 'b' })
 
-      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(1)
+      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(0)
 
       keystrokes.release({ key: 'a' })
       keystrokes.release({ key: 'b' })
@@ -513,7 +539,7 @@ describe('new Keystrokes(options)', () => {
       keystrokes.press({ key: 'd' })
       keystrokes.press({ key: 'c' })
 
-      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(2)
+      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(1)
 
       keystrokes.release({ key: 'c' })
       keystrokes.release({ key: 'd' })
@@ -522,7 +548,7 @@ describe('new Keystrokes(options)', () => {
 
       keystrokes.press({ key: 'e' })
 
-      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(3)
+      expect(keystrokes.checkKeyComboSequenceIndex(keyCombo)).toBe(2)
 
       keystrokes.release({ key: 'e' })
 

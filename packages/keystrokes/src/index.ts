@@ -8,16 +8,13 @@ export type {
   KeystrokesOptions,
 } from './keystrokes'
 
-import { KeyEvent } from './handler-state'
-import { KeyComboState } from './key-combo-state'
 import {
-  Keystrokes,
-  KeystrokesOptions,
   MaybeBrowserKeyComboEventProps,
   MaybeBrowserKeyEventProps,
-} from './keystrokes'
-
-export { Keystrokes } from './keystrokes'
+} from './browser-bindings'
+import { KeyEvent } from './handler-state'
+import { KeyComboState } from './key-combo-state'
+import { Keystrokes, KeystrokesOptions } from './keystrokes'
 
 let globalKeystrokesOptions: KeystrokesOptions
 let globalKeystrokes: Keystrokes
@@ -27,9 +24,7 @@ export const setGlobalKeystrokes = (keystrokes?: Keystrokes) => {
 }
 
 export const getGlobalKeystrokes = () => {
-  if (!globalKeystrokes) {
-    setGlobalKeystrokes()
-  }
+  if (!globalKeystrokes) setGlobalKeystrokes()
   return globalKeystrokes
 }
 
