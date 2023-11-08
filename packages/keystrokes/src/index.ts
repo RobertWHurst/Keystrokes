@@ -1,11 +1,31 @@
 /// <reference types="vite/client" />
 
-export type { KeyEvent, HandlerFn, HandlerObj, Handler } from './handler-state'
-export type { KeyComboEvent } from './key-combo-state'
-export type {
+export {
+  BrowserKeyEventProps,
+  BrowserKeyComboEventProps,
+  MaybeBrowserKeyComboEventProps,
+  browserOnActiveBinder,
+  browserOnInactiveBinder,
+  browserOnKeyPressedBinder,
+  browserOnKeyReleasedBinder,
+} from './browser-bindings'
+export {
+  KeyEvent,
+  HandlerFn,
+  HandlerObj,
+  Handler,
+  HandlerState,
+} from './handler-state'
+export { KeyComboEvent, KeyComboState } from './key-combo-state'
+export {
+  defaultSequenceTimeout,
   OnActiveEventBinder,
   OnKeyEventBinder,
+  KeyComboEventMapper,
+  KeyPress,
   KeystrokesOptions,
+  BindEnvironmentOptions,
+  Keystrokes,
 } from './keystrokes'
 
 import {
