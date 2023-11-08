@@ -2,6 +2,8 @@
 
 export {
   BrowserKeyEventProps,
+  BrowserKeyEvent,
+  BrowserKeyComboEvent,
   BrowserKeyComboEventProps,
   MaybeBrowserKeyComboEventProps,
   browserOnActiveBinder,

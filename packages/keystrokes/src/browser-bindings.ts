@@ -1,9 +1,22 @@
+import { KeyEvent } from './handler-state'
+import { KeyComboEvent } from './key-combo-state'
 import { OnActiveEventBinder, OnKeyEventBinder } from './keystrokes'
 
 export type BrowserKeyEventProps = {
   composedPath(): EventTarget[]
   preventDefault(): void
 }
+
+// These types are not used by the library internally, but are here to
+// make it easier for users to work with the browser bindings in typescript
+// projects.
+export type BrowserKeyEvent = KeyEvent<KeyboardEvent, BrowserKeyEventProps>
+export type BrowserKeyComboEvent = KeyComboEvent<
+  KeyboardEvent,
+  BrowserKeyEventProps,
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  {}
+>
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type BrowserKeyComboEventProps = {}
