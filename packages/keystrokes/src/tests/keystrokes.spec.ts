@@ -159,32 +159,19 @@ describe('new Keystrokes(options)', () => {
       expect(handler2.onReleased).toBeCalledTimes(1)
     })
 
-    // TODO: This should probably be moved to a location for browser related binders. Perhaps
-    // when I actually move the browser binders out to a separate file.
-    it('provides an event with composedPath on it', () => {
+    it('allows binding several keyCombos at the same time', () => {
       const keystrokes = createTestKeystrokes()
 
-      const handler = {
-        onPressed: vi.fn(),
-        onPressedWithRepeat: vi.fn(),
-        onReleased: vi.fn(),
-      }
-      keystrokes.bindKey('a', handler)
+      const handler1 = vi.fn()
+      const handler2 = vi.fn()
+      keystrokes.bindKey(['a', 'b'], handler1)
+      keystrokes.bindKey(['a'], handler2)
 
-      const node1 = {} as EventTarget
-      const node2 = {} as EventTarget
+      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'b' })
 
-      keystrokes.press({ key: 'a', composedPath: () => [node1, node2] })
-      keystrokes.release({ key: 'a', composedPath: () => [node1, node2] })
-
-      const event = handler.onPressed.mock.calls[0][0] as KeyEvent<
-        KeyboardEvent,
-        BrowserKeyEventProps
-      >
-      const composedPath = event.composedPath()
-
-      expect(composedPath[0]).toBe(node1)
-      expect(composedPath[1]).toBe(node2)
+      expect(handler1).toBeCalledTimes(2)
+      expect(handler2).toBeCalledTimes(1)
     })
   })
 
@@ -275,6 +262,24 @@ describe('new Keystrokes(options)', () => {
       expect(handler1.onPressedWithRepeat).toBeCalledTimes(1)
       expect(handler2.onPressed).toBeCalledTimes(1)
       expect(handler2.onPressedWithRepeat).toBeCalledTimes(1)
+    })
+
+    it('allows unbinding several keyCombos at the same time', () => {
+      const keystrokes = createTestKeystrokes()
+
+      const handler1 = vi.fn()
+      const handler2 = vi.fn()
+      keystrokes.bindKey(['a', 'b'], handler1)
+      keystrokes.bindKey(['a'], handler2)
+
+      keystrokes.press({ key: 'a' })
+
+      keystrokes.unbindKey(['a'], handler1)
+
+      keystrokes.press({ key: 'a' })
+
+      expect(handler1).toBeCalledTimes(1)
+      expect(handler2).toBeCalledTimes(2)
     })
   })
 

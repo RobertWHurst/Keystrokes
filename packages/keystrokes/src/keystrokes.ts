@@ -133,9 +133,14 @@ export class Keystrokes<
   }
 
   bindKey(
-    key: string,
+    key: string | string[],
     handler: Handler<KeyEvent<OriginalEvent, KeyEventProps>>,
   ) {
+    if (typeof key === 'object') {
+      for (const k of key) this.bindKey(k, handler)
+      return
+    }
+
     key = key.toLowerCase()
 
     const handlerState = new HandlerState(handler)
@@ -144,9 +149,14 @@ export class Keystrokes<
   }
 
   unbindKey(
-    key: string,
+    key: string | string[],
     handler?: Handler<KeyEvent<OriginalEvent, KeyEventProps>>,
   ) {
+    if (typeof key === 'object') {
+      for (const k of key) this.unbindKey(k, handler)
+      return
+    }
+
     key = key.toLowerCase()
 
     const handlerStates = this._handlerStates[key]
@@ -165,11 +175,16 @@ export class Keystrokes<
   }
 
   bindKeyCombo(
-    keyCombo: string,
+    keyCombo: string | string[],
     handler: Handler<
       KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>
     >,
   ) {
+    if (typeof keyCombo === 'object') {
+      for (const k of keyCombo) this.bindKeyCombo(k, handler)
+      return
+    }
+
     keyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
 
     const keyComboState = new KeyComboState<
@@ -184,11 +199,16 @@ export class Keystrokes<
   }
 
   unbindKeyCombo(
-    keyCombo: string,
+    keyCombo: string | string[],
     handler?: Handler<
       KeyComboEvent<OriginalEvent, KeyEventProps, KeyComboEventProps>
     >,
   ) {
+    if (typeof keyCombo === 'object') {
+      for (const k of keyCombo) this.unbindKeyCombo(k, handler)
+      return
+    }
+
     keyCombo = KeyComboState.normalizeKeyCombo(keyCombo)
 
     const keyComboStates = this._keyComboStates[keyCombo]
