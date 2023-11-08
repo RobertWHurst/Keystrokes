@@ -465,6 +465,24 @@ describe('new Keystrokes(options)', () => {
       expect(handler.onPressed).toBeCalledTimes(0)
       expect(handler.onReleased).toBeCalledTimes(0)
     })
+
+    it('will correctly handle escaped characters', () => {
+      const keystrokes = createTestKeystrokes()
+
+      const handler = {
+        onPressed: vi.fn(),
+        onPressedWithRepeat: vi.fn(),
+        onReleased: vi.fn(),
+      }
+      keystrokes.bindKeyCombo('a + \\+', handler)
+
+      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: '+' })
+      keystrokes.release({ key: 'a' })
+      keystrokes.release({ key: '+' })
+
+      expect(handler.onPressed).toBeCalledTimes(1)
+    })
   })
 
   describe('#unbindKeyCombo(keyCombo, handler?)', () => {
