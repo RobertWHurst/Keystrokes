@@ -82,6 +82,15 @@ used as a combo operator, you will need to escape the character using backslash.
 When using bindKeyCombo you will need to provide a combo expression. Combo
 expressions are made of units, and sequences.
 
+Here is a table of operators:
+
+Operator | Description
+---------|----------------------------------------------------
+`+`      | Key name separator - separates keys in a unit
+`>`      | unit separator - separates units in a sequence
+`,`      | sequence separator - separates sequences in a combo
+`\`      | Escapes a key name that is the same as an operator
+
 ### Combo Unit
 A combo unit is a grouping of key names separated by the `+` operator. Keys in
 a unit can be pressed in any order. One or more units make up a sequence, and
