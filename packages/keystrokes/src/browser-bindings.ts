@@ -63,7 +63,7 @@ const getNav = () =>
 // NOTE: Because MacOS does not fire keyup events for the Command key, we need
 // to track the state of the Command key ourselves so we can release it
 // ourselves.
-const isMacOs = () => getNav().userAgent.toLocaleLowerCase().includes('mac')
+const isMacOs = () => getNav().userAgent.toLowerCase().includes('mac')
 let isMacOsCommandKeyPressed = false
 
 const maybeHandleMacOsCommandKeyPressed = (event: KeyboardEvent) => {
