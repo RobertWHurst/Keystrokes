@@ -67,21 +67,53 @@ keystrokes.bindKey('a', () => console.log('you pressed a'))
 
 ## Available Key Names
 
-Keystrokes uses the standard values for the [KeyboardEvent.key][key] property.
+Keystrokes is environment agnostic, but by default will use built-in browser
+bindings. These bindings use the standard values for the
+[KeyboardEvent.key][key] property.
 
 To see what key names can be used in your bindings see MDN's
 [table of key values][key-names].
 
+Note that if you need to bind a combo containing a key name like `+` which is
+used as a combo operator, you will need to escape the character using backslash.
+
+## Available Combo Operators
+
+When using bindKeyCombo you will need to provide a combo expression. Combo
+expressions are made of units, and sequences.
+
+### Combo Unit
+A combo unit is a grouping of key names separated by the `+` operator. Keys in
+a unit can be pressed in any order. One or more units make up a sequence, and
+are separated by the `>` operator.
+
+In order for a unit to be satisfied all keys in the unit must be pressed, along
+with keys from units from earlier in the sequence. Units must be satisfied in
+order. For example the combo `a + b > c` can only be satified if unit `a + b`
+is pressed, then unit `c` (without releasing a and b).
+
+### Combo Sequence
+
+Sequences are made up of units and are separated by the `,` operator. They
+enable the creation of multi-step combos. For example `a + b > c, x > y` is a
+combo made up of two sequences - `a + b > c` and `x > y`. Each of these contain
+two units `a + b` and `c` for the first, and `x` and `y` for the second.
+In order to satify this combo, a and b must be pressed (in any order), then
+c, then all must be released, then x, then y.
+
 ## Binding Keys and Key Combos
 
-As in the example at the top of the page, Keystrokes exports a bindKey and
-bindKeyCombo function. These function will bind a handler function, or handler
-object to a key or key combo.
+Keystrokes exports a bindKey and bindKeyCombo function. These function will bind
+a handler function, or handler object to a key or key combo.
 
-The key names used in your bindings is determined by the environment you are
-using Keystrokes in. They are always case insensitive. The default behavior,
-intended for browser environments, is to use the value of the key property from
-keyboard events. You get get a list of valid [key names here][key-names].
+To bind a key you simply need to pass a key name to bindKey along with a
+handler function or object. As mentioned previously, the key names available
+depend on the bindings you are using. By default browser bindings are used, and
+these recognize the standard values for the [KeyboardEvent.key][key] property.
+
+To bind combos you can pass a combo expression to bindKeyCombo. bindKeyCombo,
+like bindKey, will work with key names recognized by the bindings assigned to
+Keystrokes, and as mentioned these are browser bindings by default.
 
 ```js
 import { bindKey, bindKeyCombo } from '@rwh/keystrokes'
