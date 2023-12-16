@@ -74,6 +74,17 @@ bindings. These bindings use the standard values for the
 To see what key names can be used in your bindings see MDN's
 [table of key values][key-names].
 
+It is also possible to use [KeyboardEvent.code][code] should you care more
+about the key's location on the keyboard than it's value. To use code instead
+of key, prepend the key name with `@`. For example `@KeyW` binds the
+physical key labeled `W` on a QWERTY keyboard, `Z` on a AZERTY keyboard, and
+`<` on a Dvorak keyboard - the same physical key by position on all of these
+keyboards.
+
+To see what code names can be used in your bindings see MDN's
+[table of code values][code-names]. Don't forget to prepend code names with `@`
+when using them in bindings.
+
 Note that if you need to bind a combo containing a key name like `+` which is
 used as a combo operator, you will need to escape the character using backslash.
 
@@ -92,6 +103,7 @@ Operator | Description
 `\`      | Escapes a key name that is the same as an operator
 
 ### Combo Unit
+
 A combo unit is a grouping of key names separated by the `+` operator. Keys in
 a unit can be pressed in any order. One or more units make up a sequence, and
 are separated by the `>` operator.
@@ -510,5 +522,7 @@ Thank you!
 [unpkg]: https://unpkg.com/browse/@rwh/keystrokes@latest/
 [key-names]: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
 [key]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
+[code]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code
+[code-names]: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values
 [bug-report]: https://github.com/RobertWHurst/Keystrokes/issues/new?template=bug_report.md
 [feature-request]: https://github.com/RobertWHurst/Keystrokes/issues/new?template=feature_request.md
