@@ -132,12 +132,21 @@ export const browserOnKeyPressedBinder: OnKeyEventBinder<
       addActiveKeyEvent(e)
       maybeHandleMacOsCommandKeyPressed(e)
 
-      return handler({
+      handler({
         key: e.key,
         originalEvent: e,
         composedPath: () => e.composedPath(),
         preventDefault: () => e.preventDefault(),
       })
+
+      if (e.code) {
+        handler({
+          key: `@${e.code}`,
+          originalEvent: e,
+          composedPath: () => e.composedPath(),
+          preventDefault: () => e.preventDefault(),
+        })
+      }
     }
     getDoc().addEventListener('keydown', handlerWrapper)
     return () => getDoc().removeEventListener('keydown', handlerWrapper)
@@ -153,12 +162,21 @@ export const browserOnKeyReleasedBinder: OnKeyEventBinder<
       removeActiveKeyEvent(e)
       maybeHandleMacOsCommandKeyReleased(e)
 
-      return handler({
+      handler({
         key: e.key,
         originalEvent: e,
         composedPath: () => e.composedPath(),
         preventDefault: () => e.preventDefault(),
       })
+
+      if (e.code) {
+        handler({
+          key: `@${e.code}`,
+          originalEvent: e,
+          composedPath: () => e.composedPath(),
+          preventDefault: () => e.preventDefault(),
+        })
+      }
     }
     getDoc().addEventListener('keyup', handlerWrapper)
     return () => getDoc().removeEventListener('keyup', handlerWrapper)

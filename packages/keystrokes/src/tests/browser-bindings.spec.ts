@@ -63,7 +63,7 @@ describe('browserOnInactiveBinder(handler) -> void', () => {
 
     const keydownEvent = new KeyboardEvent('keydown', {
       key: 'a',
-      code: 'a',
+      code: 'KeyA',
       bubbles: true,
       cancelable: true,
     })
@@ -112,7 +112,7 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
 
     const keydownEvent = new KeyboardEvent('keydown', {
       key: 'a',
-      code: 'a',
+      code: 'KeyA',
       bubbles: true,
       cancelable: true,
     })
@@ -128,6 +128,37 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
       expect.objectContaining({
         composedPath: expect.any(Function),
         key: 'a',
+        originalEvent: keydownEvent,
+      }),
+    )
+
+    vi.unstubAllGlobals()
+  })
+
+  it('correctly binds the given handler to document keydown with a code', () => {
+    const addEventListenerStub = vi.fn()
+    const handlerStub = vi.fn()
+    vi.spyOn(document, 'addEventListener').mockImplementation(
+      addEventListenerStub,
+    )
+
+    browserOnKeyPressedBinder(handlerStub)
+
+    const handler = addEventListenerStub.mock.calls[0][1]
+
+    const keydownEvent = new KeyboardEvent('keydown', {
+      key: 'a',
+      code: 'KeyA',
+      bubbles: true,
+      cancelable: true,
+    })
+    handler(keydownEvent)
+
+    expect(handlerStub).nthCalledWith(
+      2,
+      expect.objectContaining({
+        composedPath: expect.any(Function),
+        key: '@KeyA',
         originalEvent: keydownEvent,
       }),
     )
@@ -161,7 +192,7 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
       })
       const aKeydownEvent = new KeyboardEvent('keydown', {
         key: 'a',
-        code: 'a',
+        code: 'KeyA',
         bubbles: true,
         cancelable: true,
       })
@@ -195,7 +226,7 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
         }),
       )
       expect(keyPressedHandlerStub).nthCalledWith(
-        2,
+        3,
         expect.objectContaining({
           composedPath: expect.any(Function),
           key: 'a',
@@ -235,7 +266,7 @@ describe('browserOnKeyReleased(handler) -> void', () => {
 
     const keyupEvent = new KeyboardEvent('keyup', {
       key: 'a',
-      code: 'a',
+      code: 'KeyA',
       bubbles: true,
       cancelable: true,
     })
@@ -252,9 +283,5 @@ describe('browserOnKeyReleased(handler) -> void', () => {
     )
 
     vi.unstubAllGlobals()
-  })
-
-  describe('/macOS Specific Behavior/', () => {
-    it('intercepts and blocks command key release events for command', () => {})
   })
 })
