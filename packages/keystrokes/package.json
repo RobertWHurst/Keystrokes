@@ -8,6 +8,7 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/keystrokes.js",
       "require": "./dist/keystrokes.umd.cjs"
     }
