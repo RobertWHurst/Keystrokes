@@ -315,7 +315,11 @@ export class Keystrokes<
   private _handleKeyPress(event: KeyEvent<OriginalEvent, KeyEventProps>) {
     if (!this._isActive) return
 
-    event = { ...event, key: event.key.toLowerCase() }
+    event = {
+      ...event,
+      key: event.key.toLowerCase(),
+      aliases: event.aliases?.map((a) => a.toLowerCase()) ?? [],
+    }
 
     const remappedKey = this._keyRemap[event.key]
     if (remappedKey) event.key = remappedKey
@@ -351,7 +355,11 @@ export class Keystrokes<
   }
 
   private _handleKeyRelease(event: KeyEvent<OriginalEvent, KeyEventProps>) {
-    event = { ...event, key: event.key.toLowerCase() }
+    event = {
+      ...event,
+      key: event.key.toLowerCase(),
+      aliases: event.aliases?.map((a) => a.toLowerCase()) ?? [],
+    }
 
     const remappedKey = this._keyRemap[event.key]
     if (remappedKey) event.key = remappedKey

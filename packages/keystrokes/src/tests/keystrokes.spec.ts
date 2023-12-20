@@ -392,7 +392,7 @@ describe('new Keystrokes(options)', () => {
       keystrokes.release({ key: 'd' })
 
       const event = handler.onPressed.mock.calls[0][0] as KeyComboEvent<
-        KeyboardEvent,
+        keyboardEvent,
         BrowserKeyEventProps,
         BrowserKeyComboEventProps
       >
@@ -425,7 +425,7 @@ describe('new Keystrokes(options)', () => {
       keystrokes.release({ key: 'd' })
 
       const event = handler.onPressed.mock.calls[0][0] as KeyComboEvent<
-        KeyboardEvent,
+        keyboardEvent,
         BrowserKeyEventProps,
         BrowserKeyComboEventProps
       >
@@ -495,6 +495,57 @@ describe('new Keystrokes(options)', () => {
       keystrokes.release({ key: '+' })
 
       expect(handler.onPressed).toBeCalledTimes(1)
+    })
+
+    it.only('accepts a key combo made up of aliases and when that combo is satisfied the given handler is executed', () => {
+      const keystrokes = createTestKeystrokes()
+
+      const handler1 = {
+        onPressed: vi.fn(),
+        onPressedWithRepeat: vi.fn(),
+        onReleased: vi.fn(),
+      }
+      const handler2 = {
+        onPressed: vi.fn(),
+        onPressedWithRepeat: vi.fn(),
+        onReleased: vi.fn(),
+      }
+      keystrokes.bindKeyCombo('@keya,@keyb>@keyc+@keyd', handler1)
+      keystrokes.bindKeyCombo('@keya,@keyb>@keyc+@keyd', handler2)
+
+      keystrokes.press({ key: 'a', aliases: ['@keya'] })
+      keystrokes.press({ key: 'a', aliases: ['@keya'] })
+      keystrokes.release({ key: 'a', aliases: ['@keya'] })
+
+      keystrokes.press({ key: 'b', aliases: ['@keyb'] })
+      keystrokes.press({ key: 'b', aliases: ['@keyb'] })
+      keystrokes.press({ key: 'd', aliases: ['@keyd'] })
+      keystrokes.press({ key: 'd', aliases: ['@keyd'] })
+      keystrokes.press({ key: 'c', aliases: ['@keyc'] })
+      keystrokes.press({ key: 'c', aliases: ['@keyc'] })
+      keystrokes.release({ key: 'b', aliases: ['@keyb'] })
+      keystrokes.release({ key: 'c', aliases: ['@keyc'] })
+      keystrokes.release({ key: 'd', aliases: ['@keyd'] })
+
+      expect(handler1.onPressed).toBeCalledTimes(1)
+      expect(handler1.onPressedWithRepeat).toBeCalledTimes(2)
+      expect(handler1.onReleased).toBeCalledTimes(1)
+      expect(handler2.onPressed).toBeCalledTimes(1)
+      expect(handler2.onPressedWithRepeat).toBeCalledTimes(2)
+      expect(handler2.onReleased).toBeCalledTimes(1)
+
+      expect(handler1.onPressed).toBeCalledWith(
+        expect.objectContaining({
+          finalKeyEvent: expect.objectContaining({ key: 'c' }),
+          keyCombo: '@keya,@keyb>@keyc+@keyd',
+          keyEvents: expect.arrayContaining([
+            expect.objectContaining({ key: 'a' }),
+            expect.objectContaining({ key: 'b' }),
+            expect.objectContaining({ key: 'c' }),
+            expect.objectContaining({ key: 'd' }),
+          ]),
+        }),
+      )
     })
   })
 
