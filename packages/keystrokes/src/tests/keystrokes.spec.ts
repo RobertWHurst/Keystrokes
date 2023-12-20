@@ -392,7 +392,7 @@ describe('new Keystrokes(options)', () => {
       keystrokes.release({ key: 'd' })
 
       const event = handler.onPressed.mock.calls[0][0] as KeyComboEvent<
-        keyboardEvent,
+        KeyboardEvent,
         BrowserKeyEventProps,
         BrowserKeyComboEventProps
       >
@@ -425,7 +425,7 @@ describe('new Keystrokes(options)', () => {
       keystrokes.release({ key: 'd' })
 
       const event = handler.onPressed.mock.calls[0][0] as KeyComboEvent<
-        keyboardEvent,
+        KeyboardEvent,
         BrowserKeyEventProps,
         BrowserKeyComboEventProps
       >
