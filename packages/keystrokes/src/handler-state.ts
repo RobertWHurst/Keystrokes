@@ -1,5 +1,6 @@
 export type KeyEvent<OriginalEvent, KeyEventProps> = KeyEventProps & {
   key: string
+  aliases?: string[]
   originalEvent?: OriginalEvent
 }
 

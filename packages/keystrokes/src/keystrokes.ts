@@ -27,6 +27,7 @@ export type KeyComboEventMapper<
 
 export type KeyPress<OriginalEvent, KeyEventProps> = {
   key: string
+  aliases: Set<string>
   event: KeyEvent<OriginalEvent, KeyEventProps>
 }
 
@@ -317,8 +318,12 @@ export class Keystrokes<
     event = { ...event, key: event.key.toLowerCase() }
 
     const remappedKey = this._keyRemap[event.key]
-    if (remappedKey) {
-      event.key = remappedKey
+    if (remappedKey) event.key = remappedKey
+    if (event.aliases) {
+      for (let i = 0; i < event.aliases.length; i += 1) {
+        const remappedAlias = this._keyRemap[event.aliases[i]]
+        if (remappedAlias) event.aliases[i] = remappedAlias
+      }
     }
 
     const keyPressHandlerStates = this._handlerStates[event.key]
@@ -332,6 +337,7 @@ export class Keystrokes<
     } else {
       const keypress = {
         key: event.key,
+        aliases: new Set(event.aliases),
         event,
       }
       this._activeKeyMap.set(event.key, keypress)
@@ -348,8 +354,12 @@ export class Keystrokes<
     event = { ...event, key: event.key.toLowerCase() }
 
     const remappedKey = this._keyRemap[event.key]
-    if (remappedKey) {
-      event.key = remappedKey
+    if (remappedKey) event.key = remappedKey
+    if (event.aliases) {
+      for (let i = 0; i < event.aliases.length; i += 1) {
+        const remappedAlias = this._keyRemap[event.aliases[i]]
+        if (remappedAlias) event.aliases[i] = remappedAlias
+      }
     }
 
     const keyPressHandlerStates = this._handlerStates[event.key]

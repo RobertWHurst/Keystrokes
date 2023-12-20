@@ -134,19 +134,11 @@ export const browserOnKeyPressedBinder: OnKeyEventBinder<
 
       handler({
         key: e.key,
+        aliases: [`@${e.code}`],
         originalEvent: e,
         composedPath: () => e.composedPath(),
         preventDefault: () => e.preventDefault(),
       })
-
-      if (e.code) {
-        handler({
-          key: `@${e.code}`,
-          originalEvent: e,
-          composedPath: () => e.composedPath(),
-          preventDefault: () => e.preventDefault(),
-        })
-      }
     }
     getDoc().addEventListener('keydown', handlerWrapper)
     return () => getDoc().removeEventListener('keydown', handlerWrapper)
@@ -164,19 +156,11 @@ export const browserOnKeyReleasedBinder: OnKeyEventBinder<
 
       handler({
         key: e.key,
+        aliases: [`@${e.code}`],
         originalEvent: e,
         composedPath: () => e.composedPath(),
         preventDefault: () => e.preventDefault(),
       })
-
-      if (e.code) {
-        handler({
-          key: `@${e.code}`,
-          originalEvent: e,
-          composedPath: () => e.composedPath(),
-          preventDefault: () => e.preventDefault(),
-        })
-      }
     }
     getDoc().addEventListener('keyup', handlerWrapper)
     return () => getDoc().removeEventListener('keyup', handlerWrapper)

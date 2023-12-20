@@ -180,14 +180,22 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
   executePressed(event: KeyEvent<OriginalEvent, KeyEventProps>) {
     if (!this._isPressedWithFinalUnit?.has(event.key)) return
     this._handlerState.executePressed(
-      this._wrapEvent(this._lastActiveKeyPresses, { key: event.key, event }),
+      this._wrapEvent(this._lastActiveKeyPresses, {
+        key: event.key,
+        aliases: new Set(event.aliases),
+        event,
+      }),
     )
   }
 
   executeReleased(event: KeyEvent<OriginalEvent, KeyEventProps>) {
     if (!this._isPressedWithFinalUnit?.has(event.key)) return
     this._handlerState.executeReleased(
-      this._wrapEvent(this._lastActiveKeyPresses, { key: event.key, event }),
+      this._wrapEvent(this._lastActiveKeyPresses, {
+        key: event.key,
+        aliases: new Set(event.aliases),
+        event,
+      }),
     )
     this._isPressedWithFinalUnit = null
   }
@@ -245,7 +253,10 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
           i < activeKeyIndex + previousUnit.length;
           i += 1
         ) {
-          if (activeKeyPresses[i].key === key) {
+          if (
+            activeKeyPresses[i].key === key ||
+            activeKeyPresses[i].aliases.has(key)
+          ) {
             keyFound = true
             break
           }
@@ -271,7 +282,10 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
           i < activeKeyPresses.length && i < activeKeyIndex + unit.length;
           i += 1
         ) {
-          if (activeKeyPresses[i].key === key) {
+          if (
+            activeKeyPresses[i].key === key ||
+            activeKeyPresses[i].aliases.has(key)
+          ) {
             keyFound = true
             break
           }

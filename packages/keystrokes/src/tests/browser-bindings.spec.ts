@@ -155,10 +155,11 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
     handler(keydownEvent)
 
     expect(handlerStub).nthCalledWith(
-      2,
+      1,
       expect.objectContaining({
         composedPath: expect.any(Function),
-        key: '@KeyA',
+        key: 'a',
+        aliases: ['@KeyA'],
         originalEvent: keydownEvent,
       }),
     )
@@ -226,7 +227,7 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
         }),
       )
       expect(keyPressedHandlerStub).nthCalledWith(
-        3,
+        2,
         expect.objectContaining({
           composedPath: expect.any(Function),
           key: 'a',
