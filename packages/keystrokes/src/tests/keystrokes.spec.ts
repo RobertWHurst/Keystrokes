@@ -497,7 +497,7 @@ describe('new Keystrokes(options)', () => {
       expect(handler.onPressed).toBeCalledTimes(1)
     })
 
-    it.only('accepts a key combo made up of aliases and when that combo is satisfied the given handler is executed', () => {
+    it('accepts a key combo made up of aliases and when that combo is satisfied the given handler is executed', () => {
       const keystrokes = createTestKeystrokes()
 
       const handler1 = {
