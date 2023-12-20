@@ -320,6 +320,19 @@ describe('new Keystrokes(options)', () => {
       expect(handler2.onPressed).toBeCalledTimes(1)
       expect(handler2.onPressedWithRepeat).toBeCalledTimes(2)
       expect(handler2.onReleased).toBeCalledTimes(1)
+
+      expect(handler1.onPressed).toBeCalledWith(
+        expect.objectContaining({
+          finalKeyEvent: expect.objectContaining({ key: 'c' }),
+          keyCombo: 'a,b>c+d',
+          keyEvents: expect.arrayContaining([
+            expect.objectContaining({ key: 'a' }),
+            expect.objectContaining({ key: 'b' }),
+            expect.objectContaining({ key: 'c' }),
+            expect.objectContaining({ key: 'd' }),
+          ]),
+        }),
+      )
     })
 
     it('will not trigger a key combo handler if the keys are pressed in the wrong order', () => {

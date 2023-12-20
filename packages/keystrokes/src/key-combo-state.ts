@@ -178,7 +178,11 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
   }
 
   executePressed(event: KeyEvent<OriginalEvent, KeyEventProps>) {
-    if (!this._isPressedWithFinalUnit?.has(event.key)) return
+    if (
+      !this._isPressedWithFinalUnit?.has(event.key) &&
+      !event.aliases?.some((a) => this._isPressedWithFinalUnit?.has(a))
+    )
+      return
     this._handlerState.executePressed(
       this._wrapEvent(this._lastActiveKeyPresses, {
         key: event.key,
@@ -189,7 +193,11 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
   }
 
   executeReleased(event: KeyEvent<OriginalEvent, KeyEventProps>) {
-    if (!this._isPressedWithFinalUnit?.has(event.key)) return
+    if (
+      !this._isPressedWithFinalUnit?.has(event.key) &&
+      !event.aliases?.some((a) => this._isPressedWithFinalUnit?.has(a))
+    )
+      return
     this._handlerState.executeReleased(
       this._wrapEvent(this._lastActiveKeyPresses, {
         key: event.key,
