@@ -234,7 +234,9 @@ export class Keystrokes<
   }
 
   checkKey(key: string) {
-    return this._activeKeyMap.has(key.toLowerCase())
+    return this._activeKeyPresses.some(
+      (p) => p.key === key || p.aliases.has(key),
+    )
   }
 
   checkKeyCombo(keyCombo: string) {
@@ -323,16 +325,20 @@ export class Keystrokes<
 
     const remappedKey = this._keyRemap[event.key]
     if (remappedKey) event.key = remappedKey
-    if (event.aliases) {
-      for (let i = 0; i < event.aliases.length; i += 1) {
-        const remappedAlias = this._keyRemap[event.aliases[i]]
-        if (remappedAlias) event.aliases[i] = remappedAlias
-      }
+    for (let i = 0; i < event.aliases!.length; i += 1) {
+      const remappedAlias = this._keyRemap[event.aliases![i]]
+      if (remappedAlias) event.aliases![i] = remappedAlias
     }
 
     const keyPressHandlerStates = this._handlerStates[event.key]
     if (keyPressHandlerStates) {
       for (const s of keyPressHandlerStates) s.executePressed(event)
+    }
+    for (let i = 0; i < event.aliases!.length; i += 1) {
+      const keyPressHandlerStates = this._handlerStates[event.aliases![i]]
+      if (keyPressHandlerStates) {
+        for (const s of keyPressHandlerStates) s.executePressed(event)
+      }
     }
 
     const existingKeypress = this._activeKeyMap.get(event.key)
@@ -373,6 +379,12 @@ export class Keystrokes<
     const keyPressHandlerStates = this._handlerStates[event.key]
     if (keyPressHandlerStates) {
       for (const s of keyPressHandlerStates) s.executeReleased(event)
+    }
+    for (let i = 0; i < event.aliases!.length; i += 1) {
+      const keyPressHandlerStates = this._handlerStates[event.aliases![i]]
+      if (keyPressHandlerStates) {
+        for (const s of keyPressHandlerStates) s.executeReleased(event)
+      }
     }
 
     if (this._activeKeyMap.has(event.key)) {

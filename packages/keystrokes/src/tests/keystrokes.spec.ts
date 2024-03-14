@@ -173,6 +173,21 @@ describe('new Keystrokes(options)', () => {
       expect(handler1).toBeCalledTimes(2)
       expect(handler2).toBeCalledTimes(1)
     })
+
+    it('accepts a key and handler which is executed repeatedly while the key is pressed when using aliases', () => {
+      const keystrokes = createTestKeystrokes()
+
+      const handler1 = vi.fn()
+      const handler2 = vi.fn()
+      keystrokes.bindKey('@keya', handler1)
+      keystrokes.bindKey('@keya', handler2)
+
+      keystrokes.press({ key: 'a', aliases: ['@keya'] })
+      keystrokes.press({ key: 'a', aliases: ['@keya'] })
+
+      expect(handler1).toBeCalledTimes(2)
+      expect(handler2).toBeCalledTimes(2)
+    })
   })
 
   describe('#unbindKey(keyCombo, handler?)', () => {
@@ -585,6 +600,21 @@ describe('new Keystrokes(options)', () => {
       keystrokes.release({ key: 'a' })
 
       expect(keystrokes.checkKey('a')).toBe(false)
+    })
+
+    it('will return a boolean indicating if a key is pressed when using aliases', () => {
+      const keystrokes = createTestKeystrokes()
+
+      expect(keystrokes.checkKey('@keya')).toBe(false)
+
+      keystrokes.press({ key: 'a', aliases: ['@keya'] })
+      keystrokes.press({ key: 'a', aliases: ['@keya'] })
+
+      expect(keystrokes.checkKey('@keya')).toBe(true)
+
+      keystrokes.release({ key: 'a', aliases: ['@keya'] })
+
+      expect(keystrokes.checkKey('@keya')).toBe(false)
     })
   })
 
