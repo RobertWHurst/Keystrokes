@@ -591,15 +591,20 @@ describe('new Keystrokes(options)', () => {
       const keystrokes = createTestKeystrokes()
 
       expect(keystrokes.checkKey('a')).toBe(false)
+      expect(keystrokes.checkKey('ArrowRight')).toBe(false)
 
       keystrokes.press({ key: 'a' })
       keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'ArrowRight' })
 
       expect(keystrokes.checkKey('a')).toBe(true)
+      expect(keystrokes.checkKey('ArrowRight')).toBe(true)
 
       keystrokes.release({ key: 'a' })
+      keystrokes.release({ key: 'ArrowRight' })
 
       expect(keystrokes.checkKey('a')).toBe(false)
+      expect(keystrokes.checkKey('ArrowRight')).toBe(false)
     })
 
     it('will return a boolean indicating if a key is pressed when using aliases', () => {
