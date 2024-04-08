@@ -234,6 +234,7 @@ export class Keystrokes<
   }
 
   checkKey(key: string) {
+    key = key.toLowerCase()
     return this._activeKeyPresses.some(
       (p) => p.key === key || p.aliases.has(key),
     )
