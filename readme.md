@@ -396,7 +396,7 @@ keystrokes.checkKeyCombo(...)
 
 ```
 
-If you want to go this route you won't have to work about overhead from the
+If you want to go this route you won't have to worry about overhead from the
 global instance as it is only created if you use the exported functions
 associated with it.
 
