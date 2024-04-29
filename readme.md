@@ -396,7 +396,7 @@ keystrokes.checkKeyCombo(...)
 
 ```
 
-If you want to go this route you won't have to work about overhead from the
+If you want to go this route you won't have to worry about overhead from the
 global instance as it is only created if you use the exported functions
 associated with it.
 
@@ -500,7 +500,7 @@ keystrokes.bindKey(...)
 
 ## Help Welcome
 
-If you want to support this project by throwing be some coffee money It's
+If you want to support this project by throwing me some coffee money It's
 greatly appreciated.
 
 [![sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/RobertWHurst)
