@@ -15,9 +15,6 @@
   <a href="https://github.com/sponsors/RobertWHurst">
     <img src="https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86">
   </a>
-  <a href="https://openbase.com/js/@rwh/keystrokes?utm_source=embedded&amp;utm_medium=badge&amp;utm_campaign=rate-badge">
-    <img src="https://badges.openbase.com/js/featured/@rwh/keystrokes.svg?token=2wanGBvFibIfrdpnvnSioqIgoC7lJt3ztNNcKsRw+Pg=">
-  </a>
 </p>
 
 __If you encounter a bug please [report it][bug-report].__
