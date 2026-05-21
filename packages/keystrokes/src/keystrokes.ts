@@ -99,6 +99,11 @@ export class Keystrokes<
     KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps>
   >
 
+  private _keyCombosPressedByKey: Map<
+    string,
+    KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps>[]
+  >
+
   constructor(
     options: KeystrokesOptions<
       OriginalEvent,
@@ -125,6 +130,7 @@ export class Keystrokes<
     this._activeKeyMap = new Map()
 
     this._watchedKeyComboStates = {}
+    this._keyCombosPressedByKey = new Map()
 
     this.bindEnvironment(options)
   }
@@ -357,8 +363,31 @@ export class Keystrokes<
 
     this._updateKeyComboStates()
 
-    for (const keyComboState of this._keyComboStatesArray)
-      keyComboState.executePressed(event)
+    const pressedCombos = this._keyComboStatesArray.filter(
+      (combo) => combo.isPressed,
+    )
+
+    if (pressedCombos.length > 0) {
+      const maxSequenceLength = Math.max(
+        ...pressedCombos.map((combo) => combo.sequenceLength),
+      )
+
+      const activatedCombos: KeyComboState<
+        OriginalEvent,
+        KeyEventProps,
+        KeyComboEventProps
+      >[] = []
+      for (const combo of pressedCombos) {
+        if (combo.sequenceLength === maxSequenceLength) {
+          combo.executePressed(event)
+          activatedCombos.push(combo)
+        }
+      }
+
+      if (activatedCombos.length > 0) {
+        this._keyCombosPressedByKey.set(event.key, activatedCombos)
+      }
+    }
   }
 
   private _handleKeyRelease(event: KeyEvent<OriginalEvent, KeyEventProps>) {
@@ -402,8 +431,13 @@ export class Keystrokes<
     this._tryReleaseSelfReleasingKeys()
     this._updateKeyComboStates()
 
-    for (const keyComboState of this._keyComboStatesArray)
-      keyComboState.executeReleased(event)
+    const activatedCombos = this._keyCombosPressedByKey.get(event.key)
+    if (activatedCombos) {
+      for (const combo of activatedCombos) {
+        combo.executeReleased(event)
+      }
+      this._keyCombosPressedByKey.delete(event.key)
+    }
   }
 
   private _updateKeyComboStates() {

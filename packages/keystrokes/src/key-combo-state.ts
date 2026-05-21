@@ -129,6 +129,10 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     return this._sequenceIndex
   }
 
+  get sequenceLength() {
+    return this._parsedKeyCombo.length;
+  }
+
   private _normalizedKeyCombo: string
   private _parsedKeyCombo: string[][][]
   private _handlerState: HandlerState<
