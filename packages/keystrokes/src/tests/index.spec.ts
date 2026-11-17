@@ -3,6 +3,7 @@ import {
   bindKey,
   bindKeyCombo,
   checkKey,
+  createTestKeystrokes,
   getGlobalKeystrokes,
   unbindKey,
 } from '..'
@@ -114,4 +115,28 @@ describe('exported globalKeystrokes methods', () => {
   })
 
   describe.skip('checkKeyCombo(keyCombo)', () => {})
+})
+
+describe('createTestKeystrokes()', () => {
+  it('provides the same event methods as the browser bindings', () => {
+    const keystrokes = createTestKeystrokes()
+
+    const handler = {
+      onPressed: vi.fn((e) => {
+        e.preventDefault()
+        e.composedPath()
+      }),
+      onReleased: vi.fn((e) => {
+        e.preventDefault()
+        e.composedPath()
+      }),
+    }
+    keystrokes.bindKey('a', handler)
+
+    keystrokes.press({ key: 'a' })
+    keystrokes.release({ key: 'a' })
+
+    expect(handler.onPressed).toBeCalledTimes(1)
+    expect(handler.onReleased).toBeCalledTimes(1)
+  })
 })
