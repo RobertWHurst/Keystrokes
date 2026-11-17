@@ -584,6 +584,40 @@ describe('new Keystrokes(options)', () => {
       expect(handler1).toBeCalledTimes(3)
       expect(handler2).toBeCalledTimes(2)
     })
+
+    it('will remove all handlers for a given key combo if no handler is given', () => {
+      const keystrokes = createTestKeystrokes()
+
+      const handler1 = vi.fn()
+      const handler2 = vi.fn()
+      keystrokes.bindKeyCombo('a+b', handler1)
+      keystrokes.bindKeyCombo('a+b', handler2)
+
+      keystrokes.unbindKeyCombo('a+b')
+
+      const handler3 = vi.fn()
+      keystrokes.bindKeyCombo('a+b', handler3)
+
+      keystrokes.press({ key: 'a' })
+      keystrokes.press({ key: 'b' })
+
+      expect(handler1).toBeCalledTimes(0)
+      expect(handler2).toBeCalledTimes(0)
+      expect(handler3).toBeCalledTimes(1)
+    })
+
+    it('will remove all handlers for a single key combo if no handler is given', () => {
+      const keystrokes = createTestKeystrokes()
+
+      const handler = vi.fn()
+      keystrokes.bindKeyCombo('a', handler)
+
+      keystrokes.unbindKeyCombo('a')
+
+      keystrokes.press({ key: 'a' })
+
+      expect(handler).toBeCalledTimes(0)
+    })
   })
 
   describe('#checkKey(key)', () => {
