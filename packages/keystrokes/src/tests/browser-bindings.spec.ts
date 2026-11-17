@@ -274,6 +274,57 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
 
       vi.unstubAllGlobals()
     })
+
+    it('will release keys right after they are pressed while meta is held', () => {
+      const addEventListenerStub = vi.fn()
+      const dispatchEventStub = vi.fn()
+      vi.spyOn(document, 'addEventListener').mockImplementation(
+        addEventListenerStub,
+      )
+      vi.spyOn(document, 'dispatchEvent').mockImplementation(dispatchEventStub)
+      vi.stubGlobal('navigator', { userAgent: 'mac' })
+
+      browserOnKeyPressedBinder(vi.fn())
+      browserOnKeyReleasedBinder(vi.fn())
+
+      const keyPressedHandler = addEventListenerStub.mock.calls[0][1]
+      const keyReleasedHandler = addEventListenerStub.mock.calls[1][1]
+
+      keyPressedHandler(new KeyboardEvent('keydown', { key: 'Meta' }))
+      keyPressedHandler(new KeyboardEvent('keydown', { key: 'Shift' }))
+      keyPressedHandler(new KeyboardEvent('keydown', { key: 'Enter' }))
+      keyPressedHandler(new KeyboardEvent('keydown', { key: 'Enter' }))
+
+      expect(dispatchEventStub).toBeCalledTimes(2)
+      for (const [syntheticKeyboardEvent] of dispatchEventStub.mock.calls) {
+        expect(syntheticKeyboardEvent.type).toBe('keyup')
+        expect(syntheticKeyboardEvent.key).toBe('Enter')
+      }
+
+      keyReleasedHandler(new KeyboardEvent('keyup', { key: 'Meta' }))
+      vi.unstubAllGlobals()
+    })
+
+    it('will not release keys early when not on macOS', () => {
+      const addEventListenerStub = vi.fn()
+      const dispatchEventStub = vi.fn()
+      vi.spyOn(document, 'addEventListener').mockImplementation(
+        addEventListenerStub,
+      )
+      vi.spyOn(document, 'dispatchEvent').mockImplementation(dispatchEventStub)
+      vi.stubGlobal('navigator', { userAgent: 'windows' })
+
+      browserOnKeyPressedBinder(vi.fn())
+
+      const keyPressedHandler = addEventListenerStub.mock.calls[0][1]
+
+      keyPressedHandler(new KeyboardEvent('keydown', { key: 'Meta' }))
+      keyPressedHandler(new KeyboardEvent('keydown', { key: 'Enter' }))
+
+      expect(dispatchEventStub).toBeCalledTimes(0)
+
+      vi.unstubAllGlobals()
+    })
   })
 })
 
