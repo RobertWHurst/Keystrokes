@@ -5,9 +5,10 @@
     "strict": true,
     "lib": ["DOM", "ESNext"],
     "target": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "rootDir": "./src",
     "outDir": "./dist"
   },
   "include": ["./src"],

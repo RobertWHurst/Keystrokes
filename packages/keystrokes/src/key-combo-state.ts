@@ -242,7 +242,8 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     // advance to the next sequence.
     if (hasReleasedKeys) {
       if (this._movingToNextSequenceAt === 0) return reset()
-      if (this._movingToNextSequenceAt + sequenceTimeout < Date.now()) return
+      if (this._movingToNextSequenceAt + sequenceTimeout < Date.now())
+        return reset()
       if (activeKeysCount !== 0) return
       this._movingToNextSequenceAt = 0
       this._sequenceIndex += 1

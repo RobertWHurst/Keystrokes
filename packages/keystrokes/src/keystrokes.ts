@@ -215,21 +215,16 @@ export class Keystrokes<
     const keyComboStates = this._keyComboStates[keyCombo]
     if (!keyComboStates) return
 
-    if (handler) {
-      for (let i = 0; i < keyComboStates.length; i += 1) {
-        if (keyComboStates[i].isOwnHandler(handler)) {
-          for (let j = 0; j < this._keyComboStatesArray.length; j += 1) {
-            if (this._keyComboStatesArray[j] === keyComboStates[i]) {
-              this._keyComboStatesArray.splice(j, 1)
-              j -= 1
-            }
-          }
-          keyComboStates.splice(i, 1)
-          i -= 1
+    for (let i = 0; i < keyComboStates.length; i += 1) {
+      if (handler && !keyComboStates[i].isOwnHandler(handler)) continue
+      for (let j = 0; j < this._keyComboStatesArray.length; j += 1) {
+        if (this._keyComboStatesArray[j] === keyComboStates[i]) {
+          this._keyComboStatesArray.splice(j, 1)
+          j -= 1
         }
       }
-    } else {
-      keyComboStates.length = 0
+      keyComboStates.splice(i, 1)
+      i -= 1
     }
   }
 
@@ -393,7 +388,6 @@ export class Keystrokes<
       for (let i = 0; i < this._activeKeyPresses.length; i += 1) {
         if (this._activeKeyPresses[i].key === event.key) {
           this._activeKeyPresses.splice(i, 1)
-          i -= 1
           break
         }
       }
