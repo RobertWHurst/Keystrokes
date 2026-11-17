@@ -167,6 +167,30 @@ describe('browserOnKeyPressedBinder(handler) -> void', () => {
     vi.unstubAllGlobals()
   })
 
+  it('ignores keydown and keyup events without a key', () => {
+    const addEventListenerStub = vi.fn()
+    const keyPressedHandlerStub = vi.fn()
+    const keyReleasedHandlerStub = vi.fn()
+    vi.spyOn(document, 'addEventListener').mockImplementation(
+      addEventListenerStub,
+    )
+
+    browserOnKeyPressedBinder(keyPressedHandlerStub)
+    browserOnKeyReleasedBinder(keyReleasedHandlerStub)
+
+    const keyPressedHandler = addEventListenerStub.mock.calls[0][1]
+    const keyReleasedHandler = addEventListenerStub.mock.calls[1][1]
+
+    // Browser autofill dispatches plain events with no key property
+    keyPressedHandler(new Event('keydown'))
+    keyReleasedHandler(new Event('keyup'))
+
+    expect(keyPressedHandlerStub).toBeCalledTimes(0)
+    expect(keyReleasedHandlerStub).toBeCalledTimes(0)
+
+    vi.unstubAllGlobals()
+  })
+
   describe('/macOS Specific Behavior/', () => {
     it('will release all keys pressed once meta is released', () => {
       const addEventListenerStub = vi.fn()
