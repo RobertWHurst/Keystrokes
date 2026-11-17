@@ -493,6 +493,27 @@ describe('new Keystrokes(options)', () => {
       expect(handler.onReleased).toBeCalledTimes(0)
     })
 
+    it('resets a combo if the sequence timeout passes before the sequence is released', () => {
+      vi.useFakeTimers()
+
+      const keystrokes = createTestKeystrokes()
+
+      const handler = vi.fn()
+      keystrokes.bindKeyCombo('a,b', handler)
+
+      keystrokes.press({ key: 'a' })
+      vi.advanceTimersByTime(keystrokes.sequenceTimeout + 1)
+      keystrokes.release({ key: 'a' })
+
+      keystrokes.press({ key: 'a' })
+      keystrokes.release({ key: 'a' })
+      keystrokes.press({ key: 'b' })
+
+      expect(handler).toBeCalledTimes(1)
+
+      vi.useRealTimers()
+    })
+
     it('will correctly handle escaped characters', () => {
       const keystrokes = createTestKeystrokes()
 
