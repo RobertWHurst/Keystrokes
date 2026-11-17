@@ -5,7 +5,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: resolve(import.meta.dirname, 'src/index.ts'),
       name: 'reactKeystrokes',
       fileName: 'react-keystrokes',
     },
@@ -23,7 +23,7 @@ export default defineConfig({
   },
   plugins: [
     typescript({
-      exclude: ['**/*.spec.*', '**/*.test.*', './src/tests/**/*'],
+      exclude: ['**/*.spec.*', '**/*.test.*', '**/tests/**/*'],
     })
   ],
   test: {

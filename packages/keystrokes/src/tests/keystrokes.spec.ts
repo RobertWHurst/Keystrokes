@@ -40,8 +40,7 @@ describe('new Keystrokes(options)', () => {
       let press: ((event: KeyEvent<EmptyObject, EmptyObject>) => void) | null =
         null
       let release:
-        | ((event: KeyEvent<EmptyObject, EmptyObject>) => void)
-        | null = null
+        ((event: KeyEvent<EmptyObject, EmptyObject>) => void) | null = null
 
       const onActive = vi.fn()
       const onInactive = vi.fn()

@@ -7,17 +7,18 @@ import {
 import { ref, onMounted, onUnmounted, inject } from 'vue'
 import { keystrokesSymbol } from './use-keystrokes'
 
-type ExtractedType<T> = T extends Keystrokes<
-  infer OriginalEvent,
-  infer KeyEventProps,
-  infer KeyComboEventProps
->
-  ? {
-      OriginalEvent: OriginalEvent
-      KeyEventProps: KeyEventProps
-      KeyComboEventProps: KeyComboEventProps
-    }
-  : never
+type ExtractedType<T> =
+  T extends Keystrokes<
+    infer OriginalEvent,
+    infer KeyEventProps,
+    infer KeyComboEventProps
+  >
+    ? {
+        OriginalEvent: OriginalEvent
+        KeyEventProps: KeyEventProps
+        KeyComboEventProps: KeyComboEventProps
+      }
+    : never
 
 export function useKeyCombo(keyCombo: string, preventDefault?: boolean) {
   const keystrokes = inject(keystrokesSymbol, () => getGlobalKeystrokes(), true)

@@ -393,7 +393,6 @@ export class Keystrokes<
       for (let i = 0; i < this._activeKeyPresses.length; i += 1) {
         if (this._activeKeyPresses[i].key === event.key) {
           this._activeKeyPresses.splice(i, 1)
-          i -= 1
           break
         }
       }
