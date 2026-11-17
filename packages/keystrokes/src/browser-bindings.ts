@@ -14,41 +14,33 @@ export type BrowserKeyEvent = KeyEvent<KeyboardEvent, BrowserKeyEventProps>
 export type BrowserKeyComboEvent = KeyComboEvent<
   KeyboardEvent,
   BrowserKeyEventProps,
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   {}
 >
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type BrowserKeyComboEventProps = {}
 
 export type MaybeBrowserKeyEventProps<OriginalEvent> =
   OriginalEvent extends KeyboardEvent
     ? BrowserKeyEventProps
-    : // eslint-disable-next-line @typescript-eslint/ban-types
+    : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
       {}
 
 export type MaybeBrowserKeyComboEventProps<OriginalEvent> =
   OriginalEvent extends KeyboardEvent
     ? BrowserKeyComboEventProps
-    : // eslint-disable-next-line @typescript-eslint/ban-types
+    : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
       {}
 
 // NOTE: These stubs are only used if the library is used in a non-browser
 // environment with default binders.
 const documentStub = {
-  /*
-  eslint-disable
-    @typescript-eslint/no-empty-function,
-    @typescript-eslint/no-unused-vars
-  */
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   addEventListener: (..._: any[]): any => {},
   removeEventListener: (..._: any[]): any => {},
   dispatchEvent: (..._: any[]): any => {},
-  /*
-  eslint-enable
-    @typescript-eslint/no-empty-function,
-    @typescript-eslint/no-unused-vars
-  */
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 }
 
 const navigatorStub = {
