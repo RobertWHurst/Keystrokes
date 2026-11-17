@@ -6,7 +6,6 @@ import { act } from './helpers/act'
 
 import { createTestKeystrokes } from '@rwh/keystrokes'
 import { useKey } from '..'
-import { wait } from './helpers/next-tick'
 
 const TestComponent = () => {
   const isPressed = useKey('a')
@@ -43,8 +42,9 @@ describe('useKey(key) -> isPressed', () => {
       ),
     )
 
-    keystrokes.press({ key: 'a' })
-    await wait()
+    await act(() => {
+      keystrokes.press({ key: 'a' })
+    })
 
     expect(root.findByType('div').children[0]).toEqual('isPressed')
   })
@@ -60,9 +60,10 @@ describe('useKey(key) -> isPressed', () => {
       ),
     )
 
-    keystrokes.press({ key: 'a' })
-    keystrokes.release({ key: 'a' })
-    await wait()
+    await act(() => {
+      keystrokes.press({ key: 'a' })
+      keystrokes.release({ key: 'a' })
+    })
 
     expect(root.findByType('div').children[0]).toEqual('isNotPressed')
   })
@@ -85,9 +86,10 @@ describe('useKey(key) -> isPressed', () => {
         defaultPrevented = true
       },
     }
-    keystrokes.press(keyEvent)
-    keystrokes.release(keyEvent)
-    await wait()
+    await act(() => {
+      keystrokes.press(keyEvent)
+      keystrokes.release(keyEvent)
+    })
 
     expect(defaultPrevented).toEqual(true)
     expect(root.findByType('div').children[0]).toEqual('isNotPressed')
