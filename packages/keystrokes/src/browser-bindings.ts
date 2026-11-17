@@ -68,6 +68,22 @@ const maybeHandleMacOsCommandKeyReleased = (event: KeyboardEvent) => {
   isMacOsCommandKeyPressed = false
   dispatchKeyUpForAllActiveKeys()
 }
+
+// While the Command key is held MacOS also does not fire keyup events for any
+// other keys, so we release them ourselves right after they are pressed.
+const macOsModifierKeys = ['Meta', 'Shift', 'Control', 'Alt', 'CapsLock', 'Tab']
+const maybeReleaseKeyPressedWithMacOsCommandKey = (event: KeyboardEvent) => {
+  if (!isMacOsCommandKeyPressed || macOsModifierKeys.includes(event.key)) return
+  removeActiveKeyEvent(event)
+  getDoc().dispatchEvent(
+    new KeyboardEvent('keyup', {
+      key: event.key,
+      code: event.code,
+      bubbles: true,
+      cancelable: true,
+    }),
+  )
+}
 // ----------------
 
 const activeKeyEvents = new Map<string, KeyboardEvent>()
@@ -133,6 +149,8 @@ export const browserOnKeyPressedBinder: OnKeyEventBinder<
         composedPath: () => e.composedPath(),
         preventDefault: () => e.preventDefault(),
       })
+
+      maybeReleaseKeyPressedWithMacOsCommandKey(e)
     }
     getDoc().addEventListener('keydown', handlerWrapper)
     return () => getDoc().removeEventListener('keydown', handlerWrapper)
