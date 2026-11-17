@@ -125,10 +125,10 @@ export const createTestKeystrokes = <
         deactivate!()
       },
       press(event: KeyEvent<OriginalEvent, KeyEventProps>) {
-        press!({ composedPath: () => [], ...event })
+        press!({ composedPath: () => [], preventDefault: () => {}, ...event })
       },
       release(event: KeyEvent<OriginalEvent, KeyEventProps>) {
-        release!({ composedPath: () => [], ...event })
+        release!({ composedPath: () => [], preventDefault: () => {}, ...event })
       },
     },
   ) as TestKeystrokes<OriginalEvent, KeyEventProps, KeyComboEventProps>
