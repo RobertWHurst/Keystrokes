@@ -121,6 +121,8 @@ export const browserOnKeyPressedBinder: OnKeyEventBinder<
 > = (handler) => {
   try {
     const handlerWrapper = (e: KeyboardEvent) => {
+      if (!e.key) return
+
       addActiveKeyEvent(e)
       maybeHandleMacOsCommandKeyPressed(e)
 
@@ -143,6 +145,8 @@ export const browserOnKeyReleasedBinder: OnKeyEventBinder<
 > = (handler) => {
   try {
     const handlerWrapper = (e: KeyboardEvent) => {
+      if (!e.key) return
+
       removeActiveKeyEvent(e)
       maybeHandleMacOsCommandKeyReleased(e)
 
