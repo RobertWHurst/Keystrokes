@@ -25,7 +25,7 @@ export function useKey(key: string, preventDefault?: boolean) {
   // a composable can also hook into its owner component's
   // lifecycle to setup and teardown side effects.
   onMounted(() => keystrokes.bindKey(key, handler))
-  onUnmounted(() => keystrokes.bindKey(key, handler))
+  onUnmounted(() => keystrokes.unbindKey(key, handler))
 
   // expose managed state as return value
   return isPressed
