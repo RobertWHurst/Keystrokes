@@ -582,6 +582,138 @@ describe('new Keystrokes(options)', () => {
         }),
       )
     })
+
+    describe('/Overlapping Sequences/', () => {
+      it('only fires the sequence when its final key is also bound on its own', () => {
+        const keystrokes = createTestKeystrokes()
+
+        const sequenceHandler = { onPressed: vi.fn(), onReleased: vi.fn() }
+        const keyHandler = { onPressed: vi.fn(), onReleased: vi.fn() }
+        keystrokes.bindKeyCombo('control > k, m', sequenceHandler)
+        keystrokes.bindKeyCombo('m', keyHandler)
+
+        keystrokes.press({ key: 'control' })
+        keystrokes.press({ key: 'k' })
+        keystrokes.release({ key: 'k' })
+        keystrokes.release({ key: 'control' })
+        keystrokes.press({ key: 'm' })
+        keystrokes.release({ key: 'm' })
+
+        expect(sequenceHandler.onPressed).toBeCalledTimes(1)
+        expect(sequenceHandler.onReleased).toBeCalledTimes(1)
+        expect(keyHandler.onPressed).toBeCalledTimes(0)
+        expect(keyHandler.onReleased).toBeCalledTimes(0)
+      })
+
+      it('keeps the overlapped combo suppressed while the final key repeats', () => {
+        const keystrokes = createTestKeystrokes()
+
+        const sequenceHandler = vi.fn()
+        const keyHandler = vi.fn()
+        keystrokes.bindKeyCombo('a, b', sequenceHandler)
+        keystrokes.bindKeyCombo('b', keyHandler)
+
+        keystrokes.press({ key: 'a' })
+        keystrokes.release({ key: 'a' })
+        keystrokes.press({ key: 'b' })
+        keystrokes.press({ key: 'b' })
+        keystrokes.press({ key: 'b' })
+
+        expect(sequenceHandler).toBeCalledTimes(3)
+        expect(keyHandler).toBeCalledTimes(0)
+      })
+
+      it('fires the overlapped combo normally once the sequence is done', () => {
+        const keystrokes = createTestKeystrokes()
+
+        const sequenceHandler = vi.fn()
+        const keyHandler = vi.fn()
+        keystrokes.bindKeyCombo('a, b', sequenceHandler)
+        keystrokes.bindKeyCombo('b', keyHandler)
+
+        keystrokes.press({ key: 'a' })
+        keystrokes.release({ key: 'a' })
+        keystrokes.press({ key: 'b' })
+        keystrokes.release({ key: 'b' })
+
+        keystrokes.press({ key: 'b' })
+        keystrokes.release({ key: 'b' })
+
+        expect(sequenceHandler).toBeCalledTimes(1)
+        expect(keyHandler).toBeCalledTimes(1)
+      })
+
+      it('fires other combos normally when a key breaks out of the sequence', () => {
+        const keystrokes = createTestKeystrokes()
+
+        const sequenceHandler = vi.fn()
+        const xHandler = vi.fn()
+        const bHandler = vi.fn()
+        keystrokes.bindKeyCombo('a, b', sequenceHandler)
+        keystrokes.bindKeyCombo('x', xHandler)
+        keystrokes.bindKeyCombo('b', bHandler)
+
+        keystrokes.press({ key: 'a' })
+        keystrokes.release({ key: 'a' })
+        keystrokes.press({ key: 'x' })
+        keystrokes.release({ key: 'x' })
+        keystrokes.press({ key: 'b' })
+        keystrokes.release({ key: 'b' })
+
+        expect(xHandler).toBeCalledTimes(1)
+        expect(bHandler).toBeCalledTimes(1)
+        expect(sequenceHandler).toBeCalledTimes(0)
+      })
+
+      it('only fires the longest sequence when several are completed by the same key', () => {
+        const keystrokes = createTestKeystrokes()
+
+        const longHandler = vi.fn()
+        const shortHandler = vi.fn()
+        keystrokes.bindKeyCombo('a, b, c', longHandler)
+        keystrokes.bindKeyCombo('b, c', shortHandler)
+
+        keystrokes.press({ key: 'a' })
+        keystrokes.release({ key: 'a' })
+        keystrokes.press({ key: 'b' })
+        keystrokes.release({ key: 'b' })
+        keystrokes.press({ key: 'c' })
+
+        expect(longHandler).toBeCalledTimes(1)
+        expect(shortHandler).toBeCalledTimes(0)
+      })
+
+      it('suppresses other combos for keys that continue a sequence without completing it', () => {
+        const keystrokes = createTestKeystrokes()
+
+        const sequenceHandler = vi.fn()
+        const keyHandler = vi.fn()
+        keystrokes.bindKeyCombo('a, b, c', sequenceHandler)
+        keystrokes.bindKeyCombo('b', keyHandler)
+
+        keystrokes.press({ key: 'a' })
+        keystrokes.release({ key: 'a' })
+        keystrokes.press({ key: 'b' })
+
+        expect(keyHandler).toBeCalledTimes(0)
+      })
+
+      it('still fires a combo that is also the first step of a sequence', () => {
+        const keystrokes = createTestKeystrokes()
+
+        const sequenceHandler = vi.fn()
+        const gHandler = vi.fn()
+        keystrokes.bindKeyCombo('g, i', sequenceHandler)
+        keystrokes.bindKeyCombo('g', gHandler)
+
+        keystrokes.press({ key: 'g' })
+        keystrokes.release({ key: 'g' })
+        keystrokes.press({ key: 'i' })
+
+        expect(gHandler).toBeCalledTimes(1)
+        expect(sequenceHandler).toBeCalledTimes(1)
+      })
+    })
   })
 
   describe('#unbindKeyCombo(keyCombo, handler?)', () => {

@@ -129,6 +129,18 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     return this._sequenceIndex
   }
 
+  get sequenceLength() {
+    return this._parsedKeyCombo.length
+  }
+
+  get isNewlyPressed() {
+    return this._isNewlyPressed
+  }
+
+  get hasAdvancedSequence() {
+    return this._hasAdvancedSequence
+  }
+
   private _normalizedKeyCombo: string
   private _parsedKeyCombo: string[][][]
   private _handlerState: HandlerState<
@@ -145,6 +157,9 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
   private _lastActiveKeyPresses: KeyPress<OriginalEvent, KeyEventProps>[][]
   private _lastActiveKeyCount: number
   private _isPressedWithFinalUnit: Set<string> | null
+  private _isNewlyPressed: boolean
+  private _hasAdvancedSequence: boolean
+  private _isSuppressed: boolean
 
   constructor(
     keyCombo: string,
@@ -167,6 +182,9 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     this._lastActiveKeyPresses = []
     this._lastActiveKeyCount = 0
     this._isPressedWithFinalUnit = null
+    this._isNewlyPressed = false
+    this._hasAdvancedSequence = false
+    this._isSuppressed = false
   }
 
   isOwnHandler(
@@ -177,7 +195,12 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     return this._handlerState.isOwnHandler(handler)
   }
 
+  suppress() {
+    this._isSuppressed = true
+  }
+
   executePressed(event: KeyEvent<OriginalEvent, KeyEventProps>) {
+    if (this._isSuppressed) return
     if (
       !this._isPressedWithFinalUnit?.has(event.key) &&
       !event.aliases?.some((a) => this._isPressedWithFinalUnit?.has(a))
@@ -206,6 +229,7 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
       }),
     )
     this._isPressedWithFinalUnit = null
+    this._isSuppressed = false
   }
 
   updateState(
@@ -216,6 +240,11 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
     const hasReleasedKeys = activeKeysCount < this._lastActiveKeyCount
     this._lastActiveKeyCount = activeKeysCount
 
+    const isSequenceInProgress =
+      this._sequenceIndex > 0 || this._movingToNextSequenceAt !== 0
+    this._isNewlyPressed = false
+    this._hasAdvancedSequence = false
+
     const sequence = this._parsedKeyCombo[this._sequenceIndex]
     const previousUnits = sequence.slice(0, this._unitIndex)
     const remainingUnits = sequence.slice(this._unitIndex)
@@ -225,6 +254,7 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
       this._sequenceIndex = 0
       this._unitIndex = 0
       this._lastActiveKeyPresses.length = 0
+      this._hasAdvancedSequence = false
 
       // In the case of key combos that are used by checkKeyCombo, we need to
       // clear the final unit for it because the executeReleased will not be
@@ -306,6 +336,7 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
       }
       this._unitIndex += 1
       activeKeyIndex += unit.length
+      if (isSequenceInProgress) this._hasAdvancedSequence = true
     }
 
     // Now that we have completed the sequence we need to check for overshoot.
@@ -327,6 +358,7 @@ export class KeyComboState<OriginalEvent, KeyEventProps, KeyComboEventProps> {
 
     // Setting the final unit marks the combo as active. It also allows for
     // something to match key repeat against.
+    this._isNewlyPressed = !this._isPressedWithFinalUnit
     this._isPressedWithFinalUnit = new Set(sequence[sequence.length - 1])
   }
 

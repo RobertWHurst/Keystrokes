@@ -351,6 +351,7 @@ export class Keystrokes<
     }
 
     this._updateKeyComboStates()
+    this._suppressOverlappedKeyCombos()
 
     for (const keyComboState of this._keyComboStatesArray)
       keyComboState.executePressed(event)
@@ -403,6 +404,32 @@ export class Keystrokes<
   private _updateKeyComboStates() {
     for (const keyComboState of this._keyComboStatesArray)
       keyComboState.updateState(this._activeKeyPresses, this.sequenceTimeout)
+  }
+
+  // Sequences are greedy. If a key advances a sequence that is in progress,
+  // other key combos pressed by that key are suppressed, except for the
+  // longest sequence completed by it.
+  private _suppressOverlappedKeyCombos() {
+    let hasAdvancedSequence = false
+    let longestSequenceLength = 0
+    for (const keyComboState of this._keyComboStatesArray) {
+      if (!keyComboState.hasAdvancedSequence) continue
+      hasAdvancedSequence = true
+      if (!keyComboState.isPressed) continue
+      if (keyComboState.sequenceLength > longestSequenceLength)
+        longestSequenceLength = keyComboState.sequenceLength
+    }
+    if (!hasAdvancedSequence) return
+
+    for (const keyComboState of this._keyComboStatesArray) {
+      if (!keyComboState.isNewlyPressed) continue
+      if (
+        keyComboState.hasAdvancedSequence &&
+        keyComboState.sequenceLength === longestSequenceLength
+      )
+        continue
+      keyComboState.suppress()
+    }
   }
 
   private _tryReleaseSelfReleasingKeys() {
