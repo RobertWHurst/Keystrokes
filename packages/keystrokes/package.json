@@ -5,6 +5,8 @@
   "type": "module",
   "main": "dist/keystrokes.umd.cjs",
   "module": "dist/keystrokes.js",
+  "unpkg": "dist/keystrokes.iife.js",
+  "jsdelivr": "dist/keystrokes.iife.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {

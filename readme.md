@@ -54,9 +54,13 @@ If node modules aren't an option for you, you can use an npm CDN such as
 
 ```html
 <!-- ESM -->
-<script src="https://unpkg.com/browse/@rwh/keystrokes@latest/dist/keystrokes.js">
-<!-- UMD -->
-<script src="https://unpkg.com/browse/@rwh/keystrokes@latest/dist/keystrokes.umd.cjs">
+<script type="module">
+import { bindKey } from 'https://cdn.jsdelivr.net/npm/@rwh/keystrokes@latest/dist/keystrokes.js'
+bindKey('a', () => console.log('you pressed a'))
+</script>
+
+<!-- Global -->
+<script src="https://cdn.jsdelivr.net/npm/@rwh/keystrokes@latest"></script>
 <script>
 keystrokes.bindKey('a', () => console.log('you pressed a'))
 </script>
@@ -516,7 +520,7 @@ Thank you!
 [turbopack]: https://turbo.build/pack
 [webpack]: https://webpack.js.org
 [jsdelivr]: https://www.jsdelivr.com/package/npm/@rwh/keystrokes
-[unpkg]: https://unpkg.com/browse/@rwh/keystrokes@latest/
+[unpkg]: https://unpkg.com/@rwh/keystrokes@latest/
 [key-names]: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
 [key]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
 [code]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code
