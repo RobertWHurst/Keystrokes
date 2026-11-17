@@ -214,6 +214,26 @@ const keyIsPressed = checkKey('a')
 const keyComboIsPressed = checkKeyCombo('control > y, r')
 ```
 
+### Holding Several Keys at Once
+
+Browsers only repeat the most recently pressed key, so if you hold `w` and then
+`a`, handlers bound to `w` will stop being called with repeats even though `w`
+is still held. For things like games where several keys are held at the same
+time, check the keys from your game loop instead of relying on key repeat.
+
+```js
+import { checkKey } from '@rwh/keystrokes'
+
+const update = () => {
+  if (checkKey('w')) player.y -= 1
+  if (checkKey('a')) player.x -= 1
+  if (checkKey('s')) player.y += 1
+  if (checkKey('d')) player.x += 1
+  requestAnimationFrame(update)
+}
+requestAnimationFrame(update)
+```
+
 ## Using Keystrokes with React
 
 Keystrokes has it's own react specific package with a few goodies.
