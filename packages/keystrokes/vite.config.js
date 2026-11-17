@@ -7,6 +7,7 @@ export default defineConfig({
     lib: {
       entry: resolve(import.meta.dirname, 'src/index.ts'),
       name: 'keystrokes',
+      formats: ['es', 'umd', 'iife'],
       fileName: 'keystrokes',
     },
   },
